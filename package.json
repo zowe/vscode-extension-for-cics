@@ -1,0 +1,74 @@
+{
+	"name": "cics-extension-for-zowe",
+	"displayName": "CICSExtensionForZowe",
+	"description": "Extension to the Zowe Explorer for CICS",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.50.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:cics-extension-for-zowe.addSession",
+		"onView:cics-view"
+	],
+	"extensionDependencies": [
+		"zowe.vscode-extension-for-zowe"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"views": {
+			"zowe": [
+				{
+					"id": "cics-view",
+					"name": "cics"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "cics-extension-for-zowe.addSession",
+				"title": "Create a CICS Session"
+			},
+			{
+				"command": "cics-extension-for-zowe.newCopyProgram",
+				"title": "New Copy"
+			}
+		],
+		"menus": {
+			"view/item/context": [
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+					"command": "cics-extension-for-zowe.newCopyProgram",
+					"group": "2_systemSpecific@0"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.50.0",
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.0",
+		"@types/node": "^12.11.7",
+		"eslint": "^7.9.0",
+		"@typescript-eslint/eslint-plugin": "^4.1.1",
+		"@typescript-eslint/parser": "^4.1.1",
+		"glob": "^7.1.6",
+		"mocha": "^8.1.3",
+		"typescript": "^4.0.2",
+		"vscode-test": "^1.4.0"
+	},
+	"dependencies": {
+		"@zowe/cics-for-zowe-cli": "^4.0.2",
+		"@zowe/imperative": "^4.8.1"
+	}
+}
