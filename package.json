@@ -69,6 +69,8 @@
 	},
 	"dependencies": {
 		"@zowe/cics-for-zowe-cli": "^4.0.2",
-		"@zowe/imperative": "^4.8.1"
+		"@zowe/cli": "^6.30.0",
+		"@zowe/imperative": "^4.8.1",
+		"@zowe/zowe-explorer-api": "^1.13.1"
 	}
 }
