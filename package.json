@@ -18,6 +18,12 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"viewsWelcome": [
+			{
+				"view": "cics-view",
+				"contents": "No CICS Sessions Found.\n[Add Session](command:cics-extension-for-zowe.addSession)"
+			}
+		],
 		"views": {
 			"zowe": [
 				{
@@ -29,19 +35,88 @@
 		"commands": [
 			{
 				"command": "cics-extension-for-zowe.addSession",
-				"title": "Create a CICS Session"
+				"title": "Create a CICS Session",
+				"icon": {
+					"light": "src/imgs/plus2-dark.svg",
+					"dark": "src/imgs/plus2-light.svg"
+				}
 			},
 			{
 				"command": "cics-extension-for-zowe.newCopyProgram",
-				"title": "New Copy"
+				"title": "New Copy",
+				"icon": {
+					"light": "src/imgs/copy-dark.svg",
+					"dark": "src/imgs/copy-light.svg"
+				}
+			},
+			{
+				"command": "cics-extension-for-zowe.refreshTree",
+				"title": "Refresh",
+				"icon": {
+					"light": "src/imgs/refresh-dark.svg",
+					"dark": "src/imgs/refresh-light.svg"
+				}
+			},
+			{
+				"command": "cics-extension-for-zowe.showAttributes",
+				"title": "Show Attributes"
+			},
+			{
+				"command": "cics-extension-for-zowe.showRegionAttributes",
+				"title": "Show Attributes"
+			},
+			{
+				"command": "cics-extension-for-zowe.phaseInCommand",
+				"title": "Phase In",
+				"icon": {
+					"light": "src/imgs/phase-dark.svg",
+					"dark": "src/imgs/phase-light.svg"
+				}
 			}
 		],
 		"menus": {
+			"view/title": [
+				{
+					"command": "cics-extension-for-zowe.refreshTree",
+					"when": "view == cics-view",
+					"group": "navigation"
+				},
+				{
+					"command": "cics-extension-for-zowe.addSession",
+					"when": "view == cics-view",
+					"group": "navigation"
+				}
+			],
 			"view/item/context": [
 				{
 					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
 					"command": "cics-extension-for-zowe.newCopyProgram",
-					"group": "2_systemSpecific@0"
+					"group": "inline"
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+					"command": "cics-extension-for-zowe.newCopyProgram",
+					"group": ""
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+					"command": "cics-extension-for-zowe.phaseInCommand",
+					"group": "inline"
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+					"command": "cics-extension-for-zowe.phaseInCommand",
+					"group": ""
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsregion.*/",
+					"command": "cics-extension-for-zowe.showRegionAttributes",
+					"group": ""
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+					"command": "cics-extension-for-zowe.showAttributes",
+					"group": ""
 				}
 			]
 		}
@@ -71,6 +146,7 @@
 		"@zowe/cics-for-zowe-cli": "^4.0.2",
 		"@zowe/cli": "^6.30.0",
 		"@zowe/imperative": "^4.8.1",
-		"@zowe/zowe-explorer-api": "^1.13.1"
+		"@zowe/zowe-explorer-api": "^1.13.1",
+		"vscode-nls": "^5.0.0"
 	}
 }
