@@ -18,7 +18,7 @@ export class CICSSessionTreeItem extends TreeItem {
         "..",
         "..",
         "..",
-        "src",
+        "resources",
         "imgs",
         "session2-dark.svg"
       ),
@@ -27,7 +27,7 @@ export class CICSSessionTreeItem extends TreeItem {
         "..",
         "..",
         "..",
-        "src",
+        "resources",
         "imgs",
         "session2-light.svg"
       ),

@@ -41,24 +41,24 @@
 				"command": "cics-extension-for-zowe.addSession",
 				"title": "Create a CICS Session",
 				"icon": {
-					"light": "src/imgs/plus2-dark.svg",
-					"dark": "src/imgs/plus2-light.svg"
+					"light": "resources/imgs/plus2-dark.svg",
+					"dark": "resources/imgs/plus2-light.svg"
 				}
 			},
 			{
 				"command": "cics-extension-for-zowe.newCopyProgram",
 				"title": "New Copy",
 				"icon": {
-					"light": "src/imgs/copy-dark.svg",
-					"dark": "src/imgs/copy-light.svg"
+					"light": "resources/imgs/copy-dark.svg",
+					"dark": "resources/imgs/copy-light.svg"
 				}
 			},
 			{
 				"command": "cics-extension-for-zowe.refreshTree",
 				"title": "Refresh",
 				"icon": {
-					"light": "src/imgs/refresh-dark.svg",
-					"dark": "src/imgs/refresh-light.svg"
+					"light": "resources/imgs/refresh-dark.svg",
+					"dark": "resources/imgs/refresh-light.svg"
 				}
 			},
 			{
@@ -73,8 +73,8 @@
 				"command": "cics-extension-for-zowe.phaseInCommand",
 				"title": "Phase In",
 				"icon": {
-					"light": "src/imgs/phase-dark.svg",
-					"dark": "src/imgs/phase-light.svg"
+					"light": "resources/imgs/phase-dark.svg",
+					"dark": "resources/imgs/phase-light.svg"
 				}
 			}
 		],

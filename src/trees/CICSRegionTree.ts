@@ -19,7 +19,7 @@ export class CICSRegionTreeItem extends TreeItem {
         "..",
         "..",
         "..",
-        "src",
+        "resources",
         "imgs",
         "region2-dark.svg"
       ),
@@ -28,7 +28,7 @@ export class CICSRegionTreeItem extends TreeItem {
         "..",
         "..",
         "..",
-        "src",
+        "resources",
         "imgs",
         "region2-light.svg"
       ),
