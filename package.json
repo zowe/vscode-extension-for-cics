@@ -2,6 +2,10 @@
 	"name": "cics-extension-for-zowe",
 	"displayName": "CICSExtensionForZowe",
 	"description": "Extension to the Zowe Explorer for CICS",
+	"publisher": "Zowe",
+	"repository": {
+		"url": "https://github.com/zowe/vscode-extension-for-cics"
+	},
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.50.0"
