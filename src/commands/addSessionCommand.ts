@@ -1,9 +1,15 @@
 import { CICSTreeDataProvider } from "../trees/treeProvider";
-import { commands } from "vscode";
+import { commands, window } from "vscode";
 
 export function getAddSessionCommand(tree: CICSTreeDataProvider) {
   return commands.registerCommand(
     "cics-extension-for-zowe.addSession",
-    async () => tree.addSession()
+    async () => {
+      const item = window.createStatusBarItem();
+      item.text = "Adding Session...";
+      item.show();
+      await tree.addSession();
+      item.hide();
+    }
   );
 }
