@@ -8,7 +8,6 @@ on:
 jobs:
   build_vsix:
     name: build_vsix
-    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,6 +23,7 @@ jobs:
         run: npm i -g vsce
 
       - name: Compile Extension
+        continue-on-error: true
         run: npm run compile
 
       - name: Package VSIX
