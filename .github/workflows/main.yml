@@ -11,7 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install
-      - uses: lannonbr/vsce-action@master
+      - uses: actions/setup-node@v1
         with:
-          args: "package"
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+      
+      - name: Install Dependencies
+        run: npm i
+      
+      - name: Install VSCE
+        run: npm i -g vsce
+
+      - name: Publish
+        run: vsce package
