@@ -41,8 +41,8 @@
 				"command": "cics-extension-for-zowe.addSession",
 				"title": "Create a CICS Session",
 				"icon": {
-					"light": "resources/imgs/plus2-dark.svg",
-					"dark": "resources/imgs/plus2-light.svg"
+					"light": "resources/imgs/plus-dark.svg",
+					"dark": "resources/imgs/plus-light.svg"
 				}
 			},
 			{
