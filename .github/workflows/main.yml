@@ -22,6 +22,9 @@ jobs:
       - name: Install VSCE
         run: npm i -g vsce
 
+      - name: Compile Extension
+        run: npm run compile
+
       - name: Package VSIX
         run: vsce package
 
