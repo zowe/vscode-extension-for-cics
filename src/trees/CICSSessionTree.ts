@@ -38,6 +38,7 @@ export class CICSSessionTreeItem extends TreeItem {
     this.session = session;
     this.cicsPlex = cicsPlex;
     this.children = [];
+    this.contextValue = `cicssession.${sessionName}`;
   }
 
   public addRegionChild(region: CICSRegionTreeItem) {
