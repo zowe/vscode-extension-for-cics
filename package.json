@@ -70,6 +70,14 @@
 				"title": "Show Attributes"
 			},
 			{
+				"command": "cics-extension-for-zowe.enableProgram",
+				"title": "Enable Program"
+			},
+			{
+				"command": "cics-extension-for-zowe.disableProgram",
+				"title": "Disable Program"
+			},
+			{
 				"command": "cics-extension-for-zowe.phaseInCommand",
 				"title": "Phase In",
 				"icon": {
@@ -120,6 +128,16 @@
 				{
 					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
 					"command": "cics-extension-for-zowe.showAttributes",
+					"group": ""
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsprogram.disabled.*/",
+					"command": "cics-extension-for-zowe.enableProgram",
+					"group": ""
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsprogram.enabled.*/",
+					"command": "cics-extension-for-zowe.disableProgram",
 					"group": ""
 				}
 			]

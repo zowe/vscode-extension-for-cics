@@ -1,48 +1,59 @@
-import { CicsCmciConstants, CicsCmciRestClient } from "@zowe/cics-for-zowe-cli";
+import {
+  CicsCmciConstants,
+  CicsCmciRestClient,
+  ICMCIApiResponse,
+  IURIMapParms,
+} from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, window } from "vscode";
 import { CICSTreeDataProvider } from "../trees/treeProvider";
 
-export function getPhaseInCommand(tree: CICSTreeDataProvider) {
+export function getEnableProgramCommand(tree: CICSTreeDataProvider) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.phaseInCommand",
+    "cics-extension-for-zowe.enableProgram",
     async (node) => {
       if (node) {
         window.showInformationMessage(
-          `Phase-In Requested for program ${node.label}`
+          `Enabling program ${node.program.program}`
         );
+        console.log(node.program.program);
+
         try {
-          const response = await performPhaseIn(
+          const response = await enableProgram(
             node.parentRegion.parentSession.session,
             {
-              name: node.label,
+              name: node.program.program,
               regionName: node.parentRegion.label,
               cicsPlex: node.parentRegion.parentSession.cicsPlex,
             }
           );
 
           window.showInformationMessage(
-            `New Copy Count for ${node.label} - ${response.response.records.cicsprogram.newcopycnt}`
+            `Program ${node.program.program} STATUS: - ${response.response.records.cicsprogram.status}`
           );
+
           tree.refresh();
         } catch (err) {
           console.log(err);
+
           window.showErrorMessage(err);
         }
+      } else {
+        window.showErrorMessage("No CICS program selected");
       }
     }
   );
 }
 
-async function performPhaseIn(
+async function enableProgram(
   session: AbstractSession,
-  parms: { cicsPlex: string | null; regionName: string; name: string }
-) {
+  parms: IURIMapParms
+): Promise<ICMCIApiResponse> {
   const requestBody: any = {
     request: {
       action: {
         $: {
-          name: "PHASEIN",
+          name: "ENABLE",
         },
       },
     },
@@ -66,5 +77,5 @@ async function performPhaseIn(
     cmciResource,
     [],
     requestBody
-  ) as any;
+  );
 }
