@@ -84,6 +84,10 @@
 					"light": "resources/imgs/phase-dark.svg",
 					"dark": "resources/imgs/phase-light.svg"
 				}
+			},
+			{
+				"command": "cics-extension-for-zowe.removeSession",
+				"title": "Remove Session"
 			}
 		],
 		"menus": {
@@ -139,6 +143,11 @@
 					"when": "view == cics-view && viewItem =~ /^cicsprogram.enabled.*/",
 					"command": "cics-extension-for-zowe.disableProgram",
 					"group": ""
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicssession.*/",
+					"command": "cics-extension-for-zowe.removeSession",
+					"title": "Remove Session"
 				}
 			]
 		}

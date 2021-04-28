@@ -15,6 +15,7 @@ import {
   getShowAttributesCommand,
   getShowRegionAttributes,
 } from "./commands/showAttributesCommand";
+import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 
 export async function activate(context: ExtensionContext) {
   const treeDataProv = new CICSTreeDataProvider();
@@ -31,7 +32,8 @@ export async function activate(context: ExtensionContext) {
     getPhaseInCommand(treeDataProv),
     getShowRegionAttributes(),
     getEnableProgramCommand(treeDataProv),
-    getDisableProgramCommand(treeDataProv)
+    getDisableProgramCommand(treeDataProv),
+    getRemoveSessionCommand(treeDataProv)
   );
 
   const zoweExplorerApi = extensions.getExtension(
