@@ -1,3 +1,5 @@
+import { getDisableProgramCommand } from "./commands/disableProgramCommand";
+import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { ZoweExplorerApi, ProfilesCache } from "@zowe/zowe-explorer-api";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { loadProfileManager } from "./utils/profileManagement";
@@ -24,10 +26,12 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRefreshCommand(treeDataProv),
-    getNewCopyCommand(),
+    getNewCopyCommand(treeDataProv),
     getShowAttributesCommand(),
-    getPhaseInCommand(),
-    getShowRegionAttributes()
+    getPhaseInCommand(treeDataProv),
+    getShowRegionAttributes(),
+    getEnableProgramCommand(treeDataProv),
+    getDisableProgramCommand(treeDataProv)
   );
 
   const zoweExplorerApi = extensions.getExtension(

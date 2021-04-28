@@ -11,6 +11,8 @@ import {
   TreeDataProvider,
   Event,
   EventEmitter,
+  StatusBarItem,
+  StatusBarAlignment,
 } from "vscode";
 
 export class CICSTreeDataProvider
@@ -23,8 +25,24 @@ export class CICSTreeDataProvider
 
   private sessionMap = new Map();
   private data: CICSSessionTreeItem[] | undefined = [];
+  private statusBarItem: StatusBarItem;
+
+  constructor() {
+    this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
+    this.statusBarItem.text = "Refreshing...";
+    this.statusBarItem.tooltip = "Refreshing the current Zowe CICS tree";
+    this.statusBarItem.hide();
+  }
+
+  public showStatusBarItem() {
+    this.statusBarItem.show();
+  }
+  public hideStatusBarItem() {
+    this.statusBarItem.hide();
+  }
 
   async refresh(): Promise<void> {
+    this.showStatusBarItem();
     try {
       if (this.sessionMap.size > 0) {
         let profileList = [];
@@ -110,6 +128,7 @@ export class CICSTreeDataProvider
         }
         this.data = listOfSessionTrees;
         this._onDidChangeTreeData.fire(undefined);
+        this.hideStatusBarItem();
       }
     } catch (ex) {
       console.log(ex);
