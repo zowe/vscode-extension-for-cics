@@ -74,7 +74,7 @@ export class CICSTreeDataProvider
               regionName: region.applid,
               cicsPlex: cicsPlex!,
               criteria:
-                "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL*) OR PROGRAM=DFHDPMS",
+                "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
               parameter: undefined,
             });
 
