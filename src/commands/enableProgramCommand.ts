@@ -16,7 +16,6 @@ export function getEnableProgramCommand(tree: CICSTreeDataProvider) {
         window.showInformationMessage(
           `Enabling program ${node.program.program}`
         );
-        console.log(node.program.program);
 
         try {
           const response = await enableProgram(
