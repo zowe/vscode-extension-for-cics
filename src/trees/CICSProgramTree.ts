@@ -14,9 +14,16 @@ export class CICSProgramTreeItem extends TreeItem {
       dark: join(__filename, "..", "..", "..", "resources", "imgs", "program-light.svg"),
     }
   ) {
-    super(program.program, TreeItemCollapsibleState.None);
+    super(
+      `${program.program}${
+        program.status.toLowerCase() === "disabled" ? " (Disabled)" : ""
+      }`,
+      TreeItemCollapsibleState.None
+    );
     this.program = program;
     this.parentRegion = parentRegion;
-    this.contextValue = `cicsprogram.${program.program}`;
+    this.contextValue = `cicsprogram.${program.status.toLowerCase()}.${
+      program.program
+    }`;
   }
 }

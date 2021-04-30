@@ -1,7 +1,8 @@
 import { programNewcopy } from "@zowe/cics-for-zowe-cli";
 import { commands, window } from "vscode";
+import { CICSTreeDataProvider } from "../trees/treeProvider";
 
-export function getNewCopyCommand() {
+export function getNewCopyCommand(tree: CICSTreeDataProvider) {
   return commands.registerCommand(
     "cics-extension-for-zowe.newCopyProgram",
     async (node) => {
@@ -21,6 +22,7 @@ export function getNewCopyCommand() {
           window.showInformationMessage(
             `New Copy Count for ${node.label} - ${response.response.records.cicsprogram.newcopycnt}`
           );
+          tree.refresh();
         } catch (err) {
           console.log(err);
 

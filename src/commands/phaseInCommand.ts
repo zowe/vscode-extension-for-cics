@@ -1,8 +1,9 @@
 import { CicsCmciConstants, CicsCmciRestClient } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, window } from "vscode";
+import { CICSTreeDataProvider } from "../trees/treeProvider";
 
-export function getPhaseInCommand() {
+export function getPhaseInCommand(tree: CICSTreeDataProvider) {
   return commands.registerCommand(
     "cics-extension-for-zowe.phaseInCommand",
     async (node) => {
@@ -23,6 +24,7 @@ export function getPhaseInCommand() {
           window.showInformationMessage(
             `New Copy Count for ${node.label} - ${response.response.records.cicsprogram.newcopycnt}`
           );
+          tree.refresh();
         } catch (err) {
           console.log(err);
           window.showErrorMessage(err);
