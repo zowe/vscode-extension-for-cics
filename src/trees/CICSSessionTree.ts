@@ -20,7 +20,7 @@ export class CICSSessionTreeItem extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "session-dark.svg"
+        "list-dark.svg"
       ),
       dark: join(
         __filename,
@@ -29,7 +29,7 @@ export class CICSSessionTreeItem extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "session-light.svg"
+        "list-light.svg"
       ),
     }
   ) {

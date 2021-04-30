@@ -10,8 +10,8 @@ export class CICSProgramTreeItem extends TreeItem {
     program: any,
     parentRegion: CICSRegionTreeItem,
     public readonly iconPath = {
-      light: join(__filename, "..", "..", "..", "resources", "imgs", "cogs-dark.svg"),
-      dark: join(__filename, "..", "..", "..", "resources", "imgs", "cogs-light.svg"),
+      light: join(__filename, "..", "..", "..", "resources", "imgs", "program-dark.svg"),
+      dark: join(__filename, "..", "..", "..", "resources", "imgs", "program-light.svg"),
     }
   ) {
     super(program.program, TreeItemCollapsibleState.None);
