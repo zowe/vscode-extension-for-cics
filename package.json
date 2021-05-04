@@ -49,8 +49,8 @@
 				"command": "cics-extension-for-zowe.newCopyProgram",
 				"title": "New Copy",
 				"icon": {
-					"light": "resources/imgs/copy-dark.svg",
-					"dark": "resources/imgs/copy-light.svg"
+					"light": "resources/imgs/newcopy-dark.svg",
+					"dark": "resources/imgs/newcopy-light.svg"
 				}
 			},
 			{
@@ -81,8 +81,8 @@
 				"command": "cics-extension-for-zowe.phaseInCommand",
 				"title": "Phase In",
 				"icon": {
-					"light": "resources/imgs/phase-dark.svg",
-					"dark": "resources/imgs/phase-light.svg"
+					"light": "resources/imgs/phasein-dark.svg",
+					"dark": "resources/imgs/phasein-light.svg"
 				}
 			},
 			{
