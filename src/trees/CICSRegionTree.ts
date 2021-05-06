@@ -13,7 +13,7 @@ export class CICSRegionTreeItem extends TreeItem {
     parentSession: CICSSessionTreeItem,
     region: any,
     children?: CICSProgramTreeItem[] | CICSProgramTreeItem | undefined,
-    public readonly iconPath = {
+    public iconPath = {
       light: join(
         __filename,
         "..",

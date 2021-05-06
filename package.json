@@ -22,12 +22,7 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"viewsWelcome": [
-			{
-				"view": "cics-view",
-				"contents": "No CICS Sessions Found.\n[Add Session](command:cics-extension-for-zowe.addSession)"
-			}
-		],
+		"viewsWelcome": [],
 		"views": {
 			"zowe": [
 				{
