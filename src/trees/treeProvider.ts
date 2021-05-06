@@ -1,4 +1,4 @@
-import { Session, IProfileLoaded } from "@zowe/imperative";
+import { Session, IProfileLoaded, SessConstants } from "@zowe/imperative";
 import { CICSProgramTreeItem } from "./CICSProgramTree";
 import { CICSSessionTreeItem } from "./CICSSessionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
@@ -14,9 +14,53 @@ import {
   StatusBarItem,
   StatusBarAlignment,
 } from "vscode";
+import { join } from "path";
 
 export class CICSTreeDataProvider
   implements TreeDataProvider<CICSSessionTreeItem> {
+  async loadPrograms(element: CICSRegionTreeItem) {
+    this.showStatusBarItem();
+
+    const programResponse = await getResource(element.parentSession.session, {
+      name: "CICSProgram",
+      regionName: element.region.applid,
+      cicsPlex: element.parentSession.cicsPlex!,
+      criteria:
+        "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
+      parameter: undefined,
+    });
+
+    const programs = programResponse.response.records.cicsprogram;
+
+    for (const program of programs) {
+      const programTreeItem = new CICSProgramTreeItem(program, element);
+      element.addProgramChild(programTreeItem);
+    }
+
+    element.iconPath = {
+      light: join(
+        __filename,
+        "..",
+        "..",
+        "..",
+        "resources",
+        "imgs",
+        "region-green.svg"
+      ),
+      dark: join(
+        __filename,
+        "..",
+        "..",
+        "..",
+        "resources",
+        "imgs",
+        "region-green.svg"
+      ),
+    };
+
+    this._onDidChangeTreeData.fire(undefined);
+    this.hideStatusBarItem();
+  }
   removeSession(session: CICSSessionTreeItem) {
     this.sessionMap.delete(session.sessionName);
     this.refresh();
@@ -77,10 +121,6 @@ export class CICSTreeDataProvider
           ? [getRegions.response.records.cicsregion]
           : getRegions.response.records.cicsregion;
 
-        const listOfRegionNames: string[] = listOfRegions.map(
-          (region: { applid: string }) => region.applid
-        );
-
         const regions = [];
 
         for (const region of listOfRegions) {
@@ -91,33 +131,10 @@ export class CICSTreeDataProvider
             []
           );
 
-          const getPrograms = await getResource(session, {
-            name: "CICSProgram",
-            regionName: region.applid,
-            cicsPlex: cicsPlex!,
-            criteria:
-              "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
-            parameter: undefined,
-          });
-
-          const listOfPrograms = !Array.isArray(
-            getPrograms.response.records.cicsprogram
-          )
-            ? getPrograms.response.records.cicsprogram
-            : getPrograms.response.records.cicsprogram;
-
-          for (const program of listOfPrograms) {
-            const programTreeItem = new CICSProgramTreeItem(
-              program,
-              regionTreeItem
-            );
-            regionTreeItem.addProgramChild(programTreeItem);
-          }
-
           sessionTreeItem.addRegionChild(regionTreeItem);
 
           regions.push({
-            [region.applid]: listOfPrograms,
+            [region.applid]: [],
           });
         }
 
@@ -148,6 +165,8 @@ export class CICSTreeDataProvider
     let password: string | undefined;
     let cicsPlex: string | undefined;
     let region: string | undefined;
+    let rejectUnauthorized: boolean = true;
+    let protocol: SessConstants.HTTP_PROTOCOL_CHOICES = "https";
 
     if (profile && profile.profile) {
       sessionName = profile.name
@@ -191,6 +210,11 @@ export class CICSTreeDataProvider
             password: true,
           });
 
+      rejectUnauthorized = profile.profile.rejectUnauthorized
+        ? profile.profile.rejectUnauthorized
+        : rejectUnauthorized;
+      protocol = profile.profile.protocol ? profile.profile.protocol : protocol;
+
       if (profile.profile.cicsPlex) {
         cicsPlex = profile.profile.cicsPlex;
         if (profile.profile.region) {
@@ -214,22 +238,20 @@ export class CICSTreeDataProvider
         });
       }
     } else {
-      let profileStorage = new ProfileStorage();
+      const profileStorage = new ProfileStorage();
 
       let profileNameToLoad = await window.showQuickPick(
-        profileStorage.getProfiles().map((prof) => {
-          let toReturn;
-          if (!this.sessionMap.has(prof.name!)) {
-            toReturn = {
-              label: prof.name!,
-            };
-          } else {
-            toReturn = {
-              label: "",
-            };
-          }
-          return toReturn;
-        })
+        profileStorage
+          .getProfiles()
+          .filter((profile) => {
+            if (!this.sessionMap.has(profile.name!)) {
+              return true;
+            }
+            return false;
+          })
+          .map((profile) => {
+            return { label: profile.name! };
+          })
       );
 
       if (profileNameToLoad) {
@@ -295,8 +317,8 @@ export class CICSTreeDataProvider
       user: user,
       password: password,
       basePath: "",
-      rejectUnauthorized: false,
-      protocol: "http",
+      rejectUnauthorized: rejectUnauthorized,
+      protocol: protocol,
     });
 
     const cicsSesison = new CicsSession(session, cicsPlex!, region!);
