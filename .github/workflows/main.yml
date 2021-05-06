@@ -22,10 +22,6 @@ jobs:
       - name: Install VSCE
         run: npm i -g vsce
 
-      - name: Compile Extension
-        continue-on-error: true
-        run: npm run compile
-
       - name: Package VSIX
         run: vsce package
 

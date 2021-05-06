@@ -21,13 +21,10 @@ export async function loadProfileManager() {
   const keytar = getSecurityModules("keytar");
   if (keytar) {
     KeytarCredentialManager.keytar = keytar;
-    const service: string = workspace
-      .getConfiguration()
-      .get("Zowe Security: Credential Key")!;
 
     try {
       await CredentialManagerFactory.initialize({
-        service: service || "Zowe-Plugin",
+        service: "Zowe-Plugin",
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Manager: KeytarCredentialManager,
         displayName: localize("displayName", "Zowe Explorer"),

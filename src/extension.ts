@@ -62,6 +62,7 @@ export async function activate(context: ExtensionContext) {
 
       let profileStorage = new ProfileStorage();
 
+      // @ts-ignore
       for (const profile of prof.profilesByType) {
         if (profile[0] === "cics") {
           profileStorage.setProfiles(profile[1]);
