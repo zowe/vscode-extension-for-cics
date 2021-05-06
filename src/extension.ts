@@ -19,9 +19,18 @@ import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 
 export async function activate(context: ExtensionContext) {
   const treeDataProv = new CICSTreeDataProvider();
-  window.createTreeView("cics-view", {
+  const view = window.createTreeView("cics-view", {
     treeDataProvider: treeDataProv,
     showCollapseAll: true,
+  });
+
+  view.onDidExpandElement((node) => {
+    if (node.element.session) {
+      //session
+    } else if (node.element.region) {
+      //region
+      treeDataProv.loadPrograms(node.element);
+    }
   });
 
   context.subscriptions.push(
