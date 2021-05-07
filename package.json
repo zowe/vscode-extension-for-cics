@@ -57,6 +57,14 @@
 				}
 			},
 			{
+				"command": "cics-extension-for-zowe.filterPrograms",
+				"title": "Filter Programs",
+				"icon": {
+					"light": "resources/imgs/refresh-dark.svg",
+					"dark": "resources/imgs/refresh-light.svg"
+				}
+			},
+			{
 				"command": "cics-extension-for-zowe.showAttributes",
 				"title": "Show Attributes"
 			},
@@ -123,6 +131,11 @@
 					"when": "view == cics-view && viewItem =~ /^cicsregion.*/",
 					"command": "cics-extension-for-zowe.showRegionAttributes",
 					"group": ""
+				},
+				{
+					"when": "view == cics-view && viewItem =~ /^cicsregion.*/",
+					"command": "cics-extension-for-zowe.filterPrograms",
+					"group": "inline"
 				},
 				{
 					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
