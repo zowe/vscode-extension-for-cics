@@ -42,8 +42,12 @@ export class CICSTreeDataProvider
         parameter: undefined,
       });
 
+      // If it doesn't exist, set to empty array.
+      // If exists, turn it into an array if not already.
       const programs = programResponse.response.records.cicsprogram
-        ? programResponse.response.records.cicsprogram
+        ? Array.isArray(programResponse.response.records.cicsprogram)
+          ? programResponse.response.records.cicsprogram
+          : [programResponse.response.records.cicsprogram]
         : [];
 
       for (const program of programs) {
@@ -89,7 +93,7 @@ export class CICSTreeDataProvider
     }
   }
 
-  private _onDidChangeTreeData: EventEmitter<
+  public _onDidChangeTreeData: EventEmitter<
     any | undefined
   > = new EventEmitter<any | undefined>();
   readonly onDidChangeTreeData: Event<any | undefined> = this
