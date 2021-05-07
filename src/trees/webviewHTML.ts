@@ -188,18 +188,22 @@ export const getAttributesHtml = (title: string, webText: string) => {
       <meta charset="UTF-8">
       <title>${title}"</title>
       <style>
+      * {
+        background-color: var(--vscode-editor-background);
+        color: var(--vscode-editor-foreground);
+      }
       table {
-        border:1px solid #eeeeee;
+        border:1px solid var(--vscode-editor-foreground);
         width: 90%;
       }
       th {
-        border:1px solid #eeeeee;
+        border:1px solid var(--vscode-editor-foreground);
       }
       .colHeading {
         width: 30%;
       }
       td {
-        border:1px solid #eeeeee;
+        border:1px solid var(--vscode-editor-foreground);
         padding: 1rem 0.5rem;
       }
       h1 {
@@ -227,6 +231,8 @@ export const getAttributesHtml = (title: string, webText: string) => {
       input {
         text-align: center;
         margin: 0.2rem 0;
+        border:1px solid var(--vscode-editor-foreground);
+        border-radius: 5px;
       }
       </style>
   </head>
