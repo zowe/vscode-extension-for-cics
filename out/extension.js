@@ -25,6 +25,7 @@ const profileStorage_1 = require("./utils/profileStorage");
 const CicsSession_1 = require("./utils/CicsSession");
 const imperative_1 = require("@zowe/imperative");
 const showAttributesCommand_1 = require("./commands/showAttributesCommand");
+const filterProgramsCommand_1 = require("./commands/filterProgramsCommand");
 function activate(context) {
     return __awaiter(this, void 0, void 0, function* () {
         const treeDataProv = new treeProvider_1.CICSTreeDataProvider();
@@ -40,7 +41,7 @@ function activate(context) {
                 treeDataProv.loadPrograms(node.element);
             }
         });
-        context.subscriptions.push(addSessionCommand_1.getAddSessionCommand(treeDataProv), refreshCommand_1.getRefreshCommand(treeDataProv), newCopyCommand_1.getNewCopyCommand(treeDataProv), showAttributesCommand_1.getShowAttributesCommand(), phaseInCommand_1.getPhaseInCommand(treeDataProv), showAttributesCommand_1.getShowRegionAttributes(), enableProgramCommand_1.getEnableProgramCommand(treeDataProv), disableProgramCommand_1.getDisableProgramCommand(treeDataProv), removeSessionCommand_1.getRemoveSessionCommand(treeDataProv));
+        context.subscriptions.push(addSessionCommand_1.getAddSessionCommand(treeDataProv), refreshCommand_1.getRefreshCommand(treeDataProv), newCopyCommand_1.getNewCopyCommand(treeDataProv), showAttributesCommand_1.getShowAttributesCommand(), phaseInCommand_1.getPhaseInCommand(treeDataProv), showAttributesCommand_1.getShowRegionAttributes(), enableProgramCommand_1.getEnableProgramCommand(treeDataProv), disableProgramCommand_1.getDisableProgramCommand(treeDataProv), removeSessionCommand_1.getRemoveSessionCommand(treeDataProv), filterProgramsCommand_1.getFilterProgramsCommand(treeDataProv));
         const zoweExplorerApi = vscode_1.extensions.getExtension("Zowe.vscode-extension-for-zowe");
         if (zoweExplorerApi && zoweExplorerApi.exports) {
             const importedApi = zoweExplorerApi.exports;
