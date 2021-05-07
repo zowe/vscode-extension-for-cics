@@ -1,4 +1,5 @@
-export const webviewHTML = `<!DOCTYPE html>
+export const addProfileHtml = () => {
+  return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -28,7 +29,8 @@ export const webviewHTML = `<!DOCTYPE html>
       font-size: 2.6rem;
       color: var(--vscode-editor-foreground);
     }
-    input, select {
+    input,
+    select {
       background-color: var(--vscode-editor-background);
       color: var(--vscode-editor-foreground);
       text-align: center;
@@ -56,20 +58,36 @@ export const webviewHTML = `<!DOCTYPE html>
       width: 80%;
       padding: 1rem 0;
     }
-    .input-container > label {
+    .input-container > label,
+    .input-half-container > label {
       width: 100%;
       color: var(--vscode-editor-foreground);
       padding: 1rem 0;
       font-size: 1.2rem;
     }
-    .input-container > input, 
-    .input-container > select {
+    .input-container > input,
+    .input-container > select,
+    .input-half-container > input,
+    .input-half-container > select {
       width: 100%;
     }
     .inputs > button {
       width: 40%;
       padding: 0.5rem 0;
       font-size: 1.2rem;
+    }
+    .select-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      width: 80%;
+    }
+    .input-half-container {
+      width: 40%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
   </style>
   <body>
@@ -100,31 +118,33 @@ export const webviewHTML = `<!DOCTYPE html>
         <input type="password" id="sessionPassword" />
       </div>
 
-      <div class="input-container">
-        <label for="sessionRegion">Region: </label>
-        <input type="text" id="sessionRegion" />
+      <div class="select-container">
+        <div class="input-half-container">
+          <label for="sessionRegion">Region: </label>
+          <input type="text" id="sessionRegion" />
+        </div>
+
+        <div class="input-half-container">
+          <label for="sessionCicsPlex">Cics Plex: </label>
+          <input type="text" id="sessionCicsPlex" />
+        </div>
       </div>
 
-      <div class="input-container">
-        <label for="sessionCicsPlex">Cics Plex: </label>
-        <input type="text" id="sessionCicsPlex" />
-      </div>
-
-      <div class="input-container">
-        <label for="sessionProtocol">Protocol: </label>
-        <select id="sessionProtocol">
-          <option value="http">HTTP</option>
-          <option value="https">HTTPS</option>
-        </select>
-      </div>
-      <div class="input-container">
-        <label for="sessionRejectUnauthorised"
-          >Reject Unauthorised:
-        </label>
-        <select id="sessionRejectUnauthorised">
-          <option value="true">True</option>
-          <option value="false">False</option>
-        </select>
+      <div class="select-container">
+        <div class="input-half-container">
+          <label for="sessionProtocol">Protocol: </label>
+          <select id="sessionProtocol">
+            <option value="http">HTTP</option>
+            <option value="https">HTTPS</option>
+          </select>
+        </div>
+        <div class="input-half-container">
+          <label for="sessionRejectUnauthorised">Reject Unauthorised: </label>
+          <select id="sessionRejectUnauthorised">
+            <option value="true">True</option>
+            <option value="false">False</option>
+          </select>
+        </div>
       </div>
 
       <button onclick="createSession()">Create Profile</button>
@@ -157,4 +177,78 @@ export const webviewHTML = `<!DOCTYPE html>
       }
     </script>
   </body>
-</html>`;
+</html>
+`;
+};
+
+export const getAttributesHtml = (title: string, webText: string) => {
+  return `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>${title}"</title>
+      <style>
+      table {
+        border:1px solid #eeeeee;
+        width: 90%;
+      }
+      th {
+        border:1px solid #eeeeee;
+      }
+      .colHeading {
+        width: 30%;
+      }
+      td {
+        border:1px solid #eeeeee;
+        padding: 1rem 0.5rem;
+      }
+      h1 {
+        width: 100%;
+        text-align: center;
+        padding: 0.5rem 0;
+        text-decoration: underline;
+      }
+      .valueHeading {
+        padding: 0.7rem 0.5rem;
+        text-align: left;
+      }
+      .headingTH {
+        padding: 0.7rem 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      input {
+        text-align: center;
+        margin: 0.2rem 0;
+      }
+      </style>
+  </head>
+  <body>
+  <h1>${title}</h1>
+  <div>
+  <table id="resultsTable">
+  ${webText}
+  </table>
+  
+  </div>
+  <script>
+    document.getElementById("searchBox").addEventListener("keyup", (e) => {
+      let tableRows = document.getElementsByTagName("tr");
+      for(let row of tableRows){
+        if(row.children[1].innerText !== 'Value'){
+          row.style.display = 
+              row.children[0].innerText.includes(e.target.value) ? '' : 'none';  
+        }
+      }
+    });
+  </script>
+  </body>
+  </html>`;
+};

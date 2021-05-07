@@ -5,7 +5,7 @@ import { CICSSessionTreeItem } from "./CICSSessionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { CICSRegionTreeItem } from "./CICSRegionTree";
 import { CicsSession } from "../utils/CicsSession";
-import { webviewHTML } from "./webviewHTML";
+import { addProfileHtml } from "./webviewHTML";
 import {
   Session,
   IProfileLoaded,
@@ -210,14 +210,6 @@ export class CICSTreeDataProvider
   }
 
   public async addSession() {
-    /**
-     * Event when 'Add Session' button is clicked...
-     *
-     * 1. Find Profiles that are not yet loaded...
-     * 1.1. If exist, show quick pick...
-     * 1.2. If not exist, show 'No profiles - Create one with Zowe CLI??'
-     */
-
     const profileStorage = new ProfileStorage();
 
     if (profileStorage.getProfiles()) {
@@ -289,7 +281,7 @@ export class CICSTreeDataProvider
       column || 1,
       { enableScripts: true }
     );
-    panel.webview.html = webviewHTML;
+    panel.webview.html = addProfileHtml();
 
     panel.webview.onDidReceiveMessage(async (message) => {
       try {
