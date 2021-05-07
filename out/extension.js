@@ -10,6 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
+const disableProgramCommand_1 = require("./commands/disableProgramCommand");
+const removeSessionCommand_1 = require("./commands/removeSessionCommand");
+const enableProgramCommand_1 = require("./commands/enableProgramCommand");
 const zowe_explorer_api_1 = require("@zowe/zowe-explorer-api");
 const addSessionCommand_1 = require("./commands/addSessionCommand");
 const profileManagement_1 = require("./utils/profileManagement");
@@ -25,11 +28,19 @@ const showAttributesCommand_1 = require("./commands/showAttributesCommand");
 function activate(context) {
     return __awaiter(this, void 0, void 0, function* () {
         const treeDataProv = new treeProvider_1.CICSTreeDataProvider();
-        vscode_1.window.createTreeView("cics-view", {
+        vscode_1.window
+            .createTreeView("cics-view", {
             treeDataProvider: treeDataProv,
             showCollapseAll: true,
+        })
+            .onDidExpandElement((node) => {
+            if (node.element.session) {
+            }
+            else if (node.element.region) {
+                treeDataProv.loadPrograms(node.element);
+            }
         });
-        context.subscriptions.push(addSessionCommand_1.getAddSessionCommand(treeDataProv), refreshCommand_1.getRefreshCommand(treeDataProv), newCopyCommand_1.getNewCopyCommand(), showAttributesCommand_1.getShowAttributesCommand(), phaseInCommand_1.getPhaseInCommand(), showAttributesCommand_1.getShowRegionAttributes());
+        context.subscriptions.push(addSessionCommand_1.getAddSessionCommand(treeDataProv), refreshCommand_1.getRefreshCommand(treeDataProv), newCopyCommand_1.getNewCopyCommand(treeDataProv), showAttributesCommand_1.getShowAttributesCommand(), phaseInCommand_1.getPhaseInCommand(treeDataProv), showAttributesCommand_1.getShowRegionAttributes(), enableProgramCommand_1.getEnableProgramCommand(treeDataProv), disableProgramCommand_1.getDisableProgramCommand(treeDataProv), removeSessionCommand_1.getRemoveSessionCommand(treeDataProv));
         const zoweExplorerApi = vscode_1.extensions.getExtension("Zowe.vscode-extension-for-zowe");
         if (zoweExplorerApi && zoweExplorerApi.exports) {
             const importedApi = zoweExplorerApi.exports;
@@ -42,7 +53,8 @@ function activate(context) {
                 yield prof.refresh(importedApi);
                 yield importedApi.getExplorerExtenderApi().reloadProfiles();
                 const defaultProfile = prof.getDefaultProfile("cics");
-                let profileStorage = new profileStorage_1.ProfileStorage();
+                const profileStorage = new profileStorage_1.ProfileStorage();
+                // @ts-ignore
                 for (const profile of prof.profilesByType) {
                     if (profile[0] === "cics") {
                         profileStorage.setProfiles(profile[1]);
@@ -50,7 +62,12 @@ function activate(context) {
                     }
                 }
                 if (defaultProfile && defaultProfile.profile) {
-                    treeDataProv.addSession(defaultProfile);
+                    vscode_1.window.showInformationMessage(`Default CICS Profile (${defaultProfile.name}) found. Loading it now...`);
+                    treeDataProv.loadExistingProfile(defaultProfile);
+                    // treeDataProv.addSession(defaultProfile);
+                }
+                else {
+                    vscode_1.window.showInformationMessage("No Default CICS Profile found.");
                 }
             }
         }
