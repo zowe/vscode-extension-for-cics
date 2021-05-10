@@ -1,4 +1,5 @@
 import { getDisableProgramCommand } from "./commands/disableProgramCommand";
+import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { ZoweExplorerApi, ProfilesCache } from "@zowe/zowe-explorer-api";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
@@ -15,23 +16,20 @@ import {
   getShowAttributesCommand,
   getShowRegionAttributes,
 } from "./commands/showAttributesCommand";
-import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 
 export async function activate(context: ExtensionContext) {
   const treeDataProv = new CICSTreeDataProvider();
-  const view = window.createTreeView("cics-view", {
-    treeDataProvider: treeDataProv,
-    showCollapseAll: true,
-  });
-
-  view.onDidExpandElement((node) => {
-    if (node.element.session) {
-      //session
-    } else if (node.element.region) {
-      //region
-      treeDataProv.loadPrograms(node.element);
-    }
-  });
+  window
+    .createTreeView("cics-view", {
+      treeDataProvider: treeDataProv,
+      showCollapseAll: true,
+    })
+    .onDidExpandElement((node) => {
+      if (node.element.session) {
+      } else if (node.element.region) {
+        treeDataProv.loadPrograms(node.element);
+      }
+    });
 
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
@@ -65,11 +63,12 @@ export async function activate(context: ExtensionContext) {
       await loadProfileManager();
 
       const prof = new ProfilesCache(Logger.getAppLogger());
+
       await prof.refresh(importedApi);
       await importedApi.getExplorerExtenderApi().reloadProfiles();
       const defaultProfile = prof.getDefaultProfile("cics");
 
-      let profileStorage = new ProfileStorage();
+      const profileStorage = new ProfileStorage();
 
       // @ts-ignore
       for (const profile of prof.profilesByType) {
@@ -80,7 +79,13 @@ export async function activate(context: ExtensionContext) {
       }
 
       if (defaultProfile && defaultProfile.profile) {
-        treeDataProv.addSession(defaultProfile);
+        window.showInformationMessage(
+          `Default CICS Profile (${defaultProfile.name}) found. Loading it now...`
+        );
+        treeDataProv.loadExistingProfile(defaultProfile);
+        // treeDataProv.addSession(defaultProfile);
+      } else {
+        window.showInformationMessage("No Default CICS Profile found.");
       }
     }
   }

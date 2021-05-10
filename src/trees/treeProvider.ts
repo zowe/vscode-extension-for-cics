@@ -1,10 +1,17 @@
-import { Session, IProfileLoaded, SessConstants } from "@zowe/imperative";
+import { ProfileStorage } from "../utils/profileStorage";
+import { ProfilesCache } from "@zowe/zowe-explorer-api";
 import { CICSProgramTreeItem } from "./CICSProgramTree";
 import { CICSSessionTreeItem } from "./CICSSessionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { CICSRegionTreeItem } from "./CICSRegionTree";
 import { CicsSession } from "../utils/CicsSession";
-import { ProfileStorage } from "../utils/profileStorage";
+import { addProfileHtml } from "./webviewHTML";
+import {
+  Session,
+  IProfileLoaded,
+  Logger,
+  ISaveProfile,
+} from "@zowe/imperative";
 import {
   ProviderResult,
   window,
@@ -13,6 +20,7 @@ import {
   EventEmitter,
   StatusBarItem,
   StatusBarAlignment,
+  WebviewPanel,
 } from "vscode";
 import { join } from "path";
 
@@ -20,50 +28,65 @@ export class CICSTreeDataProvider
   implements TreeDataProvider<CICSSessionTreeItem> {
   async loadPrograms(element: CICSRegionTreeItem) {
     this.showStatusBarItem();
+    window.showInformationMessage(
+      `Retrieving Programs for Region ${element.region.applid}`
+    );
 
-    const programResponse = await getResource(element.parentSession.session, {
-      name: "CICSProgram",
-      regionName: element.region.applid,
-      cicsPlex: element.parentSession.cicsPlex!,
-      criteria:
-        "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
-      parameter: undefined,
-    });
+    try {
+      const programResponse = await getResource(element.parentSession.session, {
+        name: "CICSProgram",
+        regionName: element.region.applid,
+        cicsPlex: element.parentSession.cicsPlex!,
+        criteria:
+          "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
+        parameter: undefined,
+      });
 
-    const programs = programResponse.response.records.cicsprogram;
+      const programs = programResponse.response.records.cicsprogram
+        ? programResponse.response.records.cicsprogram
+        : [];
 
-    for (const program of programs) {
-      const programTreeItem = new CICSProgramTreeItem(program, element);
-      element.addProgramChild(programTreeItem);
+      for (const program of programs) {
+        const programTreeItem = new CICSProgramTreeItem(program, element);
+        element.addProgramChild(programTreeItem);
+      }
+
+      element.iconPath = {
+        light: join(
+          __filename,
+          "..",
+          "..",
+          "..",
+          "resources",
+          "imgs",
+          "region-green.svg"
+        ),
+        dark: join(
+          __filename,
+          "..",
+          "..",
+          "..",
+          "resources",
+          "imgs",
+          "region-green.svg"
+        ),
+      };
+      window.showInformationMessage(`Programs Retrieved`);
+    } catch (error) {
+      window.showErrorMessage(error.message);
+    } finally {
+      this._onDidChangeTreeData.fire(undefined);
+      this.hideStatusBarItem();
     }
-
-    element.iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "region-green.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "region-green.svg"
-      ),
-    };
-
-    this._onDidChangeTreeData.fire(undefined);
-    this.hideStatusBarItem();
   }
   removeSession(session: CICSSessionTreeItem) {
-    this.sessionMap.delete(session.sessionName);
-    this.refresh();
+    try {
+      window.showInformationMessage(`Removing Session ${session.label}`);
+      this.sessionMap.delete(session.sessionName);
+      this.refresh();
+    } catch (error) {
+      window.showErrorMessage(error.message);
+    }
   }
 
   private _onDidChangeTreeData: EventEmitter<
@@ -150,180 +173,89 @@ export class CICSTreeDataProvider
       this.data = listOfSessionTrees;
       this._onDidChangeTreeData.fire(undefined);
       this.hideStatusBarItem();
-    } catch (ex) {
-      console.log(ex);
-      window.showErrorMessage(ex);
+    } catch (error) {
+      window.showErrorMessage(error.message);
       this.hideStatusBarItem();
     }
   }
 
-  public async addSession(profile?: IProfileLoaded) {
-    let sessionName: string | undefined;
-    let host: string | undefined;
-    let port: string | undefined;
-    let user: string | undefined;
-    let password: string | undefined;
-    let cicsPlex: string | undefined;
-    let region: string | undefined;
-    let rejectUnauthorized: boolean = true;
-    let protocol: SessConstants.HTTP_PROTOCOL_CHOICES = "https";
+  public async loadExistingProfile(profile?: IProfileLoaded) {
+    try {
+      const session = new Session({
+        type: "basic",
+        hostname: profile!.profile!.host,
+        port: Number(profile!.profile!.port),
+        user: profile!.profile!.user,
+        password: profile!.profile!.password,
+        rejectUnauthorized: profile!.profile!.rejectUnauthorized,
+        protocol: profile!.profile!.protocol,
+      });
 
-    if (profile && profile.profile) {
-      sessionName = profile.name
-        ? profile.name
-        : await window.showInputBox({
-            placeHolder: "Session Name",
-            prompt: "Enter a name for the connection",
-            value: "",
-          });
-
-      host = profile.profile.host
-        ? profile.profile.host
-        : await window.showInputBox({
-            placeHolder: "Host name",
-            prompt: "Enter the host name for the connection",
-            value: "",
-          });
-
-      port = profile.profile.port
-        ? profile.profile.port
-        : await window.showInputBox({
-            placeHolder: "Port",
-            prompt: "Enter the port for the connection",
-            value: "",
-          });
-
-      user = profile.profile.user
-        ? profile.profile.user
-        : await window.showInputBox({
-            placeHolder: "Username",
-            prompt: "Enter the user name used for the connection",
-            value: "",
-          });
-
-      password = profile.profile.password
-        ? profile.profile.password
-        : await window.showInputBox({
-            placeHolder: "Password",
-            prompt: "Enter the password used for the connection",
-            value: "",
-            password: true,
-          });
-
-      rejectUnauthorized = profile.profile.rejectUnauthorized
-        ? profile.profile.rejectUnauthorized
-        : rejectUnauthorized;
-      protocol = profile.profile.protocol ? profile.profile.protocol : protocol;
-
-      if (profile.profile.cicsPlex) {
-        cicsPlex = profile.profile.cicsPlex;
-        if (profile.profile.region) {
-          region = profile.profile.regionName;
-        } else {
-          region = profile.profile.cicsPlex;
-        }
-      } else if (profile.profile.regionName) {
-        region = profile.profile.regionName;
+      let cicsPlex;
+      let region;
+      if (profile!.profile!.cicsPlex) {
+        cicsPlex = profile!.profile!.cicsPlex;
+        region = profile!.profile!.cicsPlex;
       } else {
-        cicsPlex = await window.showInputBox({
-          placeHolder: "CICS Plex",
-          prompt:
-            "Enter the CICS Plex used for connection. Leave empty if using a single region system",
-          value: "",
+        region = profile!.profile!.regionName;
+      }
+
+      const cicsSesison = new CicsSession(session, cicsPlex, region);
+      this.sessionMap.set(profile!.name, cicsSesison);
+    } catch (error) {
+      window.showErrorMessage(error.message);
+    } finally {
+      await this.refresh();
+    }
+  }
+
+  public async addSession() {
+    const profileStorage = new ProfileStorage();
+
+    if (profileStorage.getProfiles()) {
+      const profilesFound = profileStorage
+        .getProfiles()
+        .filter((profile) => {
+          if (!this.sessionMap.has(profile.name!)) {
+            return true;
+          }
+          return false;
+        })
+        .map((profile) => {
+          return { label: profile.name! };
         });
-        region = await window.showInputBox({
-          placeHolder: "CICS Region",
-          prompt: "Enter the CICS Region used for connection",
-          value: "",
-        });
+
+      if (profilesFound.length === 0) {
+        window.showInformationMessage(
+          "No Profiles Found... Create a CICS profile"
+        );
+        this.noProfiles();
+      } else {
+        const profileNameToLoad = await window.showQuickPick(profilesFound);
+
+        if (profileNameToLoad) {
+          window.showInformationMessage(
+            `Loading CICS Profile (${profileNameToLoad.label})`
+          );
+          let profileToLoad;
+
+          for (const prof of profileStorage.getProfiles()) {
+            if (prof.name === profileNameToLoad.label) {
+              profileToLoad = prof;
+            }
+          }
+
+          this.loadExistingProfile(profileToLoad);
+        } else {
+          this.noProfiles();
+        }
       }
     } else {
-      const profileStorage = new ProfileStorage();
-
-      let profileNameToLoad = await window.showQuickPick(
-        profileStorage
-          .getProfiles()
-          .filter((profile) => {
-            if (!this.sessionMap.has(profile.name!)) {
-              return true;
-            }
-            return false;
-          })
-          .map((profile) => {
-            return { label: profile.name! };
-          })
+      window.showInformationMessage(
+        "No Profiles Found... Create a CICS profile"
       );
-
-      if (profileNameToLoad) {
-        let profileToLoad;
-
-        for (const prof of profileStorage.getProfiles()) {
-          if (prof.name === profileNameToLoad.label) {
-            profileToLoad = prof;
-          }
-        }
-
-        this.addSession(profileToLoad);
-      } else {
-        sessionName = await window.showInputBox({
-          placeHolder: "Session Name",
-          prompt: "Enter a name for the connection",
-          value: "",
-        });
-
-        host = await window.showInputBox({
-          placeHolder: "Host name",
-          prompt: "Enter the host name for the connection",
-          value: "",
-        });
-
-        port = await window.showInputBox({
-          placeHolder: "Port",
-          prompt: "Enter the port for the connection",
-          value: "0",
-        });
-
-        user = await window.showInputBox({
-          placeHolder: "Username",
-          prompt: "Enter the user name used for the connection",
-          value: "",
-        });
-
-        password = await window.showInputBox({
-          placeHolder: "Password",
-          prompt: "Enter the password used for the connection",
-          value: "",
-          password: true,
-        });
-
-        cicsPlex = await window.showInputBox({
-          placeHolder: "CICS Plex",
-          prompt:
-            "Enter the CICS Plex used for connection. (Leave empty if single region system)",
-          value: "",
-        });
-
-        region = await window.showInputBox({
-          placeHolder: "CICS Region",
-          prompt: "Enter the CICS Region used for connection",
-          value: "",
-        });
-      }
+      this.noProfiles();
     }
-    const session = new Session({
-      type: "basic",
-      hostname: host,
-      port: Number(port),
-      user: user,
-      password: password,
-      basePath: "",
-      rejectUnauthorized: rejectUnauthorized,
-      protocol: protocol,
-    });
-
-    const cicsSesison = new CicsSession(session, cicsPlex!, region!);
-    this.sessionMap.set(sessionName, cicsSesison);
-    await this.refresh();
   }
 
   getTreeItem(
@@ -337,5 +269,56 @@ export class CICSTreeDataProvider
       return this.data;
     }
     return element.children;
+  }
+
+  noProfiles(): void {
+    const column = window.activeTextEditor
+      ? window.activeTextEditor.viewColumn
+      : undefined;
+    const panel: WebviewPanel = window.createWebviewPanel(
+      "zowe",
+      `Create Session`,
+      column || 1,
+      { enableScripts: true }
+    );
+    panel.webview.html = addProfileHtml();
+
+    panel.webview.onDidReceiveMessage(async (message) => {
+      try {
+        const session = new Session(message.session);
+
+        const cicsSesison = new CicsSession(
+          session,
+          message.cicsPlex,
+          message.region
+        );
+        this.sessionMap.set(message.name, cicsSesison);
+        panel.dispose();
+
+        const prof = new ProfilesCache(Logger.getAppLogger());
+        const newProfile: ISaveProfile = {
+          profile: {
+            name: message.name,
+            host: message.session.hostname,
+            port: message.session.port,
+            user: message.session.user,
+            password: message.session.password,
+            rejectUnauthorized: message.session.rejectUnauthorized,
+            protocol: message.session.protocol,
+            regionName: message.region,
+            cicsPlex: message.cicsPlex,
+          },
+          name: message.name,
+          type: "cics",
+          overwrite: true,
+        };
+
+        await prof.getCliProfileManager("cics").save(newProfile);
+      } catch (error) {
+        window.showErrorMessage(error.message);
+      } finally {
+        await this.refresh();
+      }
+    });
   }
 }
