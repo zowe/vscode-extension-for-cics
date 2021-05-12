@@ -25,7 +25,8 @@ import {
 import { join } from "path";
 
 export class CICSTreeDataProvider
-  implements TreeDataProvider<CICSSessionTreeItem> {
+  implements TreeDataProvider<CICSSessionTreeItem>
+{
   async loadPrograms(element: CICSRegionTreeItem) {
     this.showStatusBarItem();
     window.showInformationMessage(
@@ -93,11 +94,11 @@ export class CICSTreeDataProvider
     }
   }
 
-  public _onDidChangeTreeData: EventEmitter<
+  public _onDidChangeTreeData: EventEmitter<any | undefined> = new EventEmitter<
     any | undefined
-  > = new EventEmitter<any | undefined>();
-  readonly onDidChangeTreeData: Event<any | undefined> = this
-    ._onDidChangeTreeData.event;
+  >();
+  readonly onDidChangeTreeData: Event<any | undefined> =
+    this._onDidChangeTreeData.event;
 
   private sessionMap = new Map();
   private data: CICSSessionTreeItem[] | undefined = [];
@@ -235,7 +236,10 @@ export class CICSTreeDataProvider
         );
         this.noProfiles();
       } else {
-        const profileNameToLoad = await window.showQuickPick(profilesFound);
+        const profileNameToLoad = await window.showQuickPick(profilesFound, {
+          ignoreFocusOut: true,
+          placeHolder: "Click the profile to load...",
+        });
 
         if (profileNameToLoad) {
           window.showInformationMessage(
