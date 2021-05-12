@@ -29,6 +29,7 @@ export class CICSTreeDataProvider
 {
   async loadPrograms(element: CICSRegionTreeItem) {
     this.showStatusBarItem();
+    element.children = [];
     window.showInformationMessage(
       `Retrieving Programs for Region ${element.region.applid}`
     );
