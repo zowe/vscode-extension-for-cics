@@ -1,183 +1,279 @@
 export const addProfileHtml = () => {
   return `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Session</title>
-  </head>
-  <style>
-    :root {
-      font-size: 16px;
-    }
-    * {
-      padding: 0;
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-color: var(--vscode-editor-background);
-    }
-    h1 {
-      margin: 1.5rem 0;
-      font-size: 2.6rem;
-      color: var(--vscode-editor-foreground);
-    }
-    input,
-    select {
-      background-color: var(--vscode-editor-background);
-      color: var(--vscode-editor-foreground);
-      text-align: center;
-      padding: 0.7rem 0;
-      width: 70%;
-      font-size: 1rem;
-      border: 1px solid var(--vscode-editor-foreground);
-      border-radius: 1rem;
-    }
-    .inputs {
-      margin: 2rem 0;
-      padding: 2rem 0;
-      width: 80%;
-      border: 1px solid var(--vscode-editor-foreground);
-      border-radius: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      -webkit-box-shadow: 0px 0px 30px 6px rgba(238, 238, 238, 0.7);
-      box-shadow: 0px 0px 30px 6px rgba(238, 238, 238, 0.7);
-    }
-    .input-container {
-      display: flex;
-      flex-direction: column;
-      width: 80%;
-      padding: 1rem 0;
-    }
-    .input-container > label,
-    .input-half-container > label {
-      width: 100%;
-      color: var(--vscode-editor-foreground);
-      padding: 1rem 0;
-      font-size: 1.2rem;
-    }
-    .input-container > input,
-    .input-container > select,
-    .input-half-container > input,
-    .input-half-container > select {
-      width: 100%;
-    }
-    .inputs > button {
-      width: 40%;
-      padding: 0.5rem 0;
-      font-size: 1.2rem;
-    }
-    .select-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 0;
-      width: 80%;
-    }
-    .input-half-container {
-      width: 40%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-  </style>
-  <body>
-    <div class="inputs">
-      <h1>Add Session</h1>
-      <div class="input-container">
-        <label for="sessionName">Name of the profile: </label>
-        <input type="text" id="sessionName" />
-      </div>
-
-      <div class="input-container">
-        <label for="sessionHost">Host: </label>
-        <input type="text" id="sessionHost" />
-      </div>
-
-      <div class="input-container">
-        <label for="sessionPort">Port: </label>
-        <input type="text" id="sessionPort" />
-      </div>
-
-      <div class="input-container">
-        <label for="sessionUser">User: </label>
-        <input type="text" id="sessionUser" />
-      </div>
-
-      <div class="input-container">
-        <label for="sessionPassword">Password: </label>
-        <input type="password" id="sessionPassword" />
-      </div>
-
-      <div class="select-container">
-        <div class="input-half-container">
-          <label for="sessionRegion">Region: </label>
-          <input type="text" id="sessionRegion" />
-        </div>
-
-        <div class="input-half-container">
-          <label for="sessionCicsPlex">Cics Plex: </label>
-          <input type="text" id="sessionCicsPlex" />
-        </div>
-      </div>
-
-      <div class="select-container">
-        <div class="input-half-container">
-          <label for="sessionProtocol">Protocol: </label>
-          <select id="sessionProtocol">
-            <option value="http">HTTP</option>
-            <option value="https">HTTPS</option>
-          </select>
-        </div>
-        <div class="input-half-container">
-          <label for="sessionRejectUnauthorised">Reject Unauthorised: </label>
-          <select id="sessionRejectUnauthorised">
-            <option value="true">True</option>
-            <option value="false">False</option>
-          </select>
-        </div>
-      </div>
-
-      <button onclick="createSession()">Create Profile</button>
-    </div>
-
-    <script>
-      function createSession() {
-        const session = {
-          type: "basic",
-          hostname: document.getElementById("sessionHost").value,
-          port: parseInt(document.getElementById("sessionPort").value),
-          user: document.getElementById("sessionUser").value,
-          password: document.getElementById("sessionPassword").value,
-          rejectUnauthorized:
-            document.getElementById("sessionRejectUnauthorised").value ===
-            "true"
-              ? true
-              : false,
-          protocol: document.getElementById("sessionProtocol").value,
-        };
-        const data = {
-          session: session,
-          name: document.getElementById("sessionName").value,
-          region: document.getElementById("sessionRegion").value,
-          cicsPlex: document.getElementById("sessionCicsPlex").value,
-        };
-
-        const vscode = acquireVsCodeApi();
-        vscode.postMessage(data);
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Add Session</title>
+  
+      <link
+        rel="stylesheet"
+        href="https://unpkg.com/carbon-components/css/carbon-components.min.css"
+      />
+    </head>
+    <style>
+      :root {
+        font-size: 16px;
       }
-    </script>
-  </body>
-</html>
+      * {
+        padding: 0;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      body {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        background-color: var(--vscode-editor-background);
+      }
+  
+      /*       color: var(--vscode-editor-foreground);  */
+  
+      .bx--content {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        background-color: var(--vscode-editor-background);
+      }
+  
+      .two-input-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        width: 100%;
+        padding: 1rem 0;
+      }
+      .port-container {
+        max-width: 20%;
+        min-width: 75px;
+      }
+  
+      .host-container {
+        max-width: 70%;
+        min-width: 250px;
+      }
+  
+      .select-container {
+        max-width: 40%;
+        padding: 1rem 0;
+      }
+  
+      .user-input {
+        max-width: 46%;
+      }
+  
+      h2 {
+        padding: 1rem 0;
+      }
+
+      h1, h2, p, label {
+        color: var(--vscode-editor-foreground) !important;
+      }
+    </style>
+    <body>
+      <div class="bx--content">
+        <h1>Add Session</h1>
+  
+        <div
+          class="
+            bx--form-item bx--text-input-wrapper
+            host-container
+            two-input-container
+          "
+        >
+          <label for="name-input" class="bx--label">Profile Name</label>
+          <div class="bx--text-input__field-wrapper">
+            <input
+              id="name-input"
+              type="text"
+              class="bx--text-input"
+              placeholder="This name is used to identify the profile"
+            />
+          </div>
+        </div>
+  
+        <h2>Connection Details</h2>
+  
+        <div class="two-input-container">
+          <div class="bx--form-item bx--text-input-wrapper host-container">
+            <label for="host-input" class="bx--label">Host URL</label>
+            <div class="bx--text-input__field-wrapper">
+              <input
+                id="host-input"
+                type="text"
+                class="bx--text-input"
+                placeholder="example.cics.host.com"
+              />
+            </div>
+          </div>
+  
+          <div class="bx--form-item bx--text-input-wrapper port-container">
+            <label for="port-input" class="bx--label">Port</label>
+            <div class="bx--text-input__field-wrapper">
+              <input
+                id="port-input"
+                type="text"
+                class="bx--text-input"
+                placeholder="12345"
+              />
+            </div>
+          </div>
+        </div>
+  
+        <div class="two-input-container">
+          <div class="bx--form-item select-container">
+            <div class="bx--select">
+              <label for="protocol-select" class="bx--label">Protocol</label>
+              <div class="bx--select-input__wrapper">
+                <select id="protocol-select" class="bx--select-input">
+                  <option class="bx--select-option" value="https" selected>
+                    HTTPS
+                  </option>
+                  <option class="bx--select-option" value="http">HTTP</option>
+                </select>
+                <svg
+                  focusable="false"
+                  preserveAspectRatio="xMidYMid meet"
+                  style="will-change: transform"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="bx--select__arrow"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                >
+                  <path d="M8 11L3 6 3.7 5.3 8 9.6 12.3 5.3 13 6z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+  
+          <div class="bx--form-item select-container">
+            <div class="bx--select">
+              <label for="ruSelect" class="bx--label">Reject Unauthorized</label>
+              <div class="bx--select-input__wrapper">
+                <select id="ruSelect" class="bx--select-input">
+                  <option class="bx--select-option" value="true" selected>
+                    True
+                  </option>
+                  <option class="bx--select-option" value="false">False</option>
+                </select>
+                <svg
+                  focusable="false"
+                  preserveAspectRatio="xMidYMid meet"
+                  style="will-change: transform"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="bx--select__arrow"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                >
+                  <path d="M8 11L3 6 3.7 5.3 8 9.6 12.3 5.3 13 6z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <h2>User Details</h2>
+  
+        <div class="two-input-container">
+          <div class="bx--form-item bx--text-input-wrapper user-input">
+            <label for="user-input" class="bx--label">User ID</label>
+            <div class="bx--text-input__field-wrapper">
+              <input
+                id="user-input"
+                type="text"
+                class="bx--text-input"
+                placeholder=""
+              />
+            </div>
+          </div>
+  
+          <div class="bx--form-item bx--text-input-wrapper user-input">
+            <label for="password-input" class="bx--label">Password</label>
+            <div class="bx--text-input__field-wrapper">
+              <input
+                id="password-input"
+                type="password"
+                class="bx--text-input"
+                placeholder=""
+              />
+            </div>
+          </div>
+        </div>
+        <h2>CICS Details</h2>
+  
+        <p>Only 1 of the below is required</p>
+  
+        <div class="two-input-container">
+          <div class="bx--form-item bx--text-input-wrapper user-input">
+            <label for="region-input" class="bx--label">Region Name</label>
+            <div class="bx--text-input__field-wrapper">
+              <input
+                id="region-input"
+                type="text"
+                class="bx--text-input"
+                placeholder=""
+              />
+            </div>
+          </div>
+  
+          <div class="bx--form-item bx--text-input-wrapper user-input">
+            <label for="plex-input" class="bx--label">Plex Name</label>
+            <div class="bx--text-input__field-wrapper">
+              <input
+                id="plex-input"
+                type="text"
+                class="bx--text-input"
+                placeholder=""
+              />
+            </div>
+          </div>
+        </div>
+        <button
+          onclick="createSession()"
+          class="bx--btn bx--btn--primary"
+          type="button"
+        >
+          Create Profile
+        </button>
+      </div>
+  
+      <script>
+        function createSession() {
+          const session = {
+            type: "basic",
+            hostname: document.getElementById("host-input").value,
+            port: parseInt(document.getElementById("port-input").value),
+            user: document.getElementById("user-input").value,
+            password: document.getElementById("password-input").value,
+            rejectUnauthorized:
+              document.getElementById("ruSelect").value === "true" ? true : false,
+            protocol: document.getElementById("protocol-select").value,
+          };
+          const data = {
+            session: session,
+            name: document.getElementById("name-input").value,
+            region: document.getElementById("region-input").value,
+            cicsPlex: document.getElementById("plex-input").value,
+          };
+  
+          const vscode = acquireVsCodeApi();
+          vscode.postMessage(data);
+        }
+      </script>
+    </body>
+  </html>
+  
+  
 `;
 };
 
