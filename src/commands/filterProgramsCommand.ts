@@ -7,7 +7,10 @@ export function getFilterProgramsCommand(tree: CICSTreeDataProvider) {
     "cics-extension-for-zowe.filterPrograms",
     async (node) => {
       if (node) {
-        const filter = await window.showInputBox();
+        const filter = await window.showInputBox({
+          prompt: "Input a string you want the resulting programs to contain.",
+          ignoreFocusOut: true,
+        });
 
         const regex = filter ? new RegExp(filter.toUpperCase()) : undefined;
 
