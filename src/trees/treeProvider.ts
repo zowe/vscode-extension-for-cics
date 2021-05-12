@@ -126,54 +126,59 @@ export class CICSTreeDataProvider
       const listOfSessionTrees: CICSSessionTreeItem[] = [];
 
       for (const element of this.sessionMap) {
-        const sessionName = element[0];
-        const { session, cicsPlex, region } = element[1];
+        try {
+          const sessionName = element[0];
+          const { session, cicsPlex, region } = element[1];
 
-        const sessionTreeItem = new CICSSessionTreeItem(
-          sessionName,
-          session,
-          cicsPlex
-        );
-
-        const getRegions = await getResource(session, {
-          name: "CICSRegion",
-          regionName: region!,
-          cicsPlex: cicsPlex!,
-          criteria: undefined,
-          parameter: undefined,
-        });
-
-        const listOfRegions: any[] = !Array.isArray(
-          getRegions.response.records.cicsregion
-        )
-          ? [getRegions.response.records.cicsregion]
-          : getRegions.response.records.cicsregion;
-
-        const regions = [];
-
-        for (const region of listOfRegions) {
-          const regionTreeItem = new CICSRegionTreeItem(
-            region.applid,
-            sessionTreeItem,
-            region,
-            []
+          const sessionTreeItem = new CICSSessionTreeItem(
+            sessionName,
+            session,
+            cicsPlex
           );
 
-          sessionTreeItem.addRegionChild(regionTreeItem);
-
-          regions.push({
-            [region.applid]: [],
+          const getRegions = await getResource(session, {
+            name: "CICSRegion",
+            regionName: region!,
+            cicsPlex: cicsPlex!,
+            criteria: undefined,
+            parameter: undefined,
           });
+
+          const listOfRegions: any[] = !Array.isArray(
+            getRegions.response.records.cicsregion
+          )
+            ? [getRegions.response.records.cicsregion]
+            : getRegions.response.records.cicsregion;
+
+          const regions = [];
+
+          for (const region of listOfRegions) {
+            const regionTreeItem = new CICSRegionTreeItem(
+              region.applid,
+              sessionTreeItem,
+              region,
+              []
+            );
+
+            sessionTreeItem.addRegionChild(regionTreeItem);
+
+            regions.push({
+              [region.applid]: [],
+            });
+          }
+
+          listOfSessionTrees.push(sessionTreeItem);
+
+          profileList.push({
+            name: sessionName,
+            session: session,
+            regions: regions,
+            cicsPlex: cicsPlex!,
+          });
+        } catch (error) {
+          this.sessionMap.delete(element[0]);
+          window.showErrorMessage(error.message);
         }
-
-        listOfSessionTrees.push(sessionTreeItem);
-
-        profileList.push({
-          name: sessionName,
-          session: session,
-          regions: regions,
-          cicsPlex: cicsPlex!,
-        });
       }
       this.data = listOfSessionTrees;
       this._onDidChangeTreeData.fire(undefined);
@@ -209,6 +214,7 @@ export class CICSTreeDataProvider
       this.sessionMap.set(profile!.name, cicsSesison);
     } catch (error) {
       window.showErrorMessage(error.message);
+      this.sessionMap.delete(profile!.name);
     } finally {
       await this.refresh();
     }
@@ -230,18 +236,20 @@ export class CICSTreeDataProvider
           return { label: profile.name! };
         });
 
-      if (profilesFound.length === 0) {
-        window.showInformationMessage(
-          "No Profiles Found... Create a CICS profile"
-        );
-        this.noProfiles();
-      } else {
-        const profileNameToLoad = await window.showQuickPick(profilesFound, {
+      const profileNameToLoad = await window.showQuickPick(
+        [{ label: "\uFF0B Create New CICS Session..." }].concat(profilesFound),
+        {
           ignoreFocusOut: true,
-          placeHolder: "Click the profile to load...",
-        });
+          placeHolder: "Load Session or Create New Session",
+        }
+      );
 
-        if (profileNameToLoad) {
+      if (profileNameToLoad) {
+        if (profileNameToLoad.label.includes("\uFF0B")) {
+          // Create New
+          this.noProfiles();
+        } else {
+          // Load Existing
           window.showInformationMessage(
             `Loading CICS Profile (${profileNameToLoad.label})`
           );
@@ -254,15 +262,12 @@ export class CICSTreeDataProvider
           }
 
           this.loadExistingProfile(profileToLoad);
-        } else {
-          this.noProfiles();
         }
       }
     } else {
       window.showInformationMessage(
-        "No Profiles Found... Create a CICS profile"
+        "No Profiles Found... Click the Add Session button to get started"
       );
-      this.noProfiles();
     }
   }
 

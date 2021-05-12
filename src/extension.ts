@@ -50,7 +50,8 @@ export async function activate(context: ExtensionContext) {
   );
 
   if (zoweExplorerApi && zoweExplorerApi.exports) {
-    const importedApi = zoweExplorerApi.exports as ZoweExplorerApi.IApiRegisterClient;
+    const importedApi =
+      zoweExplorerApi.exports as ZoweExplorerApi.IApiRegisterClient;
 
     importedApi.registerMvsApi(new CicsApi());
 
