@@ -65,7 +65,7 @@ export class CICSTreeDataProvider
           "..",
           "resources",
           "imgs",
-          "region-green.svg"
+          "region-dark-expanded.svg"
         ),
         dark: join(
           __filename,
@@ -74,7 +74,7 @@ export class CICSTreeDataProvider
           "..",
           "resources",
           "imgs",
-          "region-green.svg"
+          "region-light-expanded.svg"
         ),
       };
       window.showInformationMessage(`Programs Retrieved`);
