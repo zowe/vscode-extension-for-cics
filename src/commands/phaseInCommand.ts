@@ -35,7 +35,7 @@ export function getPhaseInCommand(tree: CICSTreeDataProvider) {
           window.showInformationMessage(
             `New Copy Count for ${node.label} - ${response.response.records.cicsprogram.newcopycnt}`
           );
-          tree.refresh();
+          // tree.refresh();
         } catch (err) {
           console.log(err);
           window.showErrorMessage(err);
@@ -47,7 +47,7 @@ export function getPhaseInCommand(tree: CICSTreeDataProvider) {
 
 async function performPhaseIn(
   session: AbstractSession,
-  parms: { cicsPlex: string | null; regionName: string; name: string }
+  parms: { cicsPlex: string | null; regionName: string; name: string; }
 ) {
   const requestBody: any = {
     request: {

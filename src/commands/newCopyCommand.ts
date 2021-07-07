@@ -33,7 +33,7 @@ export function getNewCopyCommand(tree: CICSTreeDataProvider) {
           window.showInformationMessage(
             `New Copy Count for ${node.label} - ${response.response.records.cicsprogram.newcopycnt}`
           );
-          tree.refresh();
+          // tree.refresh();
         } catch (err) {
           console.log(err);
 
