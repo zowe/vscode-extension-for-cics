@@ -2,26 +2,24 @@
 
 ## Requirements
 
-- VScode
+- VSSode
+- Zowe Explorer (optional - the Zowe Explorer will be added as part of the install if it isn't already present in VSCode.
 
 ## Installation
 
-### From VSCode Marketplace
+### From VSIX File 
 
-1. Search `Zowe Explorer Extension For CICS` on the VSCode Marketplace
+1. Download [cics-extension-for-zowe-0.0.1.vsix](https://github.com/zowe/vscode-extension-for-cics/raw/main/cics-extension-for-zowe-0.0.1.vsix) to your PC that has VS Code already installed.
 
-2. Click `Install`
+2. Open the Extensions icon in the side bar, navigate to the ... menu, press **Install from VSIX ...** and select the downloaded `cics-extension-for-zowe-0.0.1.vsix` file.
 
-### From VSIX File
+<img src="./images/zowe-cics-explorer-install.gif" alt="Installing Zowe CICS Explorer" width="700px"/> 
 
-1. Clone the Extension Repository
+3. After installation
 
-   `git clone git@github.com:zowe/vscode-extension-for-cics.git`
+The successfull install message should be shown
 
-2. Open VSCode and navigate to the Extensions tab
+<img src="./images/info-message-install-completed.png" alt="Zowe CICS Explorer install completed" width="700px"/> 
 
-3. Click the three dots at the top, and click `Install from VSIX...`
 
-4. Navigate to the cloned repository directory, and click `cics-extension-for-zowe-0.0.1.vsix`
-
-5. Wait for successful installation message
+The Zowe Explorer pane will still show tree views for `Data Sets`, `Unit System Services (USS)` and `Jobs`, but in addition a new view `CICS` will be included.
