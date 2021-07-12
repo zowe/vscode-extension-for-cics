@@ -14,7 +14,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 - Perform actions such as `New Copy` and `Phase In` directly from the UI
 - View attributes about the programs and regions by right-clicking
 
-To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation.md)
+To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md)
 
 ## Getting Started
 
@@ -30,7 +30,7 @@ To show more than one CICS profile in the tree, select the + button and choose f
 
 Expand a CICS profile to see the region name, and expand the region to view its programs.  If the CICS profile is connected to a CMAS region that is part of a CICSPlex, the tree will show all of the regions managed by the CICSPlex.  If the CICS profile is for an SMSS region then just one region will be shown.  
 
-### CICS Programs
+### Show CICS Programs
 
 The list of programs shown in the tree excludes those that are IBM supplied (those starting CEE, DFH, CJ, EYU, CSQ, CEL or IGZ).  This is to narrow the tree to only include user programs.
 
@@ -38,7 +38,13 @@ To filter the list of programs select the manifying glass to the right of the re
 
 <img src="./docs/images/filter-programs.gif" alt="Zowe CICS Explorer Filter Programs" width="700px"/> 
 
-## Known Issues
+### NewCopy CICS Programs
+
+Use the pop-up menu against a program to list the available actions that can be performed.  These are: Disable Program,
+
+
+
+
 
 ## Release Notes
 
