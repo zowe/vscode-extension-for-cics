@@ -31,7 +31,7 @@ export function getNewCopyCommand(tree: CICSTreeDataProvider) {
             }
           );
           window.showInformationMessage(
-            `New Copy Count for ${node.label} - ${response.response.records.cicsprogram.newcopycnt}`
+            `New Copy Count for ${node.label} = ${response.response.records.cicsprogram.newcopycnt}`
           );
           // tree.refresh();
         } catch (err) {
