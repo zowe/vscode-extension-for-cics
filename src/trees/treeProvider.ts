@@ -277,6 +277,7 @@ export class CICSTreeDataProvider
         }
       }
     } else {
+      this.noProfiles();
       window.showInformationMessage(
         "No Profiles Found... Click the Add Session button to get started"
       );
