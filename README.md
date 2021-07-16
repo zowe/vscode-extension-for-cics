@@ -51,10 +51,10 @@ Use the pop-up menu against a program to list the available actions that can be 
 
 Use `Show Attributes` to open a viewer of all of the program's attributes.  Use the input field in the viewer to fiter and show attributes matching the criteria. 
 
-Use `New Copy` and `Phase In` attributes to perform a new copy against the selected program.  The updated value of the newcopycnt attribute is retrieved after the action and shown as a pop-up informational message.  
+Use `New Copy` and `Phase In` attributes to get the CICS region to load a new copy of the selected program into memory.  This could be after you've edited a COBOL program source and successfully compiled it into a load library and now want to test your change.  The updated value of the newcopycnt attribute is retrieved after the action and shown as a pop-up informational message.  
 
 <p align="center">
-<img src="./docs/images/program-new-copy.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/program-newcopy.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
 </p>
 
 ## Release Notes
