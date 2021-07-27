@@ -16,7 +16,7 @@ export const addProfileHtml = () => {
       <meta charset="UTF-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Add Session</title>
+      <title>Create CICS Profile</title>
   
       <link
         rel="stylesheet"
@@ -89,7 +89,7 @@ export const addProfileHtml = () => {
     </style>
     <body>
       <div class="bx--content">
-        <h1>Add Session</h1>
+        <h1>Create CICS Profile</h1>
   
         <div
           class="
@@ -270,13 +270,28 @@ export const addProfileHtml = () => {
               document.getElementById("ruSelect").value === "true" ? true : false,
             protocol: document.getElementById("protocol-select").value,
           };
-          const data = {
+          let data = {
             session: session,
-            name: document.getElementById("name-input").value,
-            region: document.getElementById("region-input").value,
-            cicsPlex: document.getElementById("plex-input").value,
+            name: document.getElementById("name-input").value.toString().trim(),
           };
-  
+
+          const givenRegion = document
+            .getElementById("region-input")
+            .value.toString()
+            .trim();
+          const givenPlex = document.getElementById("plex-input").value.toString().trim();
+
+          if (givenPlex.length > 0) {
+            data.cicsPlex = givenPlex;
+            if (givenRegion.length > 0) {
+              data.region = givenRegion;
+            } else {
+              data.region = givenPlex;
+            }
+          } else {
+            data.region = givenRegion;
+          }
+
           const vscode = acquireVsCodeApi();
           vscode.postMessage(data);
         }
