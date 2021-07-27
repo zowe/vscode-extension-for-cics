@@ -303,7 +303,7 @@ export class CICSTreeDataProvider
       : undefined;
     const panel: WebviewPanel = window.createWebviewPanel(
       "zowe",
-      `Create Session`,
+      `Create CICS Profile`,
       column || 1,
       { enableScripts: true }
     );

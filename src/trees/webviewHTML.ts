@@ -16,7 +16,7 @@ export const addProfileHtml = () => {
       <meta charset="UTF-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Add Session</title>
+      <title>Create CICS Profile</title>
   
       <link
         rel="stylesheet"
@@ -89,7 +89,7 @@ export const addProfileHtml = () => {
     </style>
     <body>
       <div class="bx--content">
-        <h1>Add Session</h1>
+        <h1>Create CICS Profile</h1>
   
         <div
           class="
