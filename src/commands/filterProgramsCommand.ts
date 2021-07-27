@@ -33,7 +33,7 @@ export function getFilterProgramsCommand(tree: CICSTreeDataProvider) {
           if (!regex) {
             return true;
           }
-          return regex.test(program!.label!);
+          return regex.test(program!.label!.toString());
         });
         tree._onDidChangeTreeData.fire(undefined);
       }

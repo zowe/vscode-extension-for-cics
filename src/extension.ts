@@ -12,7 +12,7 @@
 import { getDisableProgramCommand } from "./commands/disableProgramCommand";
 import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
-import { ZoweExplorerApi, ProfilesCache } from "@zowe/zowe-explorer-api";
+import { ZoweExplorerApi, ProfilesCache, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { loadProfileManager } from "./utils/profileManagement";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
@@ -42,6 +42,37 @@ export async function activate(context: ExtensionContext) {
         treeDataProv.loadPrograms(node.element);
       }
     });
+
+  // const zeapi = ZoweVsCodeExtension.getZoweExplorerApi();
+  // if (zeapi) {
+  //   console.log("GOT THE APIS");
+  //   console.log(zeapi);
+
+  //   // const meta = await CoreUtils.getProfileMeta();
+  //   // await zeapi.getExplorerExtenderApi().initForZowe("cics", meta);
+  //   await zeapi.getExplorerExtenderApi().reloadProfiles();
+
+  //   // Get the IApiExplorerExtender instance from the API that extenders can used
+  //   // to interact with Zowe Explorer such as accessing all the loaded profiles
+  //   const profilesCache = zeapi.getExplorerExtenderApi().getProfilesCache();
+
+  //   console.log(profilesCache);
+
+
+  //   // Example for iterating over the profiles loaded by Zowe Explorer by type
+  //   const allProfileTypes = profilesCache.getAllTypes();
+  //   let message = "Found the following available profiles: ";
+  //   if (!allProfileTypes) {
+  //     message += "none.";
+  //   } else {
+  //     for (const profileType of allProfileTypes) {
+  //       const profileNames = await profilesCache.getNamesForType(profileType);
+  //       message += `${profileType}: ${JSON.stringify(profileNames)} `;
+  //     }
+  //   }
+
+  //   console.log(message);
+  // }
 
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
@@ -105,4 +136,4 @@ export async function activate(context: ExtensionContext) {
   }
 }
 
-export function deactivate() {}
+export function deactivate() { }
