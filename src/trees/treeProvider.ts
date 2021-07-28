@@ -38,9 +38,6 @@ export class CICSTreeDataProvider
   async loadPrograms(element: CICSRegionTreeItem) {
     this.showStatusBarItem();
     element.children = [];
-    window.showInformationMessage(
-      `Retrieving Programs for Region ${element.region.applid}`
-    );
 
     try {
       const programResponse = await getResource(element.parentSession.session, {
@@ -85,7 +82,7 @@ export class CICSTreeDataProvider
           "region-light-expanded.svg"
         ),
       };
-      window.showInformationMessage(`Programs Retrieved`);
+      window.showInformationMessage(`${programs.length} Programs Retrieved from ${element.region.applid}`);
     } catch (error) {
       window.showErrorMessage(error.message);
     } finally {
@@ -95,7 +92,7 @@ export class CICSTreeDataProvider
   }
   removeSession(session: CICSSessionTreeItem) {
     try {
-      window.showInformationMessage(`Removing Session ${session.label}`);
+      window.showInformationMessage(`Removing Profile ${session.label}`);
       this.sessionMap.delete(session.sessionName);
       this.refresh();
     } catch (error) {
