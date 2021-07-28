@@ -291,14 +291,17 @@ export class CICSTreeDataProvider
 
     panel.webview.onDidReceiveMessage(async (message) => {
       try {
-        const session = new Session(message.session);
 
-        const cicsSesison = new CicsSession(
-          session,
-          message.cicsPlex,
-          message.region
+        const createdSession = new CicsSession(
+          new Session({
+            type: "basic",
+            ...message.profile
+          }),
+          message.profile.cicsPlex,
+          message.profile.region
         );
-        this.sessionMap.set(message.name, cicsSesison);
+
+        this.sessionMap.set(message.name, createdSession);
         panel.dispose();
 
         await ProfileManagement.createNewProfile(message);

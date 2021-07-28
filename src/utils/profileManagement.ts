@@ -32,26 +32,10 @@ export class ProfileManagement {
     return ProfileManagement.profilesCache;
   }
 
-  public static async createNewProfile(formResponse: any) {
-
-    const newProfile: ISaveProfile = {
-      profile: {
-        name: formResponse.name,
-        host: formResponse.session.hostname,
-        port: formResponse.session.port,
-        user: formResponse.session.user,
-        password: formResponse.session.password,
-        rejectUnauthorized: formResponse.session.rejectUnauthorized,
-        protocol: formResponse.session.protocol,
-        regionName: formResponse.region,
-        cicsPlex: formResponse.cicsPlex,
-      },
-      name: formResponse.name,
-      type: "cics",
-      overwrite: true,
-    };
-
-    await ProfileManagement.profilesCache.getCliProfileManager('cics').save(newProfile);
+  public static async createNewProfile(formResponse: ISaveProfile) {
+    formResponse.profile.host = formResponse.profile.hostname;
+    delete formResponse.profile.hostname;
+    await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
   }
 
 }

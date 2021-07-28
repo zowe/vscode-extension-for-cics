@@ -260,41 +260,46 @@ export const addProfileHtml = () => {
   
       <script>
         function createSession() {
-          const session = {
-            type: "basic",
-            hostname: document.getElementById("host-input").value,
-            port: parseInt(document.getElementById("port-input").value),
-            user: document.getElementById("user-input").value,
-            password: document.getElementById("password-input").value,
-            rejectUnauthorized:
-              document.getElementById("ruSelect").value === "true" ? true : false,
-            protocol: document.getElementById("protocol-select").value,
-          };
           let data = {
-            session: session,
+            profile: {
+              name: document.getElementById("name-input").value.toString().trim(),
+              hostname: document.getElementById("host-input").value,
+              port: parseInt(document.getElementById("port-input").value),
+              user: document.getElementById("user-input").value,
+              password: document.getElementById("password-input").value,
+              rejectUnauthorized:
+                document.getElementById("ruSelect").value === "true" ? true : false,
+              protocol: document.getElementById("protocol-select").value,
+            },
             name: document.getElementById("name-input").value.toString().trim(),
+            type: "CICS",
+            overwrite: true,
           };
 
           const givenRegion = document
             .getElementById("region-input")
             .value.toString()
             .trim();
-          const givenPlex = document.getElementById("plex-input").value.toString().trim();
+          const givenPlex = document
+            .getElementById("plex-input")
+            .value.toString()
+            .trim();
 
           if (givenPlex.length > 0) {
-            data.cicsPlex = givenPlex;
+            data.profile.cicsPlex = givenPlex;
             if (givenRegion.length > 0) {
-              data.region = givenRegion;
+              data.profile.region = givenRegion;
             } else {
-              data.region = givenPlex;
+              data.profile.region = givenPlex;
             }
           } else {
-            data.region = givenRegion;
+            data.profile.region = givenRegion;
           }
 
           const vscode = acquireVsCodeApi();
           vscode.postMessage(data);
         }
+
       </script>
     </body>
   </html>
