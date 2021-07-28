@@ -18,9 +18,6 @@ export function getNewCopyCommand(tree: CICSTreeDataProvider) {
     "cics-extension-for-zowe.newCopyProgram",
     async (node) => {
       if (node) {
-        window.showInformationMessage(
-          `New Copy Requested for program ${node.label}`
-        );
         try {
           const response = await programNewcopy(
             node.parentRegion.parentSession.session,

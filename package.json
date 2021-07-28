@@ -34,7 +34,7 @@
 		"commands": [
 			{
 				"command": "cics-extension-for-zowe.addSession",
-				"title": "Create a CICS Session",
+				"title": "Create a CICS Profile",
 				"icon": {
 					"light": "resources/imgs/plus-dark.svg",
 					"dark": "resources/imgs/plus-light.svg"
@@ -90,7 +90,7 @@
 			},
 			{
 				"command": "cics-extension-for-zowe.removeSession",
-				"title": "Remove Session"
+				"title": "Remove Profile"
 			}
 		],
 		"menus": {
