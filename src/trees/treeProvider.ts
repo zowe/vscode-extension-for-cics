@@ -233,7 +233,12 @@ export class CICSTreeDataProvider
       // Profiles Exist
 
       const profileNameToLoad = await window.showQuickPick(
-        [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.map(profileName => {
+        [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.filter((profile) => {
+          if (!this.sessionMap.has(profile)) {
+            return true;
+          }
+          return false;
+        }).map(profileName => {
           return { label: profileName };
         })),
         {
