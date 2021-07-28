@@ -37,7 +37,6 @@ export function getPhaseInCommand(tree: CICSTreeDataProvider) {
           );
           // tree.refresh();
         } catch (err) {
-          console.log(err);
           window.showErrorMessage(err);
         }
       }

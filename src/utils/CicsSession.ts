@@ -36,7 +36,7 @@ export class CicsSession {
 export class CicsApi implements ZoweExplorerApi.IMvs {
   private session?: Session;
 
-  public constructor(public profile?: IProfileLoaded) {}
+  public constructor(public profile?: IProfileLoaded) { }
   dataSet(filter: string, options?: IListOptions): Promise<IZosFilesResponse> {
     throw new Error("Method not implemented.");
   }
@@ -81,7 +81,7 @@ export class CicsApi implements ZoweExplorerApi.IMvs {
   copyDataSetMember(
     { dataSetName: fromDataSetName, memberName: fromMemberName }: IDataSet,
     { dataSetName: toDataSetName, memberName: toMemberName }: IDataSet,
-    options?: { replace?: boolean | undefined }
+    options?: { replace?: boolean | undefined; }
   ): Promise<IZosFilesResponse> {
     throw new Error("Method not implemented.");
   }

@@ -40,6 +40,3 @@ export function getFilterProgramsCommand(tree: CICSTreeDataProvider) {
     }
   );
 }
-function program(program: any) {
-  throw new Error("Function not implemented.");
-}

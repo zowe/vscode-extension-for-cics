@@ -31,7 +31,6 @@ export class CICSProgramTreeItem extends TreeItem {
       }`,
       TreeItemCollapsibleState.None
     );
-    console.log(iconPath.light);
     this.program = program;
     this.parentRegion = parentRegion;
     this.contextValue = `cicsprogram.${program.status.toLowerCase()}.${program.program
