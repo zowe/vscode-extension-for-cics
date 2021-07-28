@@ -9,8 +9,6 @@
 *
 */
 
-import { ProfileStorage } from "../utils/profileStorage";
-import { ProfilesCache } from "@zowe/zowe-explorer-api";
 import { CICSProgramTreeItem } from "./CICSProgramTree";
 import { CICSSessionTreeItem } from "./CICSSessionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
@@ -20,8 +18,6 @@ import { addProfileHtml } from "./webviewHTML";
 import {
   Session,
   IProfileLoaded,
-  Logger,
-  ISaveProfile,
 } from "@zowe/imperative";
 import {
   ProviderResult,
@@ -34,6 +30,7 @@ import {
   WebviewPanel,
 } from "vscode";
 import { join } from "path";
+import { ProfileManagement } from "../utils/profileManagement";
 
 export class CICSTreeDataProvider
   implements TreeDataProvider<CICSSessionTreeItem>
@@ -233,54 +230,35 @@ export class CICSTreeDataProvider
   }
 
   public async addSession() {
-    const profileStorage = new ProfileStorage();
 
-    if (profileStorage.getProfiles()) {
-      const profilesFound = profileStorage
-        .getProfiles()
-        .filter((profile) => {
-          if (!this.sessionMap.has(profile.name!)) {
-            return true;
-          }
-          return false;
-        })
-        .map((profile) => {
-          return { label: profile.name! };
-        });
+    const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
+    if (allCICSProfileNames.length > 0) {
+      // Profiles Exist
 
       const profileNameToLoad = await window.showQuickPick(
-        [{ label: "\uFF0B Create New CICS Session..." }].concat(profilesFound),
+        [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.map(profileName => {
+          return { label: profileName };
+        })),
         {
           ignoreFocusOut: true,
-          placeHolder: "Load Session or Create New Session",
+          placeHolder: "Load Profile or Create New Profile",
         }
       );
 
       if (profileNameToLoad) {
         if (profileNameToLoad.label.includes("\uFF0B")) {
-          // Create New
           this.noProfiles();
         } else {
-          // Load Existing
-          window.showInformationMessage(
-            `Loading CICS Profile (${profileNameToLoad.label})`
-          );
-          let profileToLoad;
-
-          for (const prof of profileStorage.getProfiles()) {
-            if (prof.name === profileNameToLoad.label) {
-              profileToLoad = prof;
-            }
-          }
-
-          this.loadExistingProfile(profileToLoad);
+          this.loadExistingProfile(ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics'));
         }
       }
+
     } else {
-      this.noProfiles();
+      // No CICS Profiles
       window.showInformationMessage(
-        "No Profiles Found... Click the Add Session button to get started"
+        "No Profiles Found... Opening Profile Creation Form"
       );
+      this.noProfiles();
     }
   }
 
@@ -321,25 +299,7 @@ export class CICSTreeDataProvider
         this.sessionMap.set(message.name, cicsSesison);
         panel.dispose();
 
-        const prof = new ProfilesCache(Logger.getAppLogger());
-        const newProfile: ISaveProfile = {
-          profile: {
-            name: message.name,
-            host: message.session.hostname,
-            port: message.session.port,
-            user: message.session.user,
-            password: message.session.password,
-            rejectUnauthorized: message.session.rejectUnauthorized,
-            protocol: message.session.protocol,
-            regionName: message.region,
-            cicsPlex: message.cicsPlex,
-          },
-          name: message.name,
-          type: "cics",
-          overwrite: true,
-        };
-
-        await prof.getCliProfileManager("cics").save(newProfile);
+        await ProfileManagement.createNewProfile(message);
       } catch (error) {
         window.showErrorMessage(error.message);
       } finally {

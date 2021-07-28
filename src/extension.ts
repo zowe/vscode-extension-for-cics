@@ -12,22 +12,19 @@
 import { getDisableProgramCommand } from "./commands/disableProgramCommand";
 import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
-import { ZoweExplorerApi, ProfilesCache, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
-import { loadProfileManager } from "./utils/profileManagement";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
 import { getRefreshCommand } from "./commands/refreshCommand";
-import { ExtensionContext, window, extensions } from "vscode";
+import { ExtensionContext, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import { CICSTreeDataProvider } from "./trees/treeProvider";
-import { ProfileStorage } from "./utils/profileStorage";
 import { CicsApi } from "./utils/CicsSession";
-import { Logger } from "@zowe/imperative";
 import {
   getShowAttributesCommand,
   getShowRegionAttributes,
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
+import { ProfileManagement } from "./utils/profileManagement";
 
 export async function activate(context: ExtensionContext) {
   const treeDataProv = new CICSTreeDataProvider();
@@ -43,37 +40,6 @@ export async function activate(context: ExtensionContext) {
       }
     });
 
-  // const zeapi = ZoweVsCodeExtension.getZoweExplorerApi();
-  // if (zeapi) {
-  //   console.log("GOT THE APIS");
-  //   console.log(zeapi);
-
-  //   // const meta = await CoreUtils.getProfileMeta();
-  //   // await zeapi.getExplorerExtenderApi().initForZowe("cics", meta);
-  //   await zeapi.getExplorerExtenderApi().reloadProfiles();
-
-  //   // Get the IApiExplorerExtender instance from the API that extenders can used
-  //   // to interact with Zowe Explorer such as accessing all the loaded profiles
-  //   const profilesCache = zeapi.getExplorerExtenderApi().getProfilesCache();
-
-  //   console.log(profilesCache);
-
-
-  //   // Example for iterating over the profiles loaded by Zowe Explorer by type
-  //   const allProfileTypes = profilesCache.getAllTypes();
-  //   let message = "Found the following available profiles: ";
-  //   if (!allProfileTypes) {
-  //     message += "none.";
-  //   } else {
-  //     for (const profileType of allProfileTypes) {
-  //       const profileNames = await profilesCache.getNamesForType(profileType);
-  //       message += `${profileType}: ${JSON.stringify(profileNames)} `;
-  //     }
-  //   }
-
-  //   console.log(message);
-  // }
-
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRefreshCommand(treeDataProv),
@@ -87,51 +53,20 @@ export async function activate(context: ExtensionContext) {
     getFilterProgramsCommand(treeDataProv)
   );
 
-  const zoweExplorerApi = extensions.getExtension(
-    "Zowe.vscode-extension-for-zowe"
-  );
-
-  if (zoweExplorerApi && zoweExplorerApi.exports) {
-    const importedApi =
-      zoweExplorerApi.exports as ZoweExplorerApi.IApiRegisterClient;
-
-    importedApi.registerMvsApi(new CicsApi());
-
+  if (ProfileManagement.apiDoesExist()) {
+    ProfileManagement.getExplorerApis().registerMvsApi(new CicsApi());
+    await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
     window.showInformationMessage(
       "Zowe Explorer was modified for the CICS Extension"
     );
-
-    if (
-      importedApi.getExplorerExtenderApi &&
-      importedApi.getExplorerExtenderApi().reloadProfiles
-    ) {
-      await loadProfileManager();
-
-      const prof = new ProfilesCache(Logger.getAppLogger());
-
-      await prof.refresh(importedApi);
-      await importedApi.getExplorerExtenderApi().reloadProfiles();
-      const defaultProfile = prof.getDefaultProfile("cics");
-
-      const profileStorage = new ProfileStorage();
-
-      // @ts-ignore
-      for (const profile of prof.profilesByType) {
-        if (profile[0] === "cics") {
-          profileStorage.setProfiles(profile[1]);
-          break;
-        }
-      }
-
-      if (defaultProfile && defaultProfile.profile) {
-        window.showInformationMessage(
-          `Default CICS Profile (${defaultProfile.name}) found. Loading it now...`
-        );
-        treeDataProv.loadExistingProfile(defaultProfile);
-        // treeDataProv.addSession(defaultProfile);
-      } else {
-        window.showInformationMessage("No Default CICS Profile found.");
-      }
+    const defaultCicsProfile = ProfileManagement.getProfilesCache().getDefaultProfile('cics');
+    if (defaultCicsProfile) {
+      window.showInformationMessage(
+        `Default CICS Profile (${defaultCicsProfile.name}) found. Loading it now...`
+      );
+      treeDataProv.loadExistingProfile(defaultCicsProfile);
+    } else {
+      window.showInformationMessage("No Default CICS Profile found.");
     }
   }
 }
