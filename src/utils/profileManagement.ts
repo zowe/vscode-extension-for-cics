@@ -9,8 +9,10 @@
 *
 */
 
-import { ISaveProfile } from "@zowe/imperative";
+import { IProfileLoaded, ISaveProfile } from "@zowe/imperative";
 import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
+import axios from "axios";
+import { xml2json } from "xml-js";
 
 export class ProfileManagement {
 
@@ -38,4 +40,128 @@ export class ProfileManagement {
     await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
   }
 
+  public static async getPlexInfo(profile: IProfileLoaded) {
+
+    const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+    const infoLoaded: { plexname: string | null, regions: any[]; }[] = [];
+
+    if (profile!.profile!.cicsPlex) {
+      if (profile!.profile!.regionName) {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Both Supplied, no searching required - Only load 1 region
+         */
+
+        const singleRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`);
+        const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
+        const singleRegion = jsonFromXml.response.records.cicsmanagedregion._attributes;
+        infoLoaded.push({
+          plexname: profile!.profile!.cicsPlex,
+          regions: [singleRegion]
+        });
+
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+      } else {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Plex given - must search for regions
+         */
+
+        const allRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}`);
+        const jsonFromXml = JSON.parse(xml2json(allRegionResponse.data, { compact: true, spaces: 4 }));
+        const allRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
+        infoLoaded.push({
+          plexname: profile!.profile!.cicsPlex,
+          regions: allRegions
+        });
+
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+      }
+    } else {
+      if (profile!.profile!.regionName) {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Region but no plex - Single region system, use that
+         */
+
+        const singleRegionResponse = await axios.get(`${URL}/CICSRegion/${profile!.profile!.regionName}`);
+        const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
+        const singleRegion = jsonFromXml.response.records.cicsregion._attributes;
+        infoLoaded.push({
+          plexname: null,
+          regions: [singleRegion]
+        });
+
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+      } else {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Nothing given - Test if plex and find all info
+         */
+        try {
+          const testIfPlexResponse = await axios.get(`${URL}/CICSCICSPlex`);
+          if (testIfPlexResponse.status === 200) {
+            // Plex
+            const jsonFromXml = JSON.parse(xml2json(testIfPlexResponse.data, { compact: true, spaces: 4 }));
+            const returnedPlexes = jsonFromXml.response.records.cicscicsplex.map((item: { _attributes: any; }) => item._attributes);
+
+
+            for (const plex of returnedPlexes) {
+              try {
+                const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.plexname}`);
+                if (regionResponse.status === 200) {
+                  const jsonFromXml = JSON.parse(xml2json(regionResponse.data, { compact: true, spaces: 4 }));
+                  const returnedRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
+                  infoLoaded.push({
+                    plexname: plex.plexname,
+                    regions: returnedRegions
+                  });
+                }
+              } catch (error) {
+                // console.log(error);
+              }
+            }
+
+          } else {
+            // Not Plex
+
+            const singleRegion = await axios.get(`${URL}/CICSRegion`);
+            const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+            const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
+            infoLoaded.push({
+              plexname: null,
+              regions: [returnedRegion]
+            });
+          }
+        } catch (error) {
+          // Not Plex - Could be error
+
+          const singleRegion = await axios.get(`${URL}/CICSRegion`);
+          const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+          const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
+          infoLoaded.push({
+            plexname: null,
+            regions: [returnedRegion]
+          });
+
+        }
+      }
+    }
+    return infoLoaded;
+  }
 }

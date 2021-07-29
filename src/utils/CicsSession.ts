@@ -21,17 +21,6 @@ import {
   IDataSet,
   IDeleteDatasetOptions,
 } from "@zowe/zos-files-for-zowe-sdk";
-export class CicsSession {
-  session: Session;
-  cicsPlex: string;
-  region: string;
-
-  constructor(session: Session, cicsPlex?: string, region?: string) {
-    this.session = session;
-    this.cicsPlex = cicsPlex!;
-    this.region = region!;
-  }
-}
 
 export class CicsApi implements ZoweExplorerApi.IMvs {
   private session?: Session;
