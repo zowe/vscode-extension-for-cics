@@ -11,9 +11,9 @@
 
 import { programNewcopy } from "@zowe/cics-for-zowe-cli";
 import { commands, window } from "vscode";
-import { CICSTreeDataProvider } from "../trees/treeProvider";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getNewCopyCommand(tree: CICSTreeDataProvider) {
+export function getNewCopyCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.newCopyProgram",
     async (node) => {
@@ -22,15 +22,14 @@ export function getNewCopyCommand(tree: CICSTreeDataProvider) {
           const response = await programNewcopy(
             node.parentRegion.parentSession.session,
             {
-              name: node.label,
+              name: node.program.program,
               regionName: node.parentRegion.label,
-              cicsPlex: node.parentRegion.parentSession.cicsPlex,
+              cicsPlex: node.parentRegion.parentPlex ? node.parentRegion.parentPlex.plexName : undefined,
             }
           );
           window.showInformationMessage(
             `New Copy Count for ${node.label} = ${response.response.records.cicsprogram.newcopycnt}`
           );
-          // tree.refresh();
         } catch (err) {
           window.showErrorMessage(err);
         }

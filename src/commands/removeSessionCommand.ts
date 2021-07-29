@@ -9,18 +9,17 @@
 *
 */
 
-import { CICSTreeDataProvider } from "../trees/treeProvider";
 import { commands, window } from "vscode";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getRemoveSessionCommand(tree: CICSTreeDataProvider) {
+export function getRemoveSessionCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.removeSession",
     async (node) => {
       if (node) {
         await tree.removeSession(node);
-        tree.refresh();
       } else {
-        window.showErrorMessage("No CICS program selected");
+        window.showErrorMessage("No profile selected to remove");
       }
     }
   );

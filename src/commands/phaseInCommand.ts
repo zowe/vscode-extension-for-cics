@@ -12,33 +12,30 @@
 import { CicsCmciConstants, CicsCmciRestClient } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, window } from "vscode";
-import { CICSTreeDataProvider } from "../trees/treeProvider";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getPhaseInCommand(tree: CICSTreeDataProvider) {
+export function getPhaseInCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.phaseInCommand",
     async (node) => {
       if (node) {
-        window.showInformationMessage(
-          `Phase-In Requested for program ${node.label}`
-        );
         try {
           const response = await performPhaseIn(
             node.parentRegion.parentSession.session,
             {
-              name: node.label,
+              name: node.program.program,
               regionName: node.parentRegion.label,
-              cicsPlex: node.parentRegion.parentSession.cicsPlex,
+              cicsPlex: node.parentRegion.parentPlex ? node.parentRegion.parentPlex.plexName : undefined,
             }
           );
-
           window.showInformationMessage(
             `New Copy Count for ${node.label} = ${response.response.records.cicsprogram.newcopycnt}`
           );
-          // tree.refresh();
         } catch (err) {
           window.showErrorMessage(err);
         }
+      } else {
+        window.showErrorMessage("No CICS program selected");
       }
     }
   );

@@ -9,12 +9,15 @@
 *
 */
 
-import { CICSTreeDataProvider } from "../trees/treeProvider";
+;
 import { commands } from "vscode";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getRefreshCommand(tree: CICSTreeDataProvider) {
+export function getRefreshCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.refreshTree",
-    async () => tree.refresh()
+    async () => {
+
+    }
   );
 }

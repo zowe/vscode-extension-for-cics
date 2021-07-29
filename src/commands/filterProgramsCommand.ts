@@ -9,33 +9,32 @@
 *
 */
 
-import { CICSTreeDataProvider } from "../trees/treeProvider";
-import { commands, window } from "vscode";
-import { CICSProgramTreeItem } from "../trees/CICSProgramTree";
+import { commands } from "vscode";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getFilterProgramsCommand(tree: CICSTreeDataProvider) {
+export function getFilterProgramsCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterPrograms",
     async (node) => {
       if (node) {
-        const filter = await window.showInputBox({
-          prompt: "Input a string you want the resulting programs to contain.",
-          ignoreFocusOut: true,
-        });
+        // const filter = await window.showInputBox({
+        //   prompt: "Input a string you want the resulting programs to contain.",
+        //   ignoreFocusOut: true,
+        // });
 
-        const regex = filter ? new RegExp(filter.toUpperCase()) : undefined;
+        // const regex = filter ? new RegExp(filter.toUpperCase()) : undefined;
 
-        node.children = [];
+        // node.children = [];
 
-        await tree.loadPrograms(node);
+        // await tree.loadRegionContents(node);
 
-        node.children = node.children.filter((program: CICSProgramTreeItem) => {
-          if (!regex) {
-            return true;
-          }
-          return regex.test(program!.label!.toString());
-        });
-        tree._onDidChangeTreeData.fire(undefined);
+        // node.children = node.children.filter((program: CICSProgramTreeItem) => {
+        //   if (!regex) {
+        //     return true;
+        //   }
+        //   return regex.test(program!.label!.toString());
+        // });
+        // tree._onDidChangeTreeData.fire(undefined);
       }
     }
   );

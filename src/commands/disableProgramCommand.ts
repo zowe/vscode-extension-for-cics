@@ -17,32 +17,25 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, window } from "vscode";
-import { CICSTreeDataProvider } from "../trees/treeProvider";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getDisableProgramCommand(tree: CICSTreeDataProvider) {
+export function getDisableProgramCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.disableProgram",
     async (node) => {
       if (node) {
-        window.showInformationMessage(
-          `Disabling program ${node.program.program}`
-        );
         try {
           const response = await disableProgram(
             node.parentRegion.parentSession.session,
             {
               name: node.program.program,
               regionName: node.parentRegion.label,
-              cicsPlex: node.parentRegion.parentSession.cicsPlex,
+              cicsPlex: node.parentRegion.parentPlex ? node.parentRegion.parentPlex.plexName : undefined,
             }
           );
-
           window.showInformationMessage(
             `Program ${node.program.program} STATUS: - ${response.response.records.cicsprogram.status}`
           );
-
-          tree.refresh();
-          
         } catch (err) {
           window.showErrorMessage(err);
         }
