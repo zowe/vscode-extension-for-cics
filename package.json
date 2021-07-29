@@ -65,7 +65,15 @@
         }
       },
       {
-        "command": "cics-extension-for-zowe.showAttributes",
+        "command": "cics-extension-for-zowe.showProgramAttributes",
+        "title": "Show Attributes"
+      },
+      {
+        "command": "cics-extension-for-zowe.showTransactionAttributes",
+        "title": "Show Attributes"
+      },
+      {
+        "command": "cics-extension-for-zowe.showLocalFileAttributes",
         "title": "Show Attributes"
       },
       {
@@ -139,7 +147,17 @@
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
-          "command": "cics-extension-for-zowe.showAttributes",
+          "command": "cics-extension-for-zowe.showProgramAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
+          "command": "cics-extension-for-zowe.showTransactionAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslocalfile.*/",
+          "command": "cics-extension-for-zowe.showLocalFileAttributes",
           "group": ""
         },
         {

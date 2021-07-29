@@ -25,6 +25,8 @@ import {
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
+import { getShowTransactionAttributesCommand } from "./commands/showTransactionAttributesCommand";
+import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttributesCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -70,7 +72,9 @@ export async function activate(context: ExtensionContext) {
     getEnableProgramCommand(treeDataProv),
     getDisableProgramCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv),
-    getFilterProgramsCommand(treeDataProv)
+    getFilterProgramsCommand(treeDataProv),
+    getShowTransactionAttributesCommand(),
+    getShowLocalFileAttributesCommand()
   );
 }
 

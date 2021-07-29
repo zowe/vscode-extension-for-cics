@@ -14,7 +14,7 @@ import { getAttributesHtml } from "../trees/webviewHTML";
 
 export function getShowAttributesCommand() {
   return commands.registerCommand(
-    "cics-extension-for-zowe.showAttributes",
+    "cics-extension-for-zowe.showProgramAttributes",
     async (node) => {
       if (node) {
         const program = node.program;
