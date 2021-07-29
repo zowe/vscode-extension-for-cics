@@ -17,7 +17,6 @@ import { getNewCopyCommand } from "./commands/newCopyCommand";
 import { getRefreshCommand } from "./commands/refreshCommand";
 import { ExtensionContext, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
-import { CICSTreeDataProvider } from "./trees/treeProvider";
 import { CicsApi } from "./utils/CicsSession";
 import {
   getShowAttributesCommand,
@@ -25,33 +24,9 @@ import {
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
 import { ProfileManagement } from "./utils/profileManagement";
+import { CICSTree } from "./trees/CICSTree";
 
 export async function activate(context: ExtensionContext) {
-  const treeDataProv = new CICSTreeDataProvider();
-  window
-    .createTreeView("cics-view", {
-      treeDataProvider: treeDataProv,
-      showCollapseAll: true,
-    })
-    .onDidExpandElement((node) => {
-      if (node.element.session) {
-      } else if (node.element.region) {
-        treeDataProv.loadPrograms(node.element);
-      }
-    });
-
-  context.subscriptions.push(
-    getAddSessionCommand(treeDataProv),
-    getRefreshCommand(treeDataProv),
-    getNewCopyCommand(treeDataProv),
-    getShowAttributesCommand(),
-    getPhaseInCommand(treeDataProv),
-    getShowRegionAttributes(),
-    getEnableProgramCommand(treeDataProv),
-    getDisableProgramCommand(treeDataProv),
-    getRemoveSessionCommand(treeDataProv),
-    getFilterProgramsCommand(treeDataProv)
-  );
 
   if (ProfileManagement.apiDoesExist()) {
     /**
@@ -67,16 +42,36 @@ export async function activate(context: ExtensionContext) {
     window.showInformationMessage(
       "Zowe Explorer was modified for the CICS Extension"
     );
-    const defaultCicsProfile = ProfileManagement.getProfilesCache().getDefaultProfile('cics');
-    if (defaultCicsProfile) {
-      window.showInformationMessage(
-        `Default CICS Profile (${defaultCicsProfile.name}) found. Loading it now...`
-      );
-      treeDataProv.loadExistingProfile(defaultCicsProfile);
-    } else {
-      window.showInformationMessage("No Default CICS Profile found.");
-    }
   }
+
+  const treeDataProv = new CICSTree();
+  window
+    .createTreeView("cics-view", {
+      treeDataProvider: treeDataProv,
+      showCollapseAll: true,
+    })
+    .onDidExpandElement((node) => {
+      if (node.element.contextValue.includes("cicssession.")) {
+      } else if (node.element.contextValue.includes("cicsplex.")) {
+      } else if (node.element.contextValue.includes("cicsregion.")) {
+        // Load region contents
+        treeDataProv.loadRegionContents(node.element);
+      } else if (node.element.contextValue.includes("cicsprogram.")) {
+      }
+    });
+
+  context.subscriptions.push(
+    getAddSessionCommand(treeDataProv),
+    // getRefreshCommand(treeDataProv),
+    getNewCopyCommand(treeDataProv),
+    getShowAttributesCommand(),
+    getPhaseInCommand(treeDataProv),
+    getShowRegionAttributes(),
+    getEnableProgramCommand(treeDataProv),
+    getDisableProgramCommand(treeDataProv),
+    getRemoveSessionCommand(treeDataProv),
+    getFilterProgramsCommand(treeDataProv)
+  );
 }
 
 export function deactivate() { }
