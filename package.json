@@ -184,10 +184,13 @@
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "@zowe/cics-for-zowe-cli": "^4.0.2",
     "@zowe/cli": "^6.30.0",
     "@zowe/imperative": "^4.8.1",
-    "@zowe/zowe-explorer-api": "^1.13.1",
-    "vscode-nls": "^5.0.0"
+    "@zowe/zowe-explorer-api": "PATH_TO_FILE",
+    "axios": "^0.21.1",
+    "vscode-nls": "^5.0.0",
+    "xml-js": "^1.6.11"
   }
 }
