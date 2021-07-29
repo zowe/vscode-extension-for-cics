@@ -18,6 +18,7 @@ import { addProfileHtml } from "./webviewHTML";
 import {
   Session,
   IProfileLoaded,
+  AbstractSession,
 } from "@zowe/imperative";
 import {
   ProviderResult,
@@ -31,6 +32,8 @@ import {
 } from "vscode";
 import { join } from "path";
 import { ProfileManagement } from "../utils/profileManagement";
+import axios from "axios";
+import { xml2json } from 'xml-js';
 
 export class CICSTreeDataProvider
   implements TreeDataProvider<CICSSessionTreeItem>
@@ -218,6 +221,9 @@ export class CICSTreeDataProvider
 
       const cicsSesison = new CicsSession(session, cicsPlex, region);
       this.sessionMap.set(profile!.name, cicsSesison);
+
+      let r = await getRegions(cicsSesison.session);
+
     } catch (error) {
       window.showErrorMessage(error.message);
       this.sessionMap.delete(profile!.name);
@@ -311,5 +317,36 @@ export class CICSTreeDataProvider
         await this.refresh();
       }
     });
+  }
+}
+
+
+async function getRegions(
+  session: AbstractSession
+) {
+
+  const URL = `${session.ISession.protocol}://${session.ISession.hostname}:${session.ISession.port}/CICSSystemManagement`;
+  try {
+    const rrrr = await axios.get(`${URL}/CICSCICSPlex`);
+    if (rrrr.status === 200) {
+      // Probably a  Plex System
+
+      const jsonFromXml = JSON.parse(xml2json(rrrr.data, { compact: true, spaces: 4 }));
+      console.log(jsonFromXml.response.records.cicscicsplex.map((item: { _attributes: any; }) => item._attributes));
+
+      return rrrr;
+
+    } else if (rrrr.status === 404) {
+      // Probably single region system
+      const region = await axios.get(`${URL}/CICSRegion`);
+      const jsonFromXml = JSON.parse(xml2json(region.data, { compact: true, spaces: 4 }));
+
+      console.log(jsonFromXml.response.records.cicsregion._attributes);
+    }
+  } catch (err) {
+    const region = await axios.get(`${URL}/CICSRegion`);
+    const jsonFromXml = JSON.parse(xml2json(region.data, { compact: true, spaces: 4 }));
+
+    console.log(jsonFromXml.response.records.cicsregion._attributes);
   }
 }
