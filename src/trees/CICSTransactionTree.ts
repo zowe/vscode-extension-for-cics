@@ -11,10 +11,10 @@
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { join } from "path";
-import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
+import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 
-export class CICSProgramTree extends TreeItem {
-  children: CICSProgramTreeItem[] = [];
+export class CICSTransactionTree extends TreeItem {
+  children: CICSTransactionTreeItem[] = [];
 
   constructor(
     public readonly iconPath = {
@@ -38,11 +38,11 @@ export class CICSProgramTree extends TreeItem {
       ),
     }
   ) {
-    super('Programs', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreeprogram.programs`;
+    super('Transactions', TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstransactiontree.transactions`;
   }
 
-  public addProgram(program: CICSProgramTreeItem) {
+  public addTransaction(program: CICSTransactionTreeItem) {
     this.children.push(program);
   }
 }

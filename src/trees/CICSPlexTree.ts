@@ -10,13 +10,15 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
+import { CICSRegionTree } from "./CICSRegionTree";
 import { join } from "path";
-import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 
-export class CICSProgramTree extends TreeItem {
-  children: CICSProgramTreeItem[] = [];
+export class CICSPlexTree extends TreeItem {
+  children: CICSRegionTree[] = [];
+  plexName: string;
 
   constructor(
+    plexName: string,
     public readonly iconPath = {
       light: join(
         __filename,
@@ -38,11 +40,16 @@ export class CICSProgramTree extends TreeItem {
       ),
     }
   ) {
-    super('Programs', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreeprogram.programs`;
+    super(plexName, TreeItemCollapsibleState.Collapsed);
+    this.plexName = plexName;
+    this.contextValue = `cicsplex.${plexName}`;
   }
 
-  public addProgram(program: CICSProgramTreeItem) {
-    this.children.push(program);
+  public addRegion(region: CICSRegionTree) {
+    this.children.push(region);
+  }
+
+  public getPlexName() {
+    return this.plexName;
   }
 }

@@ -11,10 +11,10 @@
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { join } from "path";
-import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
+import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 
-export class CICSProgramTree extends TreeItem {
-  children: CICSProgramTreeItem[] = [];
+export class CICSLocalFileTree extends TreeItem {
+  children: CICSLocalFileTreeItem[] = [];
 
   constructor(
     public readonly iconPath = {
@@ -38,11 +38,11 @@ export class CICSProgramTree extends TreeItem {
       ),
     }
   ) {
-    super('Programs', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreeprogram.programs`;
+    super('Local Files', TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicslocalfiletree.localFiles`;
   }
 
-  public addProgram(program: CICSProgramTreeItem) {
-    this.children.push(program);
+  public addLocalFile(localFile: CICSLocalFileTreeItem) {
+    this.children.push(localFile);
   }
 }

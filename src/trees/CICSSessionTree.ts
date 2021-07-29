@@ -10,19 +10,18 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { CICSRegionTreeItem } from "./CICSRegionTree";
+import { CICSRegionTree } from "./CICSRegionTree";
 import { join } from "path";
+import { CICSPlexTree } from "./CICSPlexTree";
+import { Session } from "@zowe/imperative";
 
-export class CICSSessionTreeItem extends TreeItem {
-  sessionName: string;
-  children: CICSRegionTreeItem[];
-  session: any;
-  cicsPlex: string;
+export class CICSSessionTree extends TreeItem {
+  children: (CICSPlexTree | CICSRegionTree)[];
+  profile: any;
+  session: Session;
 
   constructor(
-    sessionName: string,
-    session: any,
-    cicsPlex: string,
+    profile: any,
     public readonly iconPath = {
       light: join(
         __filename,
@@ -44,15 +43,25 @@ export class CICSSessionTreeItem extends TreeItem {
       ),
     }
   ) {
-    super(sessionName, TreeItemCollapsibleState.Collapsed);
-    this.sessionName = sessionName;
-    this.session = session;
-    this.cicsPlex = cicsPlex;
+    super(profile.name, TreeItemCollapsibleState.Collapsed);
     this.children = [];
-    this.contextValue = `cicssession.${sessionName}`;
+    this.contextValue = `cicssession.${profile.name}`;
+    this.session = new Session({
+      type: "basic",
+      hostname: profile.profile!.host,
+      port: Number(profile.profile!.port),
+      user: profile.profile!.user,
+      password: profile.profile!.password,
+      rejectUnauthorized: profile.profile!.rejectUnauthorized,
+      protocol: profile.profile!.protocol,
+    });
   }
 
-  public addRegionChild(region: CICSRegionTreeItem) {
+  public addRegion(region: CICSRegionTree) {
     this.children.push(region);
+  }
+
+  public addPlex(plex: CICSPlexTree) {
+    this.children.push(plex);
   }
 }

@@ -10,20 +10,31 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { CICSProgramTreeItem } from "./CICSProgramTree";
-import { CICSSessionTreeItem } from "./CICSSessionTree";
 import { join } from "path";
+import { CICSProgramTree } from "./CICSProgramTree";
+import { CICSTransactionTree } from "./CICSTransactionTree";
+import { CICSLocalFileTree } from "./CICSLocalFileTree";
+import { CICSSessionTree } from "./CICSSessionTree";
+import { CICSPlexTree } from "./CICSPlexTree";
 
-export class CICSRegionTreeItem extends TreeItem {
-  children: CICSProgramTreeItem[];
-  parentSession: CICSSessionTreeItem;
+export class CICSRegionTree extends TreeItem {
+  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree];
   region: any;
+  parentSession: CICSSessionTree;
+  parentPlex: CICSPlexTree | undefined;
+
+  public getRegionName() {
+    return this.region.applid || this.region.cicsname;
+  }
 
   constructor(
     regionName: string,
-    parentSession: CICSSessionTreeItem,
     region: any,
-    children?: CICSProgramTreeItem[] | CICSProgramTreeItem | undefined,
+    parentSession: CICSSessionTree,
+    parentPlex: CICSPlexTree | undefined,
+    programTree: CICSProgramTree,
+    transactionTree: CICSTransactionTree,
+    localFilesTree: CICSLocalFileTree,
     public iconPath = {
       light: join(
         __filename,
@@ -46,13 +57,12 @@ export class CICSRegionTreeItem extends TreeItem {
     }
   ) {
     super(regionName, TreeItemCollapsibleState.Collapsed);
-    this.children = !Array.isArray(children) ? [children!] : children;
-    this.parentSession = parentSession;
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-  }
-
-  public addProgramChild(programTreeItem: CICSProgramTreeItem) {
-    this.children.push(programTreeItem);
+    this.children = [programTree, transactionTree, localFilesTree];
+    this.parentSession = parentSession;
+    if (parentPlex) {
+      this.parentPlex = parentPlex;
+    }
   }
 }
