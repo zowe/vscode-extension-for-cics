@@ -58,21 +58,13 @@ export class CICSTransactionTree extends TreeItem {
         name: "CICSLocalTransaction",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
+        criteria: `tranid=${this.activeFilter ? this.activeFilter : '*'}`
       });
       this.children = [];
-      for (const transaction of transactionResponse.response.records.cicslocaltransaction) {
-        if (!this.activeFilter) {
-          const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
-          //@ts-ignore
-          this.addTransaction(newTransactionItem);
-        } else {
-          const regex = new RegExp(this.activeFilter.toUpperCase());
-          if (regex.test(transaction.tranid)) {
-            const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
-            //@ts-ignore
-            this.addTransaction(newTransactionItem);
-          }
-        }
+      for (const transaction of Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction]) {
+        const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
+        //@ts-ignore
+        this.addTransaction(newTransactionItem);
       }
     } catch (error) {
       console.log(error);

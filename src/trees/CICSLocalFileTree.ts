@@ -58,21 +58,13 @@ export class CICSLocalFileTree extends TreeItem {
         name: "CICSLocalFile",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
+        criteria: `file=${this.activeFilter ? this.activeFilter : '*'}`
       });
       this.children = [];
-      for (const localFile of localFileResponse.response.records.cicslocalfile) {
-        if (!this.activeFilter) {
-          const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
-          //@ts-ignore
-          this.addLocalFile(newLocalFileItem);
-        } else {
-          const regex = new RegExp(this.activeFilter.toUpperCase());
-          if (regex.test(localFile.file)) {
-            const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
-            //@ts-ignore
-            this.addLocalFile(newLocalFileItem);
-          }
-        }
+      for (const localFile of Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile]) {
+        const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
+        //@ts-ignore
+        this.addLocalFile(newLocalFileItem);
       }
     } catch (error) {
       console.log(error);

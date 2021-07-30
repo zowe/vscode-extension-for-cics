@@ -58,24 +58,15 @@ export class CICSProgramTree extends TreeItem {
         name: "CICSProgram",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria:
+        criteria: this.activeFilter ? `PROGRAM=${this.activeFilter}` :
           "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)"
       });
 
       this.children = [];
-      for (const program of programResponse.response.records.cicsprogram) {
-        if (!this.activeFilter) {
-          const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
-          //@ts-ignore
-          this.addProgram(newProgramItem);
-        } else {
-          const regex = new RegExp(this.activeFilter.toUpperCase());
-          if (regex.test(program.program)) {
-            const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
-            //@ts-ignore
-            this.addProgram(newProgramItem);
-          }
-        }
+      for (const program of Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram]) {
+        const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
+        //@ts-ignore
+        this.addProgram(newProgramItem);
       }
     } catch (error) {
       console.log(error);
