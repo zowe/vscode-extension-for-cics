@@ -12,11 +12,14 @@
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { join } from "path";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
+import { CICSRegionTree } from "./CICSRegionTree";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];
+  parentRegion: CICSRegionTree;
 
   constructor(
+    parentRegion: CICSRegionTree,
     public readonly iconPath = {
       light: join(
         __filename,
@@ -40,6 +43,7 @@ export class CICSTransactionTree extends TreeItem {
   ) {
     super('Transactions', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstransactiontree.transactions`;
+    this.parentRegion = parentRegion;
   }
 
   public addTransaction(program: CICSTransactionTreeItem) {

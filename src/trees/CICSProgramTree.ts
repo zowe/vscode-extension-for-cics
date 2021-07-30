@@ -12,11 +12,14 @@
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { join } from "path";
 import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
+import { CICSRegionTree } from "./CICSRegionTree";
 
 export class CICSProgramTree extends TreeItem {
   children: CICSProgramTreeItem[] = [];
+  parentRegion: CICSRegionTree;
 
   constructor(
+    parentRegion: CICSRegionTree,
     public readonly iconPath = {
       light: join(
         __filename,
@@ -40,6 +43,7 @@ export class CICSProgramTree extends TreeItem {
   ) {
     super('Programs', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreeprogram.programs`;
+    this.parentRegion = parentRegion;
   }
 
   public addProgram(program: CICSProgramTreeItem) {

@@ -32,9 +32,6 @@ export class CICSRegionTree extends TreeItem {
     region: any,
     parentSession: CICSSessionTree,
     parentPlex: CICSPlexTree | undefined,
-    programTree: CICSProgramTree,
-    transactionTree: CICSTransactionTree,
-    localFilesTree: CICSLocalFileTree,
     public iconPath = {
       light: join(
         __filename,
@@ -59,7 +56,7 @@ export class CICSRegionTree extends TreeItem {
     super(regionName, TreeItemCollapsibleState.Collapsed);
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-    this.children = [programTree, transactionTree, localFilesTree];
+    this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree()];
     this.parentSession = parentSession;
     if (parentPlex) {
       this.parentPlex = parentPlex;

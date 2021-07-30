@@ -82,9 +82,6 @@ export class CICSTree
         const newSessionTree = new CICSSessionTree(profile);
         for (const item of plexInfo) {
             if (item.plexname === null) {
-                const newProgramTree = new CICSProgramTree();
-                const newTransactionTree = new CICSTransactionTree();
-                const newLocalFileTree = new CICSLocalFileTree();
 
                 const session = new Session({
                     type: "basic",
@@ -101,15 +98,12 @@ export class CICSTree
                     regionName: item.regions[0].applid
                 });
 
-                const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined, newProgramTree, newTransactionTree, newLocalFileTree);
+                const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
                 newSessionTree.addRegion(newRegionTree);
             } else {
                 const newPlexTree = new CICSPlexTree(item.plexname);
                 for (const regionInPlex of item.regions) {
-                    const newProgramTree = new CICSProgramTree();
-                    const newTransactionTree = new CICSTransactionTree();
-                    const newLocalFileTree = new CICSLocalFileTree();
-                    const newRegionTree = new CICSRegionTree(regionInPlex.cicsname, regionInPlex, newSessionTree, newPlexTree, newProgramTree, newTransactionTree, newLocalFileTree);
+                    const newRegionTree = new CICSRegionTree(regionInPlex.cicsname, regionInPlex, newSessionTree, newPlexTree);
                     newPlexTree.addRegion(newRegionTree);
                 }
                 newSessionTree.addPlex(newPlexTree);
