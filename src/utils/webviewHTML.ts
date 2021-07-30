@@ -270,31 +270,13 @@ export const addProfileHtml = () => {
               rejectUnauthorized:
                 document.getElementById("ruSelect").value === "true" ? true : false,
               protocol: document.getElementById("protocol-select").value,
+              cicsPlex: document.getElementById("plex-input").value.toString().trim().length === 0 ? undefined : document.getElementById("plex-input").value.toString().trim(),
+              regionName: document.getElementById("region-input").value.toString().trim().length === 0 ? undefined : document.getElementById("region-input").value.toString().trim(),
             },
             name: document.getElementById("name-input").value.toString().trim(),
             type: "CICS",
             overwrite: true,
           };
-
-          const givenRegion = document
-            .getElementById("region-input")
-            .value.toString()
-            .trim();
-          const givenPlex = document
-            .getElementById("plex-input")
-            .value.toString()
-            .trim();
-
-          if (givenPlex.length > 0) {
-            data.profile.cicsPlex = givenPlex;
-            if (givenRegion.length > 0) {
-              data.profile.region = givenRegion;
-            } else {
-              data.profile.region = givenPlex;
-            }
-          } else {
-            data.profile.region = givenRegion;
-          }
 
           const vscode = acquireVsCodeApi();
           vscode.postMessage(data);
