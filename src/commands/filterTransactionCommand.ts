@@ -12,16 +12,17 @@
 import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
+import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
 import { PersistentFilters } from "../utils/PersistentStorage";
 
-export function getFilterProgramsCommand(tree: CICSTree) {
+export function getFilterTransactionCommand(tree: CICSTree) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.filterPrograms",
+    "cics-extension-for-zowe.filterTransactions",
     async (node) => {
       if (node) {
         const persistentFilters = new PersistentFilters("Zowe-CICS-Persistent");
         const chosenFilter = await window.showQuickPick(
-          [{ label: "\uFF0B Create New Program Filter" }].concat(persistentFilters.getProgramSearchHistory().map(loadedFilter => {
+          [{ label: "\uFF0B Create New Transaction Filter" }].concat(persistentFilters.getTransactionSearchHistory().map(loadedFilter => {
             return { label: loadedFilter };
           })),
           {
@@ -34,8 +35,8 @@ export function getFilterProgramsCommand(tree: CICSTree) {
           let filterText;
           if (chosenFilter.label.includes("\uFF0B")) {
             filterText = await window.showInputBox({
-              title: "Enter new program filter",
-              prompt: "New program filter (eg. IBM*)",
+              title: "Enter new transaction filter",
+              prompt: "New transaction filter (eg. IBM*)",
               ignoreFocusOut: true
             });
           } else {
@@ -45,19 +46,19 @@ export function getFilterProgramsCommand(tree: CICSTree) {
           if (filterText) {
             const regex = new RegExp(filterText.toUpperCase());
 
-            await persistentFilters.addProgramSearchHistory(filterText);
+            await persistentFilters.addTransactionSearchHistory(filterText);
             node.children = [];
 
             /**
-             * Create tree.LoadProgramsFromFilter ???
+             * Create tree.LoadTransactionFromFilter ???
              */
             await tree.loadRegionContents(node.parentRegion);
 
-            node.children = node.children.filter((program: CICSProgramTreeItem) => {
+            node.children = node.children.filter((transaction: CICSTransactionTreeItem) => {
               if (!regex) {
                 return true;
               }
-              return regex.test(program!.label!.toString());
+              return regex.test(transaction!.label!.toString());
             });
             tree._onDidChangeTreeData.fire(undefined);
           }
