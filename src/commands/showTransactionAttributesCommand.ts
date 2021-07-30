@@ -10,7 +10,7 @@
 */
 
 import { commands, window, WebviewPanel } from "vscode";
-import { getAttributesHtml } from "../trees/webviewHTML";
+import { getAttributesHtml } from "../utils/webviewHTML";
 
 export function getShowTransactionAttributesCommand() {
   return commands.registerCommand(
