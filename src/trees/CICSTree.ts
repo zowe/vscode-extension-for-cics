@@ -11,8 +11,9 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, Session } from "@zowe/imperative";
-import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, window } from "vscode";
+import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { ProfileManagement } from "../utils/profileManagement";
+import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSLocalFileTree } from "./CICSLocalFileTree";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSProgramTree } from "./CICSProgramTree";
@@ -62,6 +63,9 @@ export class CICSTree
             if (profileNameToLoad) {
                 if (profileNameToLoad.label.includes("\uFF0B")) {
                     //  Create New Profile Form should appear
+
+                    this.createNewProfile();
+
                 } else {
                     const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
                     this.loadProfile(profileToLoad);
@@ -72,6 +76,9 @@ export class CICSTree
                 "No Profiles Found... Opening Profile Creation Form"
             );
             //  Create New Profile Form should appear
+
+            this.createNewProfile();
+
         }
 
     }
@@ -114,64 +121,29 @@ export class CICSTree
 
     }
 
-    async loadRegionContents(regionTree: CICSRegionTree) {
-        try {
-            const programResponse = await getResource(regionTree.parentSession.session, {
-                name: "CICSProgram",
-                regionName: regionTree.getRegionName(),
-                cicsPlex: regionTree.parentPlex ? regionTree.parentPlex!.getPlexName() : undefined,
-                criteria:
-                    "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)"
-            });
-            const programTree = regionTree.children.filter(child => child.contextValue!.includes("cicstreeprogram"))[0];
-            programTree.children = [];
-            for (const program of programResponse.response.records.cicsprogram) {
-                const newProgramItem = new CICSProgramTreeItem(program, regionTree);
-                //@ts-ignore
-                programTree.addProgram(newProgramItem);
+    async createNewProfile() {
+
+        const column = window.activeTextEditor
+            ? window.activeTextEditor.viewColumn
+            : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+            "zowe",
+            `Create CICS Profile`,
+            column || 1,
+            { enableScripts: true }
+        );
+        panel.webview.html = addProfileHtml();
+
+        panel.webview.onDidReceiveMessage(async (message) => {
+            try {
+                panel.dispose();
+                await ProfileManagement.createNewProfile(message);
+                await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
+            } catch (error) {
+                window.showErrorMessage(error.message);
             }
-            this._onDidChangeTreeData.fire(undefined);
-        } catch (error) {
-            console.log(error);
-        }
+        });
 
-        try {
-            const transactionResponse = await getResource(regionTree.parentSession.session, {
-                name: "CICSLocalTransaction",
-                regionName: regionTree.getRegionName(),
-                cicsPlex: regionTree.parentPlex ? regionTree.parentPlex!.getPlexName() : undefined,
-            });
-            const transactionTree = regionTree.children.filter(child => child.contextValue!.includes("cicstransactiontree"))[0];
-            transactionTree.children = [];
-
-            for (const transaction of transactionResponse.response.records.cicslocaltransaction) {
-                const newTransactionItem = new CICSTransactionTreeItem(transaction, regionTree);
-                //@ts-ignore
-                transactionTree.addTransaction(newTransactionItem);
-            }
-            this._onDidChangeTreeData.fire(undefined);
-        } catch (error) {
-            console.log(error);
-        }
-
-        try {
-            const localFileResponse = await getResource(regionTree.parentSession.session, {
-                name: "CICSLocalFile",
-                regionName: regionTree.getRegionName(),
-                cicsPlex: regionTree.parentPlex ? regionTree.parentPlex!.getPlexName() : undefined,
-            });
-            const localFileTree = regionTree.children.filter(child => child.contextValue!.includes("cicslocalfiletree"))[0];
-            localFileTree.children = [];
-
-            for (const localFile of localFileResponse.response.records.cicslocalfile) {
-                const newLocalFileItem = new CICSLocalFileTreeItem(localFile, regionTree);
-                //@ts-ignore
-                localFileTree.addLocalFile(newLocalFileItem);
-            }
-            this._onDidChangeTreeData.fire(undefined);
-        } catch (error) {
-            console.log(error);
-        }
     }
 
     removeSession(session: CICSSessionTree) {
