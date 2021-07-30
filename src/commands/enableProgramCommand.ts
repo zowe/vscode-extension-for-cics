@@ -13,7 +13,6 @@ import {
   CicsCmciConstants,
   CicsCmciRestClient,
   ICMCIApiResponse,
-  IURIMapParms,
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, window } from "vscode";
@@ -49,7 +48,7 @@ export function getEnableProgramCommand(tree: CICSTree) {
 
 async function enableProgram(
   session: AbstractSession,
-  parms: IURIMapParms
+  parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {
     request: {
