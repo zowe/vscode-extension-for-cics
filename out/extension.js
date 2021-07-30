@@ -34,6 +34,7 @@ const profileManagement_1 = require("./utils/profileManagement");
 const CICSTree_1 = require("./trees/CICSTree");
 const showTransactionAttributesCommand_1 = require("./commands/showTransactionAttributesCommand");
 const showLocalFileAttributesCommand_1 = require("./commands/showLocalFileAttributesCommand");
+const filterTransactionCommand_1 = require("./commands/filterTransactionCommand");
 function activate(context) {
     return __awaiter(this, void 0, void 0, function* () {
         if (profileManagement_1.ProfileManagement.apiDoesExist()) {
@@ -69,7 +70,7 @@ function activate(context) {
         });
         context.subscriptions.push(addSessionCommand_1.getAddSessionCommand(treeDataProv), 
         // getRefreshCommand(treeDataProv),
-        newCopyCommand_1.getNewCopyCommand(treeDataProv), showAttributesCommand_1.getShowAttributesCommand(), phaseInCommand_1.getPhaseInCommand(treeDataProv), showAttributesCommand_1.getShowRegionAttributes(), enableProgramCommand_1.getEnableProgramCommand(treeDataProv), disableProgramCommand_1.getDisableProgramCommand(treeDataProv), removeSessionCommand_1.getRemoveSessionCommand(treeDataProv), filterProgramsCommand_1.getFilterProgramsCommand(treeDataProv), showTransactionAttributesCommand_1.getShowTransactionAttributesCommand(), showLocalFileAttributesCommand_1.getShowLocalFileAttributesCommand());
+        newCopyCommand_1.getNewCopyCommand(treeDataProv), showAttributesCommand_1.getShowAttributesCommand(), phaseInCommand_1.getPhaseInCommand(treeDataProv), showAttributesCommand_1.getShowRegionAttributes(), enableProgramCommand_1.getEnableProgramCommand(treeDataProv), disableProgramCommand_1.getDisableProgramCommand(treeDataProv), removeSessionCommand_1.getRemoveSessionCommand(treeDataProv), filterProgramsCommand_1.getFilterProgramsCommand(treeDataProv), showTransactionAttributesCommand_1.getShowTransactionAttributesCommand(), showLocalFileAttributesCommand_1.getShowLocalFileAttributesCommand(), filterTransactionCommand_1.getFilterTransactionCommand(treeDataProv));
     });
 }
 exports.activate = activate;
