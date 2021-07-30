@@ -11,8 +11,7 @@
 
 import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
-import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
-import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
+import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
 import { PersistentFilters } from "../utils/PersistentStorage";
 
 export function getFilterTransactionCommand(tree: CICSTree) {
@@ -20,36 +19,35 @@ export function getFilterTransactionCommand(tree: CICSTree) {
     "cics-extension-for-zowe.filterTransactions",
     async (node) => {
       if (node) {
-        const persistentFilters = new PersistentFilters("Zowe-CICS-Persistent");
-        const chosenFilter = await window.showQuickPick(
-          [{ label: "\uFF0B Create New Transaction Filter" }].concat(persistentFilters.getTransactionSearchHistory().map(loadedFilter => {
-            return { label: loadedFilter };
-          })),
-          {
-            ignoreFocusOut: true,
-            placeHolder: "Select past filter or create new...",
-          }
-        );
 
-        if (chosenFilter) {
-          let filterText;
-          if (chosenFilter.label.includes("\uFF0B")) {
-            filterText = await window.showInputBox({
-              title: "Enter new transaction filter",
-              prompt: "New transaction filter (eg. IBM*)",
-              ignoreFocusOut: true
-            });
-          } else {
-            filterText = chosenFilter.label;
-          }
-
-          if (filterText) {
-            await persistentFilters.addTransactionSearchHistory(filterText);
-            node.setFilter(filterText);
-            await node.loadContents();
-            tree._onDidChangeTreeData.fire(undefined);
-          }
+        const persistentFilters = new PersistentFilters("Zowe.CICS.Persistent");
+        let pattern: string;
+        const desc = new FilterDescriptor("\uFF0B Create New Transaction Filter");
+        const items = persistentFilters.getTransactionSearchHistory().map(loadedFilter => {
+          return { label: loadedFilter };
+        });
+        const quickpick = window.createQuickPick();
+        quickpick.items = [desc, ...items];
+        quickpick.placeholder = "Select past filter or create new...";
+        quickpick.ignoreFocusOut = true;
+        quickpick.show();
+        const choice = await resolveQuickPickHelper(quickpick);
+        quickpick.hide();
+        if (!choice) {
+          window.showInformationMessage("No Selection Made");
+          return;
         }
+        if (choice instanceof FilterDescriptor) {
+          if (quickpick.value) {
+            pattern = quickpick.value;
+          }
+        } else {
+          pattern = choice.label;
+        }
+        await persistentFilters.addTransactionSearchHistory(pattern!);
+        node.setFilter(pattern!);
+        await node.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
       }
     }
   );

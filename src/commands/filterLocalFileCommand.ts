@@ -11,6 +11,7 @@
 
 import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
+import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
 import { PersistentFilters } from "../utils/PersistentStorage";
 
 export function getFilterLocalFilesCommand(tree: CICSTree) {
@@ -18,37 +19,35 @@ export function getFilterLocalFilesCommand(tree: CICSTree) {
     "cics-extension-for-zowe.filterLocalFiles",
     async (node) => {
       if (node) {
-        const persistentFilters = new PersistentFilters("Zowe-CICS-Persistent");
-        const chosenFilter = await window.showQuickPick(
-          [{ label: "\uFF0B Create New Local File Filter" }].concat(persistentFilters.getLocalFileSearchHistory().map(loadedFilter => {
-            return { label: loadedFilter };
-          })),
-          {
-            ignoreFocusOut: true,
-            placeHolder: "Select past filter or create new...",
-          }
-        );
+        const persistentFilters = new PersistentFilters("Zowe.CICS.Persistent");
+        let pattern: string;
+        const desc = new FilterDescriptor("\uFF0B Create New Local File Filter");
+        const items = persistentFilters.getLocalFileSearchHistory().map(loadedFilter => {
+          return { label: loadedFilter };
+        });
 
-        if (chosenFilter) {
-          let filterText;
-          if (chosenFilter.label.includes("\uFF0B")) {
-            filterText = await window.showInputBox({
-              title: "Enter new local file filter",
-              prompt: "New local file filter (eg. IBM*)",
-              ignoreFocusOut: true
-            });
-          } else {
-            filterText = chosenFilter.label;
-          }
-
-          if (filterText) {
-            await persistentFilters.addLocalFileSearchHistory(filterText);
-            node.setFilter(filterText);
-
-            await node.loadContents();
-            tree._onDidChangeTreeData.fire(undefined);
-          }
+        const quickpick = window.createQuickPick();
+        quickpick.items = [desc, ...items];
+        quickpick.placeholder = "Select past filter or create new...";
+        quickpick.ignoreFocusOut = true;
+        quickpick.show();
+        const choice = await resolveQuickPickHelper(quickpick);
+        quickpick.hide();
+        if (!choice) {
+          window.showInformationMessage("No Selection Made");
+          return;
         }
+        if (choice instanceof FilterDescriptor) {
+          if (quickpick.value) {
+            pattern = quickpick.value;
+          }
+        } else {
+          pattern = choice.label;
+        }
+        await persistentFilters.addLocalFileSearchHistory(pattern!);
+        node.setFilter(pattern!);
+        await node.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
       }
     }
   );
