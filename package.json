@@ -65,6 +65,14 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterTransactions",
+        "title": "Filter Transactions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.showProgramAttributes",
         "title": "Show Attributes"
       },
@@ -141,8 +149,13 @@
           "group": ""
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicsregion.*/",
+          "when": "view == cics-view && viewItem =~ /^cicstreeprogram.*/",
           "command": "cics-extension-for-zowe.filterPrograms",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstransactiontree.*/",
+          "command": "cics-extension-for-zowe.filterTransactions",
           "group": "inline"
         },
         {
@@ -176,6 +189,20 @@
           "title": "Remove Session"
         }
       ]
+    },
+    "configuration": {
+      "properties": {
+        "Zowe-CICS-Persistent": {
+          "default": {
+            "persistence": true,
+            "programSearchHistory": [],
+            "transactionSearchHistory": [],
+            "localFileSearchHistory": []
+          },
+          "description": "Zowe CICS Extension History",
+          "scope": "window"
+        }
+      }
     }
   },
   "scripts": {
