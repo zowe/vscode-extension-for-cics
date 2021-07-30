@@ -38,6 +38,7 @@ export class ProfileManagement {
     formResponse.profile.host = formResponse.profile.hostname;
     delete formResponse.profile.hostname;
     await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
+    await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
   public static async getPlexInfo(profile: IProfileLoaded) {
