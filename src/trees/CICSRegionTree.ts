@@ -56,7 +56,7 @@ export class CICSRegionTree extends TreeItem {
     super(regionName, TreeItemCollapsibleState.Collapsed);
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-    this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree()];
+    this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)];
     this.parentSession = parentSession;
     if (parentPlex) {
       this.parentPlex = parentPlex;
