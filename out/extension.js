@@ -35,6 +35,8 @@ const CICSTree_1 = require("./trees/CICSTree");
 const showTransactionAttributesCommand_1 = require("./commands/showTransactionAttributesCommand");
 const showLocalFileAttributesCommand_1 = require("./commands/showLocalFileAttributesCommand");
 const filterTransactionCommand_1 = require("./commands/filterTransactionCommand");
+const clearProgramFilterCommand_1 = require("./commands/clearProgramFilterCommand");
+const filterLocalFileCommand_1 = require("./commands/filterLocalFileCommand");
 function activate(context) {
     return __awaiter(this, void 0, void 0, function* () {
         if (profileManagement_1.ProfileManagement.apiDoesExist()) {
@@ -62,15 +64,17 @@ function activate(context) {
             else if (node.element.contextValue.includes("cicsplex.")) {
             }
             else if (node.element.contextValue.includes("cicsregion.")) {
-                // Load region contents
-                treeDataProv.loadRegionContents(node.element);
+                for (const child of node.element.children) {
+                    child.loadContents();
+                }
+                treeDataProv._onDidChangeTreeData.fire(undefined);
             }
             else if (node.element.contextValue.includes("cicsprogram.")) {
             }
         });
-        context.subscriptions.push(addSessionCommand_1.getAddSessionCommand(treeDataProv), 
+        context.subscriptions.push(addSessionCommand_1.getAddSessionCommand(treeDataProv), removeSessionCommand_1.getRemoveSessionCommand(treeDataProv), 
         // getRefreshCommand(treeDataProv),
-        newCopyCommand_1.getNewCopyCommand(treeDataProv), showAttributesCommand_1.getShowAttributesCommand(), phaseInCommand_1.getPhaseInCommand(treeDataProv), showAttributesCommand_1.getShowRegionAttributes(), enableProgramCommand_1.getEnableProgramCommand(treeDataProv), disableProgramCommand_1.getDisableProgramCommand(treeDataProv), removeSessionCommand_1.getRemoveSessionCommand(treeDataProv), filterProgramsCommand_1.getFilterProgramsCommand(treeDataProv), showTransactionAttributesCommand_1.getShowTransactionAttributesCommand(), showLocalFileAttributesCommand_1.getShowLocalFileAttributesCommand(), filterTransactionCommand_1.getFilterTransactionCommand(treeDataProv));
+        newCopyCommand_1.getNewCopyCommand(treeDataProv), phaseInCommand_1.getPhaseInCommand(treeDataProv), enableProgramCommand_1.getEnableProgramCommand(treeDataProv), disableProgramCommand_1.getDisableProgramCommand(treeDataProv), showAttributesCommand_1.getShowRegionAttributes(), showAttributesCommand_1.getShowAttributesCommand(), showTransactionAttributesCommand_1.getShowTransactionAttributesCommand(), showLocalFileAttributesCommand_1.getShowLocalFileAttributesCommand(), filterProgramsCommand_1.getFilterProgramsCommand(treeDataProv), filterTransactionCommand_1.getFilterTransactionCommand(treeDataProv), filterLocalFileCommand_1.getFilterLocalFilesCommand(treeDataProv), clearProgramFilterCommand_1.getClearProgramFilterCommand(treeDataProv));
     });
 }
 exports.activate = activate;
