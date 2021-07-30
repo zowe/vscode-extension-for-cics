@@ -43,22 +43,9 @@ export function getFilterProgramsCommand(tree: CICSTree) {
           }
 
           if (filterText) {
-            const regex = new RegExp(filterText.toUpperCase());
-
             await persistentFilters.addProgramSearchHistory(filterText);
-            node.children = [];
-
-            /**
-             * Create tree.LoadProgramsFromFilter ???
-             */
-            await tree.loadRegionContents(node.parentRegion);
-
-            node.children = node.children.filter((program: CICSProgramTreeItem) => {
-              if (!regex) {
-                return true;
-              }
-              return regex.test(program!.label!.toString());
-            });
+            node.setFilter(filterText);
+            await node.loadContents();
             tree._onDidChangeTreeData.fire(undefined);
           }
         }

@@ -44,22 +44,9 @@ export function getFilterTransactionCommand(tree: CICSTree) {
           }
 
           if (filterText) {
-            const regex = new RegExp(filterText.toUpperCase());
-
             await persistentFilters.addTransactionSearchHistory(filterText);
-            node.children = [];
-
-            /**
-             * Create tree.LoadTransactionFromFilter ???
-             */
-            await tree.loadRegionContents(node.parentRegion);
-
-            node.children = node.children.filter((transaction: CICSTransactionTreeItem) => {
-              if (!regex) {
-                return true;
-              }
-              return regex.test(transaction!.label!.toString());
-            });
+            node.setFilter(filterText);
+            await node.loadContents();
             tree._onDidChangeTreeData.fire(undefined);
           }
         }

@@ -28,6 +28,8 @@ import { CICSTree } from "./trees/CICSTree";
 import { getShowTransactionAttributesCommand } from "./commands/showTransactionAttributesCommand";
 import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttributesCommand";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
+import { getClearProgramFilterCommand } from "./commands/clearProgramFilterCommand";
+import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -57,26 +59,39 @@ export async function activate(context: ExtensionContext) {
       if (node.element.contextValue.includes("cicssession.")) {
       } else if (node.element.contextValue.includes("cicsplex.")) {
       } else if (node.element.contextValue.includes("cicsregion.")) {
-        // Load region contents
-        treeDataProv.loadRegionContents(node.element);
+
+        for (const child of node.element.children) {
+          child.loadContents();
+        }
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+
       } else if (node.element.contextValue.includes("cicsprogram.")) {
       }
     });
 
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
+    getRemoveSessionCommand(treeDataProv),
+
     // getRefreshCommand(treeDataProv),
+
     getNewCopyCommand(treeDataProv),
-    getShowAttributesCommand(),
     getPhaseInCommand(treeDataProv),
-    getShowRegionAttributes(),
+
     getEnableProgramCommand(treeDataProv),
     getDisableProgramCommand(treeDataProv),
-    getRemoveSessionCommand(treeDataProv),
-    getFilterProgramsCommand(treeDataProv),
+
+
+    getShowRegionAttributes(),
+    getShowAttributesCommand(),
     getShowTransactionAttributesCommand(),
     getShowLocalFileAttributesCommand(),
-    getFilterTransactionCommand(treeDataProv)
+
+    getFilterProgramsCommand(treeDataProv),
+    getFilterTransactionCommand(treeDataProv),
+    getFilterLocalFilesCommand(treeDataProv),
+
+    getClearProgramFilterCommand(treeDataProv),
   );
 }
 
