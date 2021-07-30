@@ -30,6 +30,10 @@ export function getNewCopyCommand(tree: CICSTree) {
           window.showInformationMessage(
             `New Copy Count for ${node.label} = ${response.response.records.cicsprogram.newcopycnt}`
           );
+          const programTree = node.parentRegion.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+          await programTree.loadContents();
+          tree._onDidChangeTreeData.fire(undefined);
+
         } catch (err) {
           window.showErrorMessage(err);
         }
