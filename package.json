@@ -73,6 +73,22 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterLocalFiles",
+        "title": "Filter Local Files",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.clearFilter",
+        "title": "Clear Filter",
+        "icon": {
+          "light": "resources/imgs/phasein-dark.svg",
+          "dark": "resources/imgs/phasein-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.showProgramAttributes",
         "title": "Show Attributes"
       },
@@ -154,8 +170,28 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicstreeprogram.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstransactiontree.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslocalfiletree.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstransactiontree.*/",
           "command": "cics-extension-for-zowe.filterTransactions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslocalfiletree.*/",
+          "command": "cics-extension-for-zowe.filterLocalFiles",
           "group": "inline"
         },
         {
