@@ -34,15 +34,8 @@ import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 export async function activate(context: ExtensionContext) {
 
   if (ProfileManagement.apiDoesExist()) {
-    /**
-     * This line will change when the profilesCache can take a new profile type to cache on refresh,
-     * an addition planned for PI3.
-     * 
-     * - This will also stop profiles leaking into MVS tree
-     * 
-     */
-    ProfileManagement.getExplorerApis().registerMvsApi(new CicsApi());
-    /** */
+    await ProfileManagement.registerCICSProfiles();
+    ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
     window.showInformationMessage(
       "Zowe Explorer was modified for the CICS Extension"

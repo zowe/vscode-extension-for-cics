@@ -13,6 +13,7 @@ import { IProfileLoaded, ISaveProfile } from "@zowe/imperative";
 import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import axios from "axios";
 import { xml2json } from "xml-js";
+import cicsProfileMeta from "./profileDefinition";
 
 export class ProfileManagement {
 
@@ -24,6 +25,10 @@ export class ProfileManagement {
   public static apiDoesExist() {
     if (ProfileManagement.zoweExplorerAPI) { return true; }
     return false;
+  }
+
+  public static async registerCICSProfiles() {
+    await ProfileManagement.zoweExplorerAPI.getExplorerExtenderApi().initForZowe('cics', cicsProfileMeta);
   }
 
   public static getExplorerApis() {
