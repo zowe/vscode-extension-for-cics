@@ -14,10 +14,8 @@ import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
-import { getRefreshCommand } from "./commands/refreshCommand";
 import { ExtensionContext, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
-import { CicsApi } from "./utils/CicsSession";
 import {
   getShowAttributesCommand,
   getShowRegionAttributes,

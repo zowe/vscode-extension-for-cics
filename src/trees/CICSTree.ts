@@ -14,15 +14,9 @@ import { IProfileLoaded, Session } from "@zowe/imperative";
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { ProfileManagement } from "../utils/profileManagement";
 import { addProfileHtml } from "../utils/webviewHTML";
-import { CICSLocalFileTree } from "./CICSLocalFileTree";
 import { CICSPlexTree } from "./CICSPlexTree";
-import { CICSProgramTree } from "./CICSProgramTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
-import { CICSTransactionTree } from "./CICSTransactionTree";
-import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
-import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
-import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
