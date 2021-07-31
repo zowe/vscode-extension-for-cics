@@ -27,7 +27,6 @@ const addSessionCommand_1 = require("./commands/addSessionCommand");
 const newCopyCommand_1 = require("./commands/newCopyCommand");
 const vscode_1 = require("vscode");
 const phaseInCommand_1 = require("./commands/phaseInCommand");
-const CicsSession_1 = require("./utils/CicsSession");
 const showAttributesCommand_1 = require("./commands/showAttributesCommand");
 const filterProgramsCommand_1 = require("./commands/filterProgramsCommand");
 const profileManagement_1 = require("./utils/profileManagement");
@@ -40,15 +39,8 @@ const filterLocalFileCommand_1 = require("./commands/filterLocalFileCommand");
 function activate(context) {
     return __awaiter(this, void 0, void 0, function* () {
         if (profileManagement_1.ProfileManagement.apiDoesExist()) {
-            /**
-             * This line will change when the profilesCache can take a new profile type to cache on refresh,
-             * an addition planned for PI3.
-             *
-             * - This will also stop profiles leaking into MVS tree
-             *
-             */
-            profileManagement_1.ProfileManagement.getExplorerApis().registerMvsApi(new CicsSession_1.CicsApi());
-            /** */
+            yield profileManagement_1.ProfileManagement.registerCICSProfiles();
+            profileManagement_1.ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
             yield profileManagement_1.ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
             vscode_1.window.showInformationMessage("Zowe Explorer was modified for the CICS Extension");
         }
