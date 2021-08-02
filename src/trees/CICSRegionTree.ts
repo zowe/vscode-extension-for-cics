@@ -16,9 +16,10 @@ import { CICSTransactionTree } from "./CICSTransactionTree";
 import { CICSLocalFileTree } from "./CICSLocalFileTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
+import { CICSDefinitionTree } from "./CICSDefinitionTree";
 
 export class CICSRegionTree extends TreeItem {
-  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree];
+  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree, CICSDefinitionTree];
   region: any;
   parentSession: CICSSessionTree;
   parentPlex: CICSPlexTree | undefined;
@@ -56,7 +57,7 @@ export class CICSRegionTree extends TreeItem {
     super(regionName, TreeItemCollapsibleState.Collapsed);
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-    this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)];
+    this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this), new CICSDefinitionTree(this)];
     this.parentSession = parentSession;
     if (parentPlex) {
       this.parentPlex = parentPlex;
