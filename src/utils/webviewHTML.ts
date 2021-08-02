@@ -263,7 +263,7 @@ export const addProfileHtml = () => {
           let data = {
             profile: {
               name: document.getElementById("name-input").value.toString().trim(),
-              hostname: document.getElementById("host-input").value,
+              host: document.getElementById("host-input").value,
               port: parseInt(document.getElementById("port-input").value),
               user: document.getElementById("user-input").value,
               password: document.getElementById("password-input").value,

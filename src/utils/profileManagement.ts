@@ -40,8 +40,6 @@ export class ProfileManagement {
   }
 
   public static async createNewProfile(formResponse: ISaveProfile) {
-    formResponse.profile.host = formResponse.profile.hostname;
-    delete formResponse.profile.hostname;
     await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
