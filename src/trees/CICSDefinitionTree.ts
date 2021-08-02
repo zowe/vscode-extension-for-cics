@@ -14,9 +14,10 @@ import { join } from "path";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSProgramDefinitionTree } from "./CICSProgramDefinitionTree";
 import { CICSTransactionDefinitionTree } from "./CICSTransactionDefinitionTree";
+import { CICSFileDefinitionTree } from "./CICSFileDefinitionTree";
 
 export class CICSDefinitionTree extends TreeItem {
-  children: [CICSProgramDefinitionTree, CICSTransactionDefinitionTree]; //, CICSTransactionDefinitionTree, CICSFileDefinitionTree
+  children: [CICSProgramDefinitionTree, CICSTransactionDefinitionTree, CICSFileDefinitionTree]; //, CICSTransactionDefinitionTree, CICSFileDefinitionTree
   parentRegion: CICSRegionTree;
 
   constructor(
@@ -45,7 +46,7 @@ export class CICSDefinitionTree extends TreeItem {
     super(`Definitions`, TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicsdefinitions.definitions`;
     this.parentRegion = parentRegion;
-    this.children = [new CICSProgramDefinitionTree(parentRegion), new CICSTransactionDefinitionTree(parentRegion)]; //, new CICSTransactionDefinitionTree(this), new CICSFileDefinitionTree(this)
+    this.children = [new CICSProgramDefinitionTree(parentRegion), new CICSTransactionDefinitionTree(parentRegion), new CICSFileDefinitionTree(parentRegion)]; //, new CICSTransactionDefinitionTree(this), new CICSFileDefinitionTree(this)
   }
 
   public loadContents() {
