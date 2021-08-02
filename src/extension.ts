@@ -28,6 +28,8 @@ import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttri
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
 import { getClearProgramFilterCommand } from "./commands/clearProgramFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
+import { getFilterProgramDefinitionsCommand } from "./commands/filterProgramDefinitionsCommand";
+import { getFilterTransactionDefinitionsCommand } from "./commands/filterTransactionDefinitionsCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -81,6 +83,9 @@ export async function activate(context: ExtensionContext) {
     getFilterProgramsCommand(treeDataProv),
     getFilterTransactionCommand(treeDataProv),
     getFilterLocalFilesCommand(treeDataProv),
+
+    getFilterProgramDefinitionsCommand(treeDataProv),
+    getFilterTransactionDefinitionsCommand(treeDataProv),
 
     getClearProgramFilterCommand(treeDataProv),
   );
