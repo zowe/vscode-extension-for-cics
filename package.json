@@ -80,6 +80,17 @@
           "dark": "resources/imgs/filter-light.svg"
         }
       },
+  
+      {
+        "command": "cics-extension-for-zowe.filterFileDefinitions",
+        "title": "Filter File Definitions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+
+
       {
         "command": "cics-extension-for-zowe.filterTransactions",
         "title": "Filter Transactions",
@@ -227,6 +238,16 @@
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstreedefinitiontransaction.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionfile.*/",
+          "command": "cics-extension-for-zowe.filterFileDefinitions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionfile.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
