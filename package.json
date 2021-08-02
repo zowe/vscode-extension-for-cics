@@ -65,6 +65,22 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterProgramDefinitions",
+        "title": "Filter Program Definitions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterTransactionDefinitions",
+        "title": "Filter Transaction Definitions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.filterTransactions",
         "title": "Filter Transactions",
         "icon": {
@@ -192,6 +208,26 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicslocalfiletree.*/",
           "command": "cics-extension-for-zowe.filterLocalFiles",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionprogram.*/",
+          "command": "cics-extension-for-zowe.filterProgramDefinitions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionprogram.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitiontransaction.*/",
+          "command": "cics-extension-for-zowe.filterTransactionDefinitions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitiontransaction.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
         {
