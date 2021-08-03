@@ -48,6 +48,7 @@ export async function activate(context: ExtensionContext) {
     .createTreeView("cics-view", {
       treeDataProvider: treeDataProv,
       showCollapseAll: true,
+      canSelectMany: true
     })
     .onDidExpandElement((node) => {
       if (node.element.contextValue.includes("cicssession.")) {
