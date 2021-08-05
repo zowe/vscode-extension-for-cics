@@ -31,6 +31,8 @@ import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 import { getFilterProgramDefinitionsCommand } from "./commands/filterProgramDefinitionsCommand";
 import { getFilterTransactionDefinitionsCommand } from "./commands/filterTransactionDefinitionsCommand";
 import { getFilterFileDefinitionsCommand } from "./commands/filterFileDefinitionsCommand";
+import { getFilterPlexResources } from "./commands/getFilterPlexResources";
+import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -90,7 +92,10 @@ export async function activate(context: ExtensionContext) {
     getFilterTransactionDefinitionsCommand(treeDataProv),
     getFilterFileDefinitionsCommand(treeDataProv),
 
+    getFilterPlexResources(treeDataProv),
+
     getClearProgramFilterCommand(treeDataProv),
+    getClearPlexFilterCommand(treeDataProv)
   );
 }
 

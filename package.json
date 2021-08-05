@@ -108,8 +108,24 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterPlexResources",
+        "title": "Filter Plex Resources",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.clearFilter",
         "title": "Clear Filter",
+        "icon": {
+          "light": "resources/imgs/phasein-dark.svg",
+          "dark": "resources/imgs/phasein-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.clearPlexFilter",
+        "title": "Clear Plex Filter",
         "icon": {
           "light": "resources/imgs/phasein-dark.svg",
           "dark": "resources/imgs/phasein-light.svg"
@@ -251,6 +267,21 @@
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
+
+
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
+          "command": "cics-extension-for-zowe.filterPlexResources",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
+          "command": "cics-extension-for-zowe.clearPlexFilter",
+          "group": "inline"
+        },
+        
+
+
         {
           "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
           "command": "cics-extension-for-zowe.showProgramAttributes",
