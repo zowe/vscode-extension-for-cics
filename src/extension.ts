@@ -75,7 +75,7 @@ export async function activate(context: ExtensionContext) {
     // getRefreshCommand(treeDataProv),
 
     getNewCopyCommand(treeDataProv, treeview),
-    getPhaseInCommand(treeDataProv),
+    getPhaseInCommand(treeDataProv, treeview),
 
     getEnableProgramCommand(treeDataProv),
     getDisableProgramCommand(treeDataProv),
