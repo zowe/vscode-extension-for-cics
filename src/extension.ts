@@ -46,19 +46,20 @@ export async function activate(context: ExtensionContext) {
   }
 
   const treeDataProv = new CICSTree();
-  window
+  const treeview = window
     .createTreeView("cics-view", {
       treeDataProvider: treeDataProv,
       showCollapseAll: true,
       canSelectMany: true
-    })
-    .onDidExpandElement((node) => {
+    });
+    
+    treeview.onDidExpandElement(async (node) => {
       if (node.element.contextValue.includes("cicssession.")) {
       } else if (node.element.contextValue.includes("cicsplex.")) {
       } else if (node.element.contextValue.includes("cicsregion.")) {
 
         for (const child of node.element.children) {
-          child.loadContents();
+          await child.loadContents();
         }
         treeDataProv._onDidChangeTreeData.fire(undefined);
 
@@ -66,13 +67,14 @@ export async function activate(context: ExtensionContext) {
       }
     });
 
+
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv),
 
     // getRefreshCommand(treeDataProv),
 
-    getNewCopyCommand(treeDataProv),
+    getNewCopyCommand(treeDataProv, treeview),
     getPhaseInCommand(treeDataProv),
 
     getEnableProgramCommand(treeDataProv),
