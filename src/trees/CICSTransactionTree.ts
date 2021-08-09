@@ -9,11 +9,11 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { join } from "path";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
-import { getResource } from "@zowe/cics-for-zowe-cli";
+import { getResource, ICMCIApiResponse } from "@zowe/cics-for-zowe-cli";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];
@@ -53,21 +53,21 @@ export class CICSTransactionTree extends TreeItem {
   }
 
   public async loadContents() {
+    this.children = [];
     try {
       const transactionResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalTransaction",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: `tranid=${this.activeFilter ? this.activeFilter : '*'}`
+        criteria: this.activeFilter ? `tranid=${this.activeFilter}` : `NOT (program=DFH* OR program=EYU*)`
       });
-      this.children = [];
       for (const transaction of Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction]) {
         const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
         //@ts-ignore
         this.addTransaction(newTransactionItem);
       }
     } catch (error) {
-      console.log(error);
+      window.showInformationMessage(`No results`);
     }
   }
 

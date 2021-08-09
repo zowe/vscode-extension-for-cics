@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { join } from "path";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
@@ -53,6 +53,7 @@ export class CICSLocalFileTree extends TreeItem {
   }
 
   public async loadContents() {
+    this.children = [];
     try {
       const localFileResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalFile",
@@ -60,14 +61,13 @@ export class CICSLocalFileTree extends TreeItem {
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: `file=${this.activeFilter ? this.activeFilter : '*'}`
       });
-      this.children = [];
       for (const localFile of Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile]) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
         //@ts-ignore
         this.addLocalFile(newLocalFileItem);
       }
     } catch (error) {
-      console.log(error);
+      window.showInformationMessage(`No results`);
     }
   }
 
