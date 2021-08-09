@@ -80,7 +80,6 @@
           "dark": "resources/imgs/filter-light.svg"
         }
       },
-  
       {
         "command": "cics-extension-for-zowe.filterFileDefinitions",
         "title": "Filter File Definitions",
@@ -89,8 +88,6 @@
           "dark": "resources/imgs/filter-light.svg"
         }
       },
-
-
       {
         "command": "cics-extension-for-zowe.filterTransactions",
         "title": "Filter Transactions",
@@ -267,8 +264,6 @@
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
-
-
         {
           "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
           "command": "cics-extension-for-zowe.filterPlexResources",
@@ -279,9 +274,6 @@
           "command": "cics-extension-for-zowe.clearPlexFilter",
           "group": "inline"
         },
-        
-
-
         {
           "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
           "command": "cics-extension-for-zowe.showProgramAttributes",
@@ -324,6 +316,24 @@
             "localFileSearchHistory": []
           },
           "description": "Zowe CICS Extension History",
+          "scope": "window"
+        },
+        "Zowe.CICS.Program.Filter": {
+          "type": "string",
+          "default": "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
+          "description": "Default filter criteria for Programs",
+          "scope": "window"
+        },
+        "Zowe.CICS.Transaction.Filter": {
+          "type": "string",
+          "default": "NOT (program=DFH* OR program=EYU*)",
+          "description": "Default filter criteria for Transactions",
+          "scope": "window"
+        },
+        "Zowe.CICS.LocalFile.Filter": {
+          "type": "string",
+          "default": "file=*",
+          "description": "Default filter criteria for Local Files",
           "scope": "window"
         }
       }
