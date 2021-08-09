@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
 import { join } from "path";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
@@ -53,13 +53,20 @@ export class CICSTransactionTree extends TreeItem {
   }
 
   public async loadContents() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.Transaction.Filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('Zowe.CICS.Transaction.Filter', 'NOT (program=DFH* OR program=EYU*)');
+      defaultCriteria = 'NOT (program=DFH* OR program=EYU*)';
+    }
+    const criteria = this.activeFilter ? `tranid=${this.activeFilter}` : defaultCriteria;
+
     this.children = [];
     try {
       const transactionResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalTransaction",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: this.activeFilter ? `tranid=${this.activeFilter}` : `NOT (program=DFH* OR program=EYU*)`
+        criteria: criteria
       });
       for (const transaction of Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction]) {
         const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);

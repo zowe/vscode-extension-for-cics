@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
 import { join } from "path";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
@@ -53,13 +53,20 @@ export class CICSLocalFileTree extends TreeItem {
   }
 
   public async loadContents() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.LocalFile.Filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('Zowe.CICS.LocalFile.Filter', 'file=*');
+      defaultCriteria = 'file=*';
+    }
+    const criteria = this.activeFilter ? `file=${this.activeFilter}` : defaultCriteria;
+
     this.children = [];
     try {
       const localFileResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalFile",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: `file=${this.activeFilter ? this.activeFilter : '*'}`
+        criteria: criteria
       });
       for (const localFile of Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile]) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);

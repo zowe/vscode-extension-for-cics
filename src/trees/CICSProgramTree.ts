@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
 import { join } from "path";
 import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
@@ -53,14 +53,20 @@ export class CICSProgramTree extends TreeItem {
   }
 
   public async loadContents() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.Program.Filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('Zowe.CICS.Program.Filter', 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)');
+      defaultCriteria = 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)';
+    }
+    const criteria = this.activeFilter ? `PROGRAM=${this.activeFilter}` : defaultCriteria;
+
     this.children = [];
     try {
       const programResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSProgram",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: this.activeFilter ? `PROGRAM=${this.activeFilter}` :
-          "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)"
+        criteria: criteria
       });
       for (const program of Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram]) {
         const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
