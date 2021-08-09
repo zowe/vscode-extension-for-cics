@@ -77,6 +77,7 @@ export function getFilterPlexResources(tree: CICSTree) {
         node.collapsibleState = TreeItemCollapsibleState.Expanded;
     
         for (const region of node.children){
+          if(region.getIsActive()){
             let treeToFilter;
             if (resourceToFilter === "Programs"){
                 treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
@@ -89,6 +90,7 @@ export function getFilterPlexResources(tree: CICSTree) {
             await treeToFilter.loadContents();
             treeToFilter.collapsibleState = TreeItemCollapsibleState.Expanded;
             region.collapsibleState = TreeItemCollapsibleState.Expanded;
+          }
         }
         
         tree._onDidChangeTreeData.fire(undefined);

@@ -16,16 +16,20 @@ import { CICSTransactionTree } from "./CICSTransactionTree";
 import { CICSLocalFileTree } from "./CICSLocalFileTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
-import { CICSDefinitionTree } from "./CICSDefinitionTree";
 
 export class CICSRegionTree extends TreeItem {
-  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree]; //CICSDefinitionTree
+  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree] | null; //CICSDefinitionTree
   region: any;
   parentSession: CICSSessionTree;
   parentPlex: CICSPlexTree | undefined;
+  isActive: true | false;
 
   public getRegionName() {
     return this.region.applid || this.region.cicsname;
+  }
+
+  public getIsActive(){
+    return this.isActive;
   }
 
   constructor(
@@ -57,10 +61,44 @@ export class CICSRegionTree extends TreeItem {
     super(regionName, TreeItemCollapsibleState.Collapsed);
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-    this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)]; //, new CICSDefinitionTree(this)
+
     this.parentSession = parentSession;
     if (parentPlex) {
       this.parentPlex = parentPlex;
     }
+
+    if(this.parentPlex){
+      this.isActive = region.cicsstate === "ACTIVE" ? true : false;
+    } else {
+      this.isActive = region.cicsstatus === "ACTIVE" ? true : false;
+    }
+    
+    if(!this.isActive){
+      this.children = null;
+      this.collapsibleState = TreeItemCollapsibleState.None;
+      this.iconPath = {
+        light: join(
+          __filename,
+          "..",
+          "..",
+          "..",
+          "resources",
+          "imgs",
+          "file-dark.svg"
+        ),
+        dark: join(
+          __filename,
+          "..",
+          "..",
+          "..",
+          "resources",
+          "imgs",
+          "file-light.svg"
+        ),
+      };
+    } else {
+      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)]; //, new CICSDefinitionTree(this)
+    }
+    
   }
 }

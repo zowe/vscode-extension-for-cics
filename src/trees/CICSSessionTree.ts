@@ -17,7 +17,6 @@ import { Session } from "@zowe/imperative";
 
 export class CICSSessionTree extends TreeItem {
   children: (CICSPlexTree | CICSRegionTree)[];
-  profile: any;
   session: Session;
 
   constructor(
