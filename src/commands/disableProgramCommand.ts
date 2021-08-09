@@ -15,27 +15,52 @@ import {
   ICMCIApiResponse,
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
-import { commands, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 
-export function getDisableProgramCommand(tree: CICSTree) {
+export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.disableProgram",
     async (node) => {
       if (node) {
         try {
-          const response = await disableProgram(
-            node.parentRegion.parentSession.session,
-            {
-              name: node.program.program,
-              regionName: node.parentRegion.label,
-              cicsPlex: node.parentRegion.parentPlex ? node.parentRegion.parentPlex.plexName : undefined,
+
+          let selectedNodes = treeview.selection;
+
+          window.withProgress({
+            title: 'Disable',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the Disable");
+            });
+            for (const index in selectedNodes) {
+              progress.report({
+                message: `Disabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
+                increment: (parseInt(index) / selectedNodes.length) * 100,
+              });
+              try {
+                const currentNode = selectedNodes[parseInt(index)];
+
+                
+                await disableProgram(
+                  currentNode.parentRegion.parentSession.session,
+                {
+                  name: currentNode.program.program,
+                  regionName: currentNode.parentRegion.label,
+                  cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                }
+              );
+              // window.showInformationMessage(
+              //   `Program ${node.program.program} STATUS: - ${response.response.records.cicsprogram.status}`
+              // );
+            } catch(err){
+              window.showErrorMessage(err);
             }
-          );
-          window.showInformationMessage(
-            `Program ${node.program.program} STATUS: - ${response.response.records.cicsprogram.status}`
-          );
-        } catch (err) {
+            } 
+          });
+      } catch (err) {
           window.showErrorMessage(err);
         }
       } else {

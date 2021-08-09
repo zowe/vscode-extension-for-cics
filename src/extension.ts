@@ -78,8 +78,8 @@ export async function activate(context: ExtensionContext) {
     getNewCopyCommand(treeDataProv, treeview),
     getPhaseInCommand(treeDataProv, treeview),
 
-    getEnableProgramCommand(treeDataProv),
-    getDisableProgramCommand(treeDataProv),
+    getEnableProgramCommand(treeDataProv, treeview),
+    getDisableProgramCommand(treeDataProv, treeview),
 
 
     getShowRegionAttributes(),
