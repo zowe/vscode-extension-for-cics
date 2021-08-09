@@ -52,20 +52,20 @@ export async function activate(context: ExtensionContext) {
       showCollapseAll: true,
       canSelectMany: true
     });
-    
-    treeview.onDidExpandElement(async (node) => {
-      if (node.element.contextValue.includes("cicssession.")) {
-      } else if (node.element.contextValue.includes("cicsplex.")) {
-      } else if (node.element.contextValue.includes("cicsregion.")) {
 
-        for (const child of node.element.children) {
-          await child.loadContents();
-        }
-        treeDataProv._onDidChangeTreeData.fire(undefined);
+  treeview.onDidExpandElement(async (node) => {
+    if (node.element.contextValue.includes("cicssession.")) {
+    } else if (node.element.contextValue.includes("cicsplex.")) {
+    } else if (node.element.contextValue.includes("cicsregion.")) {
 
-      } else if (node.element.contextValue.includes("cicsprogram.")) {
+      for (const child of node.element.children) {
+        await child.loadContents();
       }
-    });
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+
+    } else if (node.element.contextValue.includes("cicsprogram.")) {
+    }
+  });
 
 
   context.subscriptions.push(
