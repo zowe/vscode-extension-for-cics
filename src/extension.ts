@@ -33,6 +33,7 @@ import { getFilterTransactionDefinitionsCommand } from "./commands/filterTransac
 import { getFilterFileDefinitionsCommand } from "./commands/filterFileDefinitionsCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
+import { getRefreshCommand } from "./commands/refreshCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -72,7 +73,7 @@ export async function activate(context: ExtensionContext) {
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv),
 
-    // getRefreshCommand(treeDataProv),
+    getRefreshCommand(treeDataProv),
 
     getNewCopyCommand(treeDataProv, treeview),
     getPhaseInCommand(treeDataProv, treeview),

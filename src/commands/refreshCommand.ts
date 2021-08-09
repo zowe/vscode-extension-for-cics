@@ -10,14 +10,37 @@
 */
 
 ;
-import { commands } from "vscode";
+import { commands, TreeItemCollapsibleState, window } from "vscode";
+import { CICSPlexTree } from "../trees/CICSPlexTree";
 import { CICSTree } from "../trees/CICSTree";
 
 export function getRefreshCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.refreshTree",
     async () => {
+      window.showInformationMessage("Refreshing...");
+      for (const sessionTree of tree.loadedProfiles) {
+        sessionTree.collapsibleState = TreeItemCollapsibleState.Collapsed;
 
+        for (const sessionChild of sessionTree.children) {
+          // sessionchhild is plex tree or region tree
+          if (sessionChild instanceof CICSPlexTree) {
+            // plex tree -> .children is region trees
+            for (const region of sessionChild.children) {
+              for (const child of region.children!) {
+                await child.loadContents();
+              }
+            }
+          } else {
+            // region tree
+            for (const child of sessionChild.children!) {
+              await child.loadContents();
+            }
+          }
+        }
+      }
+      tree._onDidChangeTreeData.fire(undefined);
+      window.showInformationMessage("Refreshed");
     }
   );
 }
