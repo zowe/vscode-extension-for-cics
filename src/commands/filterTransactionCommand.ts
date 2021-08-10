@@ -12,7 +12,7 @@
 import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
-import { PersistentFilters } from "../utils/PersistentStorage";
+import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterTransactionCommand(tree: CICSTree) {
   return commands.registerCommand(
@@ -20,10 +20,10 @@ export function getFilterTransactionCommand(tree: CICSTree) {
     async (node) => {
       if (node) {
 
-        const persistentFilters = new PersistentFilters("Zowe.CICS.Persistent");
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
         const desc = new FilterDescriptor("\uFF0B Create New Transaction Filter");
-        const items = persistentFilters.getTransactionSearchHistory().map(loadedFilter => {
+        const items = persistentStorage.getTransactionSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
         const quickpick = window.createQuickPick();
@@ -44,7 +44,7 @@ export function getFilterTransactionCommand(tree: CICSTree) {
         } else {
           pattern = choice.label;
         }
-        await persistentFilters.addTransactionSearchHistory(pattern!);
+        await persistentStorage.addTransactionSearchHistory(pattern!);
         node.setFilter(pattern!);
         await node.loadContents();
         tree._onDidChangeTreeData.fire(undefined);

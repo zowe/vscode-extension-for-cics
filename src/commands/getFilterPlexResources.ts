@@ -12,7 +12,7 @@
 import { commands, TreeItemCollapsibleState, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
-import { PersistentFilters } from "../utils/PersistentStorage";
+import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterPlexResources(tree: CICSTree) {
   return commands.registerCommand(
@@ -23,21 +23,21 @@ export function getFilterPlexResources(tree: CICSTree) {
         const resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
         const filterDescriptorText = `\uFF0B Create New ${resourceToFilter} Filter`;
 
-        const persistentFilters = new PersistentFilters("Zowe.CICS.Persistent");
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
         const desc = new FilterDescriptor(filterDescriptorText);
 
         let items;
         if (resourceToFilter === "Programs"){
-            items = persistentFilters.getProgramSearchHistory().map(loadedFilter => {
+            items = persistentStorage.getProgramSearchHistory().map(loadedFilter => {
                 return { label: loadedFilter };
             });
         } else if(resourceToFilter === "Local Transactions"){
-            items = persistentFilters.getTransactionSearchHistory().map(loadedFilter => {
+            items = persistentStorage.getTransactionSearchHistory().map(loadedFilter => {
                 return { label: loadedFilter };
             });
         } else if (resourceToFilter === "Local Files"){
-            items = persistentFilters.getLocalFileSearchHistory().map(loadedFilter => {
+            items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
                 return { label: loadedFilter };
             });
         } else {
@@ -67,11 +67,11 @@ export function getFilterPlexResources(tree: CICSTree) {
         }
 
         if (resourceToFilter === "Programs"){
-            await persistentFilters.addProgramSearchHistory(pattern!);
+            await persistentStorage.addProgramSearchHistory(pattern!);
         } else if(resourceToFilter === "Local Transactions"){
-            await persistentFilters.addTransactionSearchHistory(pattern!);
+            await persistentStorage.addTransactionSearchHistory(pattern!);
         } else if (resourceToFilter === "Local Files"){
-            await persistentFilters.addLocalFileSearchHistory(pattern!);
+            await persistentStorage.addLocalFileSearchHistory(pattern!);
         }
 
         node.collapsibleState = TreeItemCollapsibleState.Expanded;

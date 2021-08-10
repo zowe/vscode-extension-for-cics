@@ -12,17 +12,17 @@
 import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
-import { PersistentFilters } from "../utils/PersistentStorage";
+import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterLocalFilesCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterLocalFiles",
     async (node) => {
       if (node) {
-        const persistentFilters = new PersistentFilters("Zowe.CICS.Persistent");
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
         const desc = new FilterDescriptor("\uFF0B Create New Local File Filter");
-        const items = persistentFilters.getLocalFileSearchHistory().map(loadedFilter => {
+        const items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
 
@@ -44,7 +44,7 @@ export function getFilterLocalFilesCommand(tree: CICSTree) {
         } else {
           pattern = choice.label;
         }
-        await persistentFilters.addLocalFileSearchHistory(pattern!);
+        await persistentStorage.addLocalFileSearchHistory(pattern!);
         node.setFilter(pattern!);
         await node.loadContents();
         tree._onDidChangeTreeData.fire(undefined);

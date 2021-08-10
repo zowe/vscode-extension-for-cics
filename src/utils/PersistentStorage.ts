@@ -11,15 +11,18 @@
 
 import { ConfigurationTarget, workspace } from 'vscode';
 
-export class PersistentFilters {
+export class PersistentStorage {
     public schema: string;
     private static readonly programSearchHistory: string = "programSearchHistory";
     private static readonly transactionSearchHistory: string = "transactionSearchHistory";
     private static readonly localFileSearchHistory: string = "localFileSearchHistory";
+    private static readonly loadedCICSProfile: string = "loadedCICSProfile";
+
 
     private mProgramSearchHistory: string[] = [];
     private mTransactionSearchHistory: string[] = [];
     private mLocalFileSearchHistory: string[] = [];
+    private mLoadedCICSProfile: string[] = [];
 
     constructor(
         schema: string,
@@ -32,11 +35,13 @@ export class PersistentFilters {
         let programSearchHistoryLines: string[] | undefined;
         let transactionSearchHistoryLines: string[] | undefined;
         let localFileSearchHistoryLines: string[] | undefined;
+        let loadedCICSProfileLines: string[] | undefined;
 
         if (workspace.getConfiguration(this.schema)) {
-            programSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentFilters.programSearchHistory);
-            transactionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentFilters.transactionSearchHistory);
-            localFileSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentFilters.localFileSearchHistory);
+            programSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.programSearchHistory);
+            transactionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.transactionSearchHistory);
+            localFileSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.localFileSearchHistory);
+            loadedCICSProfileLines = workspace.getConfiguration(this.schema).get(PersistentStorage.loadedCICSProfile);
         }
         if (programSearchHistoryLines) {
             this.mProgramSearchHistory = programSearchHistoryLines;
@@ -53,6 +58,11 @@ export class PersistentFilters {
         } else {
             this.resetLocalFileSearchHistory();
         }
+        if (loadedCICSProfileLines) {
+            this.mLoadedCICSProfile = loadedCICSProfileLines;
+        } else {
+            this.resetLoadedCICSProfile();
+        }
     }
 
 
@@ -65,6 +75,9 @@ export class PersistentFilters {
     }
     public getLocalFileSearchHistory(): string[] {
         return this.mLocalFileSearchHistory;
+    }
+    public getLoadedCICSProfile(): string[] {
+        return this.mLoadedCICSProfile;
     }
 
 
@@ -81,27 +94,38 @@ export class PersistentFilters {
         this.mLocalFileSearchHistory = [];
         this.updateLocalFileSearchHistory();
     }
+    public async resetLoadedCICSProfile(){
+        this.mLoadedCICSProfile = [];
+        this.updateLoadedCICSProfile();
+    }
 
 
 
     private async updateProgramSearchHistory() {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
-            settings[PersistentFilters.programSearchHistory] = this.mProgramSearchHistory;
+            settings[PersistentStorage.programSearchHistory] = this.mProgramSearchHistory;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
     private async updateTransactionSearchHistory() {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
-            settings[PersistentFilters.transactionSearchHistory] = this.mTransactionSearchHistory;
+            settings[PersistentStorage.transactionSearchHistory] = this.mTransactionSearchHistory;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
     private async updateLocalFileSearchHistory() {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
-            settings[PersistentFilters.localFileSearchHistory] = this.mLocalFileSearchHistory;
+            settings[PersistentStorage.localFileSearchHistory] = this.mLocalFileSearchHistory;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+    private async updateLoadedCICSProfile(){
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if (settings.persistence) {
+            settings[PersistentStorage.loadedCICSProfile] = this.mLoadedCICSProfile;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
@@ -150,4 +174,26 @@ export class PersistentFilters {
             this.updateLocalFileSearchHistory();
         }
     }
+
+    public async addLoadedCICSProfile(name: string) {
+        if (name) {
+            this.mLoadedCICSProfile = this.mLoadedCICSProfile.filter((element) => {
+                return element.trim() !== name.trim();
+            });
+
+            this.mLoadedCICSProfile.unshift(name);
+            this.updateLoadedCICSProfile();
+        }
+    }
+
+    public async removeLoadedCICSProfile(name: string){
+        if (name) {
+            this.mLoadedCICSProfile = this.mLoadedCICSProfile.filter((element) => {
+                return element.trim() !== name.trim();
+            });
+
+            this.updateLoadedCICSProfile();
+        }
+    }
+
 }

@@ -12,6 +12,7 @@
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, Session } from "@zowe/imperative";
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
+import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
 import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSPlexTree } from "./CICSPlexTree";
@@ -23,13 +24,14 @@ export class CICSTree
 
     loadedProfiles: CICSSessionTree[] = [];
     constructor() {
-        this.loadDefaultProfile();
+        this.loadStoredProfiles();
     }
 
-    public async loadDefaultProfile() {
-        const defaultCicsProfile = ProfileManagement.getProfilesCache().getDefaultProfile('cics');
-        if (defaultCicsProfile) {
-            await this.loadProfile(defaultCicsProfile);
+    public async loadStoredProfiles() {
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+        for (const profilename of persistentStorage.getLoadedCICSProfile()){
+            const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
+            await this.loadProfile(profileToLoad);
         }
     }
 
@@ -79,6 +81,9 @@ export class CICSTree
 
     async loadProfile(profile: IProfileLoaded) {
 
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+        await persistentStorage.addLoadedCICSProfile(profile.name!);
+        
         const plexInfo = await ProfileManagement.getPlexInfo(profile);
         const newSessionTree = new CICSSessionTree(profile);
         for (const item of plexInfo) {
@@ -140,7 +145,11 @@ export class CICSTree
 
     }
 
-    removeSession(session: CICSSessionTree) {
+    async removeSession(session: CICSSessionTree) {
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+        await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
+
+
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
         this._onDidChangeTreeData.fire(undefined);
     }
