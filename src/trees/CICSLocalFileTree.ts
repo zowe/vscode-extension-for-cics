@@ -30,7 +30,7 @@ export class CICSLocalFileTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "list-dark.svg"
+        "bars-dark.svg"
       ),
       dark: join(
         __filename,
@@ -39,7 +39,7 @@ export class CICSLocalFileTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "list-light.svg"
+        "bars-light.svg"
       ),
     }
   ) {
