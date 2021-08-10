@@ -313,7 +313,8 @@
             "persistence": true,
             "programSearchHistory": [],
             "transactionSearchHistory": [],
-            "localFileSearchHistory": []
+            "localFileSearchHistory": [],
+            "loadedCICSProfile": []
           },
           "description": "Zowe CICS Extension History",
           "scope": "window"
