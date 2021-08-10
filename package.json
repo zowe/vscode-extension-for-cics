@@ -116,16 +116,16 @@
         "command": "cics-extension-for-zowe.clearFilter",
         "title": "Clear Filter",
         "icon": {
-          "light": "resources/imgs/phasein-dark.svg",
-          "dark": "resources/imgs/phasein-light.svg"
+          "light": "resources/imgs/cross-dark.svg",
+          "dark": "resources/imgs/cross-light.svg"
         }
       },
       {
         "command": "cics-extension-for-zowe.clearPlexFilter",
         "title": "Clear Plex Filter",
         "icon": {
-          "light": "resources/imgs/phasein-dark.svg",
-          "dark": "resources/imgs/phasein-light.svg"
+          "light": "resources/imgs/cross-dark.svg",
+          "dark": "resources/imgs/cross-light.svg"
         }
       },
       {
