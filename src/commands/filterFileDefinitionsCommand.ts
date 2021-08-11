@@ -12,14 +12,14 @@
 import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
-import { PersistentFilters } from "../utils/PersistentStorage";
+import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterFileDefinitionsCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterFileDefinitions",
     async (node) => {
       if (node) {
-        const persistentFilters = new PersistentFilters("Zowe.CICS.Persistent");
+        const persistentFilters = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
         const desc = new FilterDescriptor("\uFF0B Create New File Definition Filter");
         const items = persistentFilters.getLocalFileSearchHistory().map(loadedFilter => {
