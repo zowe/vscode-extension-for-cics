@@ -14,6 +14,7 @@ import { IProfileLoaded, Session } from "@zowe/imperative";
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
+import { isTheia } from "../utils/theiaCheck";
 import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
@@ -121,27 +122,131 @@ export class CICSTree
     }
 
     async createNewProfile() {
+        if (!isTheia()){
+            const connnectionName = await window.showInputBox({
+                title: "Name of connection",
+                placeHolder: "e.g. my-cics-profile",
+                ignoreFocusOut: true
+            });
+            if (!connnectionName){
+                return;
+            }
+            const hostDetails = await window.showInputBox({
+                title: "Input protocol, host and port for connection",
+                placeHolder: "e.g. https://mycicshostname.com:12345",
+                ignoreFocusOut: true
+            });
 
-        const column = window.activeTextEditor
-            ? window.activeTextEditor.viewColumn
-            : undefined;
-        const panel: WebviewPanel = window.createWebviewPanel(
-            "zowe",
-            `Create CICS Profile`,
-            column || 1,
-            { enableScripts: true }
-        );
-        panel.webview.html = addProfileHtml();
+            if (!hostDetails){
+                return;
+            }
 
-        panel.webview.onDidReceiveMessage(async (message) => {
+            const splitHostDetails = hostDetails.split(":");
+
+            const protocol = splitHostDetails[0].toLowerCase();
+            if (!["http","https"].includes(protocol)){
+                return;
+            }
+
+            let host = splitHostDetails[1];
+            if (host.slice(0,2) !== "//"){
+                return;
+            }
+            host = host.slice(2);
+
+            const port = parseInt(splitHostDetails[2]);
+            if (!port || isNaN(port)){
+                return;
+            }
+
+            const username = await window.showInputBox({
+                title: "Input Username",
+                placeHolder: "e.g. user123",
+                ignoreFocusOut: true
+            });
+            if (!username){
+                return;
+            }
+
+            const userPassword = await window.showInputBox({
+                title: "Input Password",
+                placeHolder: "e.g. 12345678",
+                password: true,
+                ignoreFocusOut: true
+            });
+            if (!userPassword){
+                return;
+            }
+
+            const plexName = await window.showInputBox({
+                title: "Input Plex Name",
+                placeHolder: "e.g. PLEX123",
+                ignoreFocusOut: true
+            });
+
+            let regionName = await window.showInputBox({
+                title: "Input Region Name",
+                placeHolder: "e.g. REGION123",
+                ignoreFocusOut: true
+            });
+
+
+            const rejectUnauthorized = await window.showQuickPick(["True", "False"], {
+                title: "Reject Unauthorized",
+                ignoreFocusOut: true
+            });
+            if (!rejectUnauthorized){
+                return;
+            }
+
+            const message = {
+                profile: {
+                    name: connnectionName,
+                    host: host,
+                    port: port,
+                    user: username,
+                    password: userPassword,
+                    rejectUnauthorized: rejectUnauthorized === "True" ? true : false,
+                    protocol: protocol,
+                    cicsPlex: plexName!.length === 0 ? undefined : plexName,
+                    regionName: regionName!.length === 0 ? undefined : regionName,
+                  },
+                  name: connnectionName,
+                  type: "CICS",
+                  overwrite: true,
+                };
+            
             try {
-                panel.dispose();
                 await ProfileManagement.createNewProfile(message);
                 await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
             } catch (error) {
                 window.showErrorMessage(error.message);
             }
-        });
+            
+
+        } else {
+            const column = window.activeTextEditor
+            ? window.activeTextEditor.viewColumn
+            : undefined;
+            const panel: WebviewPanel = window.createWebviewPanel(
+                "zowe",
+                `Create CICS Profile`,
+                column || 1,
+                { enableScripts: true }
+            );
+            panel.webview.html = addProfileHtml();
+
+            panel.webview.onDidReceiveMessage(async (message) => {
+                try {
+                    panel.dispose();
+                    await ProfileManagement.createNewProfile(message);
+                    await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
+                } catch (error) {
+                    window.showErrorMessage(error.message);
+                }
+            });
+        }
+        
 
     }
 
