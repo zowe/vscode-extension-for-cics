@@ -19,10 +19,10 @@ export function getFilterFileDefinitionsCommand(tree: CICSTree) {
     "cics-extension-for-zowe.filterFileDefinitions",
     async (node) => {
       if (node) {
-        const persistentFilters = new PersistentStorage("Zowe.CICS.Persistent");
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
         const desc = new FilterDescriptor("\uFF0B Create New File Definition Filter");
-        const items = persistentFilters.getLocalFileSearchHistory().map(loadedFilter => {
+        const items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
 
@@ -44,7 +44,7 @@ export function getFilterFileDefinitionsCommand(tree: CICSTree) {
         } else {
           pattern = choice.label;
         }
-        await persistentFilters.addLocalFileSearchHistory(pattern!);
+        await persistentStorage.addLocalFileSearchHistory(pattern!);
         node.setFilter(pattern!);
         await node.loadContents();
         tree._onDidChangeTreeData.fire(undefined);
