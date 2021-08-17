@@ -18,7 +18,7 @@ import cicsProfileMeta from "./profileDefinition";
 
 export class ProfileManagement {
 
-  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('1.17.0');
+  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('1.18.0');
   private static profilesCache = ProfileManagement.zoweExplorerAPI.getExplorerExtenderApi().getProfilesCache();
 
   constructor() { }
@@ -67,7 +67,7 @@ export class ProfileManagement {
 
         const singleRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`);
         const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
-        if(jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion){
+        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
           const singleRegion = jsonFromXml.response.records.cicsmanagedregion._attributes;
           infoLoaded.push({
             plexname: profile!.profile!.cicsPlex,
@@ -90,16 +90,16 @@ export class ProfileManagement {
 
         const allRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}`);
         const jsonFromXml = JSON.parse(xml2json(allRegionResponse.data, { compact: true, spaces: 4 }));
-        if(jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion){
+        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
           const allRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
-        infoLoaded.push({
-          plexname: profile!.profile!.cicsPlex,
-          regions: allRegions
-        });
+          infoLoaded.push({
+            plexname: profile!.profile!.cicsPlex,
+            regions: allRegions
+          });
         } else {
           window.showErrorMessage(`Cannot find plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
         }
-        
+
 
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -116,15 +116,15 @@ export class ProfileManagement {
 
         const singleRegionResponse = await axios.get(`${URL}/CICSRegion/${profile!.profile!.regionName}`);
         const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
-        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsregion){
+        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsregion) {
           const singleRegion = jsonFromXml.response.records.cicsregion._attributes;
           infoLoaded.push({
             plexname: null,
             regions: [singleRegion]
           });
-      } else {
-        window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} for profile ${profile!.name}`);
-      }
+        } else {
+          window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} for profile ${profile!.name}`);
+        }
 
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -142,7 +142,7 @@ export class ProfileManagement {
           if (testIfPlexResponse.status === 200) {
             // Plex
             const jsonFromXml = JSON.parse(xml2json(testIfPlexResponse.data, { compact: true, spaces: 4 }));
-            if (jsonFromXml.response.records && jsonFromXml.response.records.cicscicsplex){
+            if (jsonFromXml.response.records && jsonFromXml.response.records.cicscicsplex) {
               const returnedPlexes = jsonFromXml.response.records.cicscicsplex.map((item: { _attributes: any; }) => item._attributes);
 
 
@@ -151,7 +151,7 @@ export class ProfileManagement {
                   const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.plexname}`);
                   if (regionResponse.status === 200) {
                     const jsonFromXml = JSON.parse(xml2json(regionResponse.data, { compact: true, spaces: 4 }));
-                    if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion){
+                    if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
                       const returnedRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
                       infoLoaded.push({
                         plexname: plex.plexname,
@@ -163,7 +163,7 @@ export class ProfileManagement {
                   // console.log(error);
                 }
               }
-          }
+            }
 
           } else {
             // Not Plex
