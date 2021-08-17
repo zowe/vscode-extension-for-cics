@@ -162,7 +162,7 @@
       },
       {
         "command": "cics-extension-for-zowe.removeSession",
-        "title": "Remove Profile"
+        "title": "Hide Profile"
       },
       {
         "command": "cics-extension-for-zowe.updateSession",
