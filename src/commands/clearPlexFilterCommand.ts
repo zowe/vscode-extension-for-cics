@@ -28,11 +28,11 @@ export function getClearPlexFilterCommand(tree: CICSTree) {
                 treeToClear.clearFilter();
                 await treeToClear.loadContents();
             } else if (resourceToClear === "Local Transactions"){
-                treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstransactiontree."))[0];
+                treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
                 treeToClear.clearFilter();
                 await treeToClear.loadContents();
             } else if (resourceToClear === "Local Files"){
-                treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicslocalfiletree."))[0];
+                treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
                 treeToClear.clearFilter();
                 await treeToClear.loadContents();
             } else if (resourceToClear === "All"){

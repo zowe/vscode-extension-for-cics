@@ -219,22 +219,22 @@
           "group": "inline"
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicstransactiontree.filtered.*/",
+          "when": "view == cics-view && viewItem =~ /^cicstreetransaction.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicslocalfiletree.filtered.*/",
+          "when": "view == cics-view && viewItem =~ /^cicstreelocalfile.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicstransactiontree.*/",
+          "when": "view == cics-view && viewItem =~ /^cicstreetransaction.*/",
           "command": "cics-extension-for-zowe.filterTransactions",
           "group": "inline"
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicslocalfiletree.*/",
+          "when": "view == cics-view && viewItem =~ /^cicstreelocalfile.*/",
           "command": "cics-extension-for-zowe.filterLocalFiles",
           "group": "inline"
         },

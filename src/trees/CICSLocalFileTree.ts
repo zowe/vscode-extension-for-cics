@@ -44,7 +44,7 @@ export class CICSLocalFileTree extends TreeItem {
     }
   ) {
     super('Local Files', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicslocalfiletree.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
+    this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
     this.parentRegion = parentRegion;
   }
 
@@ -80,14 +80,14 @@ export class CICSLocalFileTree extends TreeItem {
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicslocalfiletree.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
+    this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
     this.label = `Local Files`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicslocalfiletree.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
+    this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
     this.label = `Local Files (${this.activeFilter})`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }

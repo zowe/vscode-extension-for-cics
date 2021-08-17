@@ -82,9 +82,9 @@ export function getFilterPlexResources(tree: CICSTree) {
             if (resourceToFilter === "Programs"){
                 treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
             } else if (resourceToFilter === "Local Transactions"){
-                treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstransactiontree."))[0];
+                treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
             } else if (resourceToFilter === "Local Files"){
-                treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicslocalfiletree."))[0];
+                treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
             }
             treeToFilter.setFilter(pattern!);
             await treeToFilter.loadContents();

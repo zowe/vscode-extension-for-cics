@@ -44,7 +44,7 @@ export class CICSTransactionTree extends TreeItem {
     }
   ) {
     super('Transactions', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstransactiontree.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
+    this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
     this.parentRegion = parentRegion;
   }
 
@@ -80,14 +80,14 @@ export class CICSTransactionTree extends TreeItem {
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstransactiontree.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
+    this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
     this.label = `Transactions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstransactiontree.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
+    this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
     this.label = `Transactions (${this.activeFilter})`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
