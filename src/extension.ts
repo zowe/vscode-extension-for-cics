@@ -34,6 +34,7 @@ import { getFilterFileDefinitionsCommand } from "./commands/filterFileDefinition
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
 import { getRefreshCommand } from "./commands/refreshCommand";
+import { getUpdateSessionCommand } from "./commands/updateSessionCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -72,6 +73,7 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv),
+    getUpdateSessionCommand(treeDataProv),
 
     getRefreshCommand(treeDataProv),
 

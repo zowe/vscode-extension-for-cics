@@ -10,7 +10,7 @@
 */
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
-import { IProfileLoaded, Session } from "@zowe/imperative";
+import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
@@ -80,7 +80,7 @@ export class CICSTree
 
     }
 
-    async loadProfile(profile: IProfileLoaded) {
+    async loadProfile(profile: IProfileLoaded, position?: number) {
 
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         await persistentStorage.addLoadedCICSProfile(profile.name!);
@@ -104,7 +104,6 @@ export class CICSTree
                     name: "CICSRegion",
                     regionName: item.regions[0].applid
                 });
-
                 const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
                 newSessionTree.addRegion(newRegionTree);
             } else {
@@ -116,13 +115,17 @@ export class CICSTree
                 newSessionTree.addPlex(newPlexTree);
             }
         }
-        this.loadedProfiles.push(newSessionTree);
+        if(position || position === 0){
+            this.loadedProfiles.splice(position, 0, newSessionTree);
+        } else{
+            this.loadedProfiles.push(newSessionTree);
+        }
         this._onDidChangeTreeData.fire(undefined);
 
     }
 
     async createNewProfile() {
-        if (!isTheia()){
+        if (isTheia()){
             const connnectionName = await window.showInputBox({
                 title: "Name of connection",
                 placeHolder: "e.g. my-cics-profile",
@@ -198,7 +201,6 @@ export class CICSTree
             if (!rejectUnauthorized){
                 return;
             }
-
             const message = {
                 profile: {
                     name: connnectionName,
@@ -222,8 +224,6 @@ export class CICSTree
             } catch (error) {
                 window.showErrorMessage(error.message);
             }
-            
-
         } else {
             const column = window.activeTextEditor
             ? window.activeTextEditor.viewColumn
@@ -235,7 +235,6 @@ export class CICSTree
                 { enableScripts: true }
             );
             panel.webview.html = addProfileHtml();
-
             panel.webview.onDidReceiveMessage(async (message) => {
                 try {
                     panel.dispose();
@@ -245,19 +244,62 @@ export class CICSTree
                     window.showErrorMessage(error.message);
                 }
             });
+            
         }
         
 
     }
 
-    async removeSession(session: CICSSessionTree) {
+    async removeSession(session: CICSSessionTree, profile?: IProfileLoaded, position?: number) {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
 
 
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
+        await this.loadProfile(profile!, position);
         this._onDidChangeTreeData.fire(undefined);
     }
+
+    async updateSession(session: CICSSessionTree) {
+        const profileToUpdate = await ProfileManagement.getProfilesCache().loadNamedProfile(session.label?.toString()!, 'cics');
+        
+        const message = {
+            name: profileToUpdate.name,
+            profile: {
+                name: profileToUpdate.name, 
+                ...profileToUpdate.profile
+            }
+        };
+        await this.updateSessionHelper(session, message);
+    }
+
+    async updateSessionHelper(session: CICSSessionTree, messageToUpdate?: IUpdateProfile) {
+        const column = window.activeTextEditor
+        ? window.activeTextEditor.viewColumn
+        : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+            "zowe",
+            `Update CICS Profile`,
+            column || 1,
+            { enableScripts: true }
+        );
+        panel.webview.html = addProfileHtml(messageToUpdate);
+        panel.webview.onDidReceiveMessage(async (message) => {
+            try {
+                panel.dispose();
+                const profile = await ProfileManagement.updateProfile(message);
+                const position = this.loadedProfiles.indexOf(session);
+                const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.profile!.name, 'cics');
+                await this.removeSession(session, updatedProfile, position);
+
+            } catch (error) {
+                window.showErrorMessage(error.message);
+            }
+        });
+    
+
+    }
+
 
     getTreeItem(element: CICSSessionTree): TreeItem | Thenable<TreeItem> {
         return element;

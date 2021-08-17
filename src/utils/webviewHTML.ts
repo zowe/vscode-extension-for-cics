@@ -9,14 +9,16 @@
 *
 */
 
-export const addProfileHtml = () => {
+import { IUpdateProfile } from "@zowe/imperative";
+
+export const addProfileHtml = (message?: IUpdateProfile) => {
   return `<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Create CICS Profile</title>
+      <title>${message ? "Update" : "Create"} CICS Profile</title>
   
       <link
         rel="stylesheet"
@@ -89,7 +91,7 @@ export const addProfileHtml = () => {
     </style>
     <body>
       <div class="bx--content">
-        <h1>Create CICS Profile</h1>
+        <h1>${message ? "Update" : "Create"} CICS Profile</h1>
   
         <div
           class="
@@ -105,6 +107,9 @@ export const addProfileHtml = () => {
               type="text"
               class="bx--text-input"
               placeholder="This name is used to identify the profile"
+              ${message?.name ? `value =${message.name}`:undefined}
+              ${message ? `readonly` : ""}
+              
             />
           </div>
         </div>
@@ -120,6 +125,7 @@ export const addProfileHtml = () => {
                 type="text"
                 class="bx--text-input"
                 placeholder="example.cics.host.com"
+                ${message?.profile!.host ? `value =${message.profile.host}`:undefined}
               />
             </div>
           </div>
@@ -132,6 +138,7 @@ export const addProfileHtml = () => {
                 type="text"
                 class="bx--text-input"
                 placeholder="12345"
+                ${message?.profile!.port?`value =${message.profile.port}`:undefined}
               />
             </div>
           </div>
@@ -143,10 +150,12 @@ export const addProfileHtml = () => {
               <label for="protocol-select" class="bx--label">Protocol</label>
               <div class="bx--select-input__wrapper">
                 <select id="protocol-select" class="bx--select-input">
-                  <option class="bx--select-option" value="https" selected>
+                  <option class="bx--select-option" value="https" ${message?.profile!.protocol === "https" ? `selected="selected"`: ""}>
                     HTTPS
                   </option>
-                  <option class="bx--select-option" value="http">HTTP</option>
+                  <option class="bx--select-option" value="http" ${message?.profile!.protocol === "http" ? `selected="selected"`: ""}>
+                    HTTP
+                  </option>
                 </select>
                 <svg
                   focusable="false"
@@ -170,10 +179,12 @@ export const addProfileHtml = () => {
               <label for="ruSelect" class="bx--label">Reject Unauthorized</label>
               <div class="bx--select-input__wrapper">
                 <select id="ruSelect" class="bx--select-input">
-                  <option class="bx--select-option" value="true" selected>
+                  <option class="bx--select-option" value="true" ${message?.profile!.rejectUnauthorized ? `selected="selected"`: ""}>
                     True
                   </option>
-                  <option class="bx--select-option" value="false">False</option>
+                  <option class="bx--select-option" value="false" ${!message?.profile!.rejectUnauthorized ? `selected="selected"`: ""}>
+                    False
+                  </option>
                 </select>
                 <svg
                   focusable="false"
@@ -204,6 +215,7 @@ export const addProfileHtml = () => {
                 type="text"
                 class="bx--text-input"
                 placeholder=""
+                ${message?.profile!.user?`value =${message.profile.user}`:undefined}
               />
             </div>
           </div>
@@ -216,6 +228,7 @@ export const addProfileHtml = () => {
                 type="password"
                 class="bx--text-input"
                 placeholder=""
+                ${message?.profile!.password?`value =${message.profile.password}`:undefined}
               />
             </div>
           </div>
@@ -233,6 +246,7 @@ export const addProfileHtml = () => {
                 type="text"
                 class="bx--text-input"
                 placeholder=""
+                ${message?.profile!.regionName?`value =${message.profile.regionName}`:undefined}
               />
             </div>
           </div>
@@ -245,6 +259,7 @@ export const addProfileHtml = () => {
                 type="text"
                 class="bx--text-input"
                 placeholder=""
+                ${message?.profile!.cicsPlex?`value =${message.profile.cicsPlex}`:undefined}
               />
             </div>
           </div>
@@ -252,10 +267,7 @@ export const addProfileHtml = () => {
         <button
           onclick="createSession()"
           class="bx--btn bx--btn--primary"
-          type="button"
-        >
-          Create Profile
-        </button>
+          type="button">${message ? "Update" : "Create"} Profile</button>
       </div>
   
       <script>
