@@ -13,7 +13,7 @@ import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
 import { join } from "path";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
-import { getResource, ICMCIApiResponse } from "@zowe/cics-for-zowe-cli";
+import { getResource } from "@zowe/cics-for-zowe-cli";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];

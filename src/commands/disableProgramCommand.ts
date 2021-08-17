@@ -16,9 +16,8 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
-import { CICSTree } from "../trees/CICSTree";
 
-export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
+export function getDisableProgramCommand(treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.disableProgram",
     async (node) => {
@@ -52,9 +51,6 @@ export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>
                   cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                 }
               );
-              // window.showInformationMessage(
-              //   `Program ${node.program.program} STATUS: - ${response.response.records.cicsprogram.status}`
-              // );
             } catch(err){
               window.showErrorMessage(err);
             }

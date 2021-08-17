@@ -47,9 +47,6 @@ export function getPhaseInCommand(tree: CICSTree, treeview: TreeView<any>) {
                   cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                 }
               );
-              // window.showInformationMessage(
-              //   `New Copy Count for ${node.label} = ${response.response.records.cicsprogram.newcopycnt}`
-              // );
 
               if(!parentRegions.includes(currentNode.parentRegion)){
                 parentRegions.push(currentNode.parentRegion);
