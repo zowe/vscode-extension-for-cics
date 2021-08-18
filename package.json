@@ -21,6 +21,7 @@
     "zowe.vscode-extension-for-zowe"
   ],
   "main": "./out/extension.js",
+  "icon": "resources/temp_logo.png",
   "contributes": {
     "viewsWelcome": [],
     "views": {
