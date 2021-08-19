@@ -44,8 +44,6 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
         background-color: var(--vscode-editor-background);
       }
   
-      /*       color: var(--vscode-editor-foreground);  */
-  
       .bx--content {
         width: 90%;
         display: flex;
@@ -88,6 +86,10 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
       h1, h2, p, label {
         color: var(--vscode-editor-foreground) !important;
       }
+
+      p {
+        text-align: center;
+      }
     </style>
     <body>
       <div class="bx--content">
@@ -107,7 +109,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
               type="text"
               class="bx--text-input"
               placeholder="This name is used to identify the profile"
-              ${message?.name ? `value =${message.name}`:undefined}
+              ${message?.name ? `value =${message.name}` : undefined}
               ${message ? `readonly` : ""}
               
             />
@@ -125,7 +127,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 type="text"
                 class="bx--text-input"
                 placeholder="example.cics.host.com"
-                ${message?.profile!.host ? `value =${message.profile.host}`:undefined}
+                ${message?.profile!.host ? `value =${message.profile.host}` : undefined}
               />
             </div>
           </div>
@@ -138,7 +140,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 type="text"
                 class="bx--text-input"
                 placeholder="12345"
-                ${message?.profile!.port?`value =${message.profile.port}`:undefined}
+                ${message?.profile!.port ? `value =${message.profile.port}` : undefined}
               />
             </div>
           </div>
@@ -150,10 +152,10 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
               <label for="protocol-select" class="bx--label">Protocol</label>
               <div class="bx--select-input__wrapper">
                 <select id="protocol-select" class="bx--select-input">
-                  <option class="bx--select-option" value="https" ${message?.profile!.protocol === "https" ? `selected="selected"`: ""}>
+                  <option class="bx--select-option" value="https" ${message?.profile!.protocol === "https" ? `selected="selected"` : ""}>
                     HTTPS
                   </option>
-                  <option class="bx--select-option" value="http" ${message?.profile!.protocol === "http" ? `selected="selected"`: ""}>
+                  <option class="bx--select-option" value="http" ${message?.profile!.protocol === "http" ? `selected="selected"` : ""}>
                     HTTP
                   </option>
                 </select>
@@ -179,10 +181,10 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
               <label for="ruSelect" class="bx--label">Reject Unauthorized</label>
               <div class="bx--select-input__wrapper">
                 <select id="ruSelect" class="bx--select-input">
-                  <option class="bx--select-option" value="true" ${message?.profile!.rejectUnauthorized ? `selected="selected"`: ""}>
+                  <option class="bx--select-option" value="true" ${message?.profile!.rejectUnauthorized ? `selected="selected"` : ""}>
                     True
                   </option>
-                  <option class="bx--select-option" value="false" ${!message?.profile!.rejectUnauthorized ? `selected="selected"`: ""}>
+                  <option class="bx--select-option" value="false" ${!message?.profile!.rejectUnauthorized ? `selected="selected"` : ""}>
                     False
                   </option>
                 </select>
@@ -215,7 +217,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 type="text"
                 class="bx--text-input"
                 placeholder=""
-                ${message?.profile!.user?`value =${message.profile.user}`:undefined}
+                ${message?.profile!.user ? `value =${message.profile.user}` : undefined}
               />
             </div>
           </div>
@@ -228,14 +230,14 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 type="password"
                 class="bx--text-input"
                 placeholder=""
-                ${message?.profile!.password?`value =${message.profile.password}`:undefined}
+                ${message?.profile!.password ? `value =${message.profile.password}` : undefined}
               />
             </div>
           </div>
         </div>
         <h2>CICS Details</h2>
   
-        <p>Only 1 of the below is required</p>
+        <p>Plex(es) and Region(s) are retrieved and shown automatically if not specified. You can reduce the number of items returned by narrowing down the search with a plex and/or region name.</p>
   
         <div class="two-input-container">
           <div class="bx--form-item bx--text-input-wrapper user-input">
@@ -246,7 +248,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 type="text"
                 class="bx--text-input"
                 placeholder=""
-                ${message?.profile!.regionName?`value =${message.profile.regionName}`:undefined}
+                ${message?.profile!.regionName ? `value =${message.profile.regionName}` : undefined}
               />
             </div>
           </div>
@@ -259,7 +261,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 type="text"
                 class="bx--text-input"
                 placeholder=""
-                ${message?.profile!.cicsPlex?`value =${message.profile.cicsPlex}`:undefined}
+                ${message?.profile!.cicsPlex ? `value =${message.profile.cicsPlex}` : undefined}
               />
             </div>
           </div>
