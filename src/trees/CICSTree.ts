@@ -30,7 +30,7 @@ export class CICSTree
 
     public async loadStoredProfiles() {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        for (const profilename of persistentStorage.getLoadedCICSProfile()){
+        for (const profilename of persistentStorage.getLoadedCICSProfile()) {
             const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
             await this.loadProfile(profileToLoad);
         }
@@ -84,7 +84,7 @@ export class CICSTree
 
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         await persistentStorage.addLoadedCICSProfile(profile.name!);
-        
+
         const plexInfo = await ProfileManagement.getPlexInfo(profile);
         const newSessionTree = new CICSSessionTree(profile);
         for (const item of plexInfo) {
@@ -115,9 +115,9 @@ export class CICSTree
                 newSessionTree.addPlex(newPlexTree);
             }
         }
-        if(position || position === 0){
+        if (position || position === 0) {
             this.loadedProfiles.splice(position, 0, newSessionTree);
-        } else{
+        } else {
             this.loadedProfiles.push(newSessionTree);
         }
         this._onDidChangeTreeData.fire(undefined);
@@ -125,13 +125,13 @@ export class CICSTree
     }
 
     async createNewProfile() {
-        if (isTheia()){
+        if (isTheia()) {
             const connnectionName = await window.showInputBox({
                 title: "Name of connection",
                 placeHolder: "e.g. my-cics-profile",
                 ignoreFocusOut: true
             });
-            if (!connnectionName){
+            if (!connnectionName) {
                 return;
             }
             const hostDetails = await window.showInputBox({
@@ -140,25 +140,25 @@ export class CICSTree
                 ignoreFocusOut: true
             });
 
-            if (!hostDetails){
+            if (!hostDetails) {
                 return;
             }
 
             const splitHostDetails = hostDetails.split(":");
 
             const protocol = splitHostDetails[0].toLowerCase();
-            if (!["http","https"].includes(protocol)){
+            if (!["http", "https"].includes(protocol)) {
                 return;
             }
 
             let host = splitHostDetails[1];
-            if (host.slice(0,2) !== "//"){
+            if (host.slice(0, 2) !== "//") {
                 return;
             }
             host = host.slice(2);
 
             const port = parseInt(splitHostDetails[2]);
-            if (!port || isNaN(port)){
+            if (!port || isNaN(port)) {
                 return;
             }
 
@@ -167,7 +167,7 @@ export class CICSTree
                 placeHolder: "e.g. user123",
                 ignoreFocusOut: true
             });
-            if (!username){
+            if (!username) {
                 return;
             }
 
@@ -177,7 +177,7 @@ export class CICSTree
                 password: true,
                 ignoreFocusOut: true
             });
-            if (!userPassword){
+            if (!userPassword) {
                 return;
             }
 
@@ -198,7 +198,7 @@ export class CICSTree
                 title: "Reject Unauthorized",
                 ignoreFocusOut: true
             });
-            if (!rejectUnauthorized){
+            if (!rejectUnauthorized) {
                 return;
             }
             const message = {
@@ -212,12 +212,12 @@ export class CICSTree
                     protocol: protocol,
                     cicsPlex: plexName!.length === 0 ? undefined : plexName,
                     regionName: regionName!.length === 0 ? undefined : regionName,
-                  },
-                  name: connnectionName,
-                  type: "CICS",
-                  overwrite: true,
-                };
-            
+                },
+                name: connnectionName,
+                type: "CICS",
+                overwrite: true,
+            };
+
             try {
                 await ProfileManagement.createNewProfile(message);
                 await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
@@ -226,8 +226,8 @@ export class CICSTree
             }
         } else {
             const column = window.activeTextEditor
-            ? window.activeTextEditor.viewColumn
-            : undefined;
+                ? window.activeTextEditor.viewColumn
+                : undefined;
             const panel: WebviewPanel = window.createWebviewPanel(
                 "zowe",
                 `Create CICS Profile`,
@@ -249,9 +249,9 @@ export class CICSTree
                     window.showErrorMessage(error.message);
                 }
             });
-            
+
         }
-        
+
 
     }
 
@@ -267,11 +267,11 @@ export class CICSTree
 
     async updateSession(session: CICSSessionTree) {
         const profileToUpdate = await ProfileManagement.getProfilesCache().loadNamedProfile(session.label?.toString()!, 'cics');
-        
+
         const message = {
             name: profileToUpdate.name,
             profile: {
-                name: profileToUpdate.name, 
+                name: profileToUpdate.name,
                 ...profileToUpdate.profile
             }
         };
@@ -280,8 +280,8 @@ export class CICSTree
 
     async updateSessionHelper(session: CICSSessionTree, messageToUpdate?: IUpdateProfile) {
         const column = window.activeTextEditor
-        ? window.activeTextEditor.viewColumn
-        : undefined;
+            ? window.activeTextEditor.viewColumn
+            : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
             "zowe",
             `Update CICS Profile`,
@@ -301,7 +301,7 @@ export class CICSTree
                 window.showErrorMessage(error.message);
             }
         });
-    
+
 
     }
 
