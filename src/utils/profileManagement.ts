@@ -65,7 +65,12 @@ export class ProfileManagement {
          * Both Supplied, no searching required - Only load 1 region
          */
 
-        const singleRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`);
+        const singleRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, {
+          auth: {
+            username: profile!.profile!.user,
+            password: profile!.profile!.password,
+          }
+        });
         const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
         if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
           const singleRegion = jsonFromXml.response.records.cicsmanagedregion._attributes;
@@ -88,7 +93,12 @@ export class ProfileManagement {
          * Plex given - must search for regions
          */
 
-        const allRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}`);
+        const allRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}`, {
+          auth: {
+            username: profile!.profile!.user,
+            password: profile!.profile!.password,
+          }
+        });
         const jsonFromXml = JSON.parse(xml2json(allRegionResponse.data, { compact: true, spaces: 4 }));
         if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
           const allRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
@@ -114,7 +124,12 @@ export class ProfileManagement {
          * Region but no plex - Single region system, use that
          */
 
-        const singleRegionResponse = await axios.get(`${URL}/CICSRegion/${profile!.profile!.regionName}`);
+        const singleRegionResponse = await axios.get(`${URL}/CICSRegion/${profile!.profile!.regionName}`, {
+          auth: {
+            username: profile!.profile!.user,
+            password: profile!.profile!.password,
+          }
+        });
         const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
         if (jsonFromXml.response.records && jsonFromXml.response.records.cicsregion) {
           const singleRegion = jsonFromXml.response.records.cicsregion._attributes;
@@ -138,7 +153,12 @@ export class ProfileManagement {
          * Nothing given - Test if plex and find all info
          */
         try {
-          const testIfPlexResponse = await axios.get(`${URL}/CICSCICSPlex`);
+          const testIfPlexResponse = await axios.get(`${URL}/CICSCICSPlex`, {
+            auth: {
+              username: profile!.profile!.user,
+              password: profile!.profile!.password,
+            }
+          });
           if (testIfPlexResponse.status === 200) {
             // Plex
             const jsonFromXml = JSON.parse(xml2json(testIfPlexResponse.data, { compact: true, spaces: 4 }));
@@ -148,7 +168,12 @@ export class ProfileManagement {
 
               for (const plex of returnedPlexes) {
                 try {
-                  const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.plexname}`);
+                  const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.plexname}`, {
+                    auth: {
+                      username: profile!.profile!.user,
+                      password: profile!.profile!.password,
+                    }
+                  });
                   if (regionResponse.status === 200) {
                     const jsonFromXml = JSON.parse(xml2json(regionResponse.data, { compact: true, spaces: 4 }));
                     if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
@@ -168,7 +193,12 @@ export class ProfileManagement {
           } else {
             // Not Plex
 
-            const singleRegion = await axios.get(`${URL}/CICSRegion`);
+            const singleRegion = await axios.get(`${URL}/CICSRegion`, {
+              auth: {
+                username: profile!.profile!.user,
+                password: profile!.profile!.password,
+              }
+            });
             const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
             const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
             infoLoaded.push({
@@ -179,7 +209,12 @@ export class ProfileManagement {
         } catch (error) {
           // Not Plex - Could be error
 
-          const singleRegion = await axios.get(`${URL}/CICSRegion`);
+          const singleRegion = await axios.get(`${URL}/CICSRegion`, {
+            auth: {
+              username: profile!.profile!.user,
+              password: profile!.profile!.password,
+            }
+          });
           const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
           const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
           infoLoaded.push({
