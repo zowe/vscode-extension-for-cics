@@ -238,6 +238,11 @@ export class CICSTree
             panel.webview.onDidReceiveMessage(async (message) => {
                 try {
                     panel.dispose();
+                    const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
+                    if (allCICSProfileNames.includes(message.name)) {
+                        window.showErrorMessage(`Profile "${message.name}" already exists`);
+                        return;
+                    }
                     await ProfileManagement.createNewProfile(message);
                     await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
                 } catch (error) {
