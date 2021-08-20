@@ -35,6 +35,7 @@ import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
 import { getRefreshCommand } from "./commands/refreshCommand";
 import { getUpdateSessionCommand } from "./commands/updateSessionCommand";
+import { getDeleteSessionCommand } from "./commands/deleteSessionCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -74,6 +75,7 @@ export async function activate(context: ExtensionContext) {
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv),
     getUpdateSessionCommand(treeDataProv),
+    getDeleteSessionCommand(treeDataProv),
 
     getRefreshCommand(treeDataProv),
 

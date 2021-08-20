@@ -265,6 +265,29 @@ export class CICSTree
         this._onDidChangeTreeData.fire(undefined);
     }
 
+    async deleteSession(session: CICSSessionTree) {
+        const answer = await window.showInformationMessage(
+            `Are you sure you want to delete the profile "${session.label?.toString()!}"`, 
+            ...["Yes", "No"]);
+
+        if (answer === "Yes"){
+            await ProfileManagement.deleteProfile({ 
+                name: session.label?.toString()!,
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                rejectIfDependency: true
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            });
+            const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+            await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
+    
+            this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
+            this._onDidChangeTreeData.fire(undefined);
+        }
+        
+    }
+
     async updateSession(session: CICSSessionTree) {
         const profileToUpdate = await ProfileManagement.getProfilesCache().loadNamedProfile(session.label?.toString()!, 'cics');
 

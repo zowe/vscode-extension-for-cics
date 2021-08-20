@@ -168,6 +168,10 @@
       {
         "command": "cics-extension-for-zowe.updateSession",
         "title": "Update Profile"
+      },
+      {
+        "command": "cics-extension-for-zowe.deleteSession",
+        "title": "Delete Profile"
       }
     ],
     "menus": {
@@ -313,6 +317,11 @@
           "when": "view == cics-view && viewItem =~ /^cicssession.*/",
           "command": "cics-extension-for-zowe.updateSession",
           "title": "Update Session"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicssession.*/",
+          "command": "cics-extension-for-zowe.deleteSession",
+          "title": "Delete Session"
         }
       ]
     },
