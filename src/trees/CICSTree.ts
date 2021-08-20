@@ -261,7 +261,9 @@ export class CICSTree
 
 
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
-        await this.loadProfile(profile!, position);
+        if (profile && position) {
+            await this.loadProfile(profile!, position);
+        }
         this._onDidChangeTreeData.fire(undefined);
     }
 
