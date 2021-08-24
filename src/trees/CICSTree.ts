@@ -259,7 +259,6 @@ export class CICSTree
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
 
-
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
         if (profile && position) {
             await this.loadProfile(profile!, position);
@@ -267,24 +266,35 @@ export class CICSTree
         this._onDidChangeTreeData.fire(undefined);
     }
 
-    async deleteSession(session: CICSSessionTree) {
-        const answer = await window.showInformationMessage(
-            `Are you sure you want to delete the profile "${session.label?.toString()!}"`, 
-            ...["Yes", "No"]);
-
+    async deleteSession(sessions: CICSSessionTree[]) {
+        let answer;
+        if(sessions.length === 1){
+            answer = await window.showInformationMessage(
+                `Are you sure you want to delete the profile "${sessions[0].label?.toString()!}"`, 
+                ...["Yes", "No"]);
+        } else if (sessions.length > 1){
+            answer = await window.showInformationMessage(
+                `Are you sure you want to delete the profiles "${sessions.map((sessionTree)=>{
+                    return sessionTree.label?.toString()!;
+                })}"`, 
+                ...["Yes", "No"]);
+        }
         if (answer === "Yes"){
-            await ProfileManagement.deleteProfile({ 
-                name: session.label?.toString()!,
-                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                rejectIfDependency: true
-                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-            });
-            const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-            await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
-    
-            this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
+            for (const session of sessions){
+                try {
+                    await ProfileManagement.deleteProfile({ 
+                        name: session.label?.toString()!,
+                        rejectIfDependency: true
+                    });
+                    const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+                    await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
+
+                    this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
+                } catch (error){
+                    window.showErrorMessage(error.message);
+                }
+            }
+            
             this._onDidChangeTreeData.fire(undefined);
         }
         

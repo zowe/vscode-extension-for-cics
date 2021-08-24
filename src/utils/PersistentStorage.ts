@@ -46,22 +46,22 @@ export class PersistentStorage {
         if (programSearchHistoryLines) {
             this.mProgramSearchHistory = programSearchHistoryLines;
         } else {
-            this.resetProgramSearchHistory();
+            await this.resetProgramSearchHistory();
         }
         if (transactionSearchHistoryLines) {
             this.mTransactionSearchHistory = transactionSearchHistoryLines;
         } else {
-            this.resetTransactionSearchHistory();
+            await this.resetTransactionSearchHistory();
         }
         if (localFileSearchHistoryLines) {
             this.mLocalFileSearchHistory = localFileSearchHistoryLines;
         } else {
-            this.resetLocalFileSearchHistory();
+            await this.resetLocalFileSearchHistory();
         }
         if (loadedCICSProfileLines) {
             this.mLoadedCICSProfile = loadedCICSProfileLines;
         } else {
-            this.resetLoadedCICSProfile();
+            await this.resetLoadedCICSProfile();
         }
     }
 
@@ -84,19 +84,19 @@ export class PersistentStorage {
 
     public async resetProgramSearchHistory() {
         this.mProgramSearchHistory = [];
-        this.updateProgramSearchHistory();
+        await this.updateProgramSearchHistory();
     }
     public async resetTransactionSearchHistory() {
         this.mTransactionSearchHistory = [];
-        this.updateTransactionSearchHistory();
+        await this.updateTransactionSearchHistory();
     }
     public async resetLocalFileSearchHistory() {
         this.mLocalFileSearchHistory = [];
-        this.updateLocalFileSearchHistory();
+        await this.updateLocalFileSearchHistory();
     }
     public async resetLoadedCICSProfile(){
         this.mLoadedCICSProfile = [];
-        this.updateLoadedCICSProfile();
+        await this.updateLoadedCICSProfile();
     }
 
 
@@ -143,7 +143,7 @@ export class PersistentStorage {
             if (this.mProgramSearchHistory.length > 10) {
                 this.mProgramSearchHistory.pop();
             }
-            this.updateProgramSearchHistory();
+            await this.updateProgramSearchHistory();
         }
     }
     public async addTransactionSearchHistory(criteria: string) {
@@ -157,7 +157,7 @@ export class PersistentStorage {
             if (this.mTransactionSearchHistory.length > 10) {
                 this.mTransactionSearchHistory.pop();
             }
-            this.updateTransactionSearchHistory();
+            await this.updateTransactionSearchHistory();
         }
     }
     public async addLocalFileSearchHistory(criteria: string) {
@@ -171,7 +171,7 @@ export class PersistentStorage {
             if (this.mLocalFileSearchHistory.length > 10) {
                 this.mLocalFileSearchHistory.pop();
             }
-            this.updateLocalFileSearchHistory();
+            await this.updateLocalFileSearchHistory();
         }
     }
 
@@ -182,7 +182,7 @@ export class PersistentStorage {
             });
 
             this.mLoadedCICSProfile.unshift(name);
-            this.updateLoadedCICSProfile();
+            await this.updateLoadedCICSProfile();
         }
     }
 
@@ -192,7 +192,7 @@ export class PersistentStorage {
                 return element.trim() !== name.trim();
             });
 
-            this.updateLoadedCICSProfile();
+            await this.updateLoadedCICSProfile();
         }
     }
 
