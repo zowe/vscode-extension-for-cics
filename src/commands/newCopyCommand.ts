@@ -20,7 +20,8 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
     async (clickedNode) => {
       if (clickedNode) {
         try {
-          let selectedNodes = treeview.selection;
+          const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== clickedNode);
+          const allSelectedNodes = [clickedNode, ...selectedNodes];
           let parentRegions: CICSRegionTree[] = [];
 
           window.withProgress({
@@ -31,14 +32,14 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
             token.onCancellationRequested(() => {
               console.log("Cancelling the New Copy");
             });
-            for (const index in selectedNodes) {
+            for (const index in allSelectedNodes) {
               progress.report({
-                message: `New Copying ${parseInt(index) + 1} of ${selectedNodes.length}`,
-                increment: (parseInt(index) / selectedNodes.length) * 100,
+                message: `New Copying ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+                increment: (parseInt(index) / allSelectedNodes.length) * 100,
               });
               try {
 
-                const currentNode = selectedNodes[parseInt(index)];
+                const currentNode = allSelectedNodes[parseInt(index)];
 
                 await programNewcopy(
                   currentNode.parentRegion.parentSession.session,
