@@ -2,7 +2,7 @@
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
-## `1.1.0`
+## `1.0.0`
 
 - Included interaction with the Zowe Explorer APIs to be able to retrieve and manipulate Zowe CICS Profiles.
 - Ability to update existing Zowe CICS Profiles as well as create new ones with a GUI.
