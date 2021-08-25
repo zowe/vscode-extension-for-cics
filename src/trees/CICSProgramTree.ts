@@ -74,7 +74,13 @@ export class CICSProgramTree extends TreeItem {
         this.addProgram(newProgramItem);
       }
     } catch (error) {
-      window.showInformationMessage(`No results`);
+      if (error.mMessage.includes('exceeded a resource limit')) {
+        window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);
+      } else if (error.mMessage.replaceAll(' ', '').includes('recordcount:0')) {
+        window.showInformationMessage(`No programs found`);
+      } else {
+        window.showErrorMessage(`Something went wrong when fetching programs`);
+      }
     }
   }
 
