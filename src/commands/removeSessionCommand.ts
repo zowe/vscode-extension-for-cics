@@ -17,50 +17,34 @@ export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>)
     "cics-extension-for-zowe.removeSession",
     async (node) => {
       if (node) {
-        const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
-        for (const currentNode of [node, ...selectedNodes]) {
-          //const currentNode = selectedNodes[parseInt(index)];
-          await tree.removeSession(currentNode);
-          
-        }
-      } 
-    });
+          const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
+          const allSelectedNodes = [node, ...selectedNodes];
+          window.withProgress({
+            title: 'Hide Profile',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the hide command");
+            });
+            for (const index in allSelectedNodes) {
+              progress.report({
+                message: `Hiding ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+                increment: (parseInt(index) / allSelectedNodes.length) * 100,
+              });
+              try {
+                const currentNode = allSelectedNodes[parseInt(index)];
 
+                await tree.removeSession(currentNode);
+
+              } catch(err){
+                window.showErrorMessage(err);
+              }
+            }
+          });
+      } else {
+        window.showErrorMessage("No profile selected to remove");
+      }
+    }
+  );
 }
-
-// export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
-//   return commands.registerCommand(
-//     "cics-extension-for-zowe.removeSession",
-//     async (node) => {
-//       if (node) {
-//           const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
-//           const allSelectedNodes = [node, ...selectedNodes];
-//           window.withProgress({
-//             title: 'Hide Profile',
-//             location: ProgressLocation.Notification,
-//             cancellable: true
-//           }, async (progress, token) => {
-//             token.onCancellationRequested(() => {
-//               console.log("Cancelling the hide functionality");
-//             });
-//             for (const index in allSelectedNodes) {
-//               progress.report({
-//                 message: `Hiding ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
-//                 increment: (parseInt(index) / allSelectedNodes.length) * 100,
-//               });
-//               try {
-//                 const currentNode = allSelectedNodes[parseInt(index)];
-
-//                 await tree.removeSession(currentNode);
-
-//               } catch(err){
-//                 window.showErrorMessage(err);
-//               }
-//             }
-//           });
-//       } else {
-//         window.showErrorMessage("No profile selected to remove");
-//       }
-//     }
-//   );
-// }

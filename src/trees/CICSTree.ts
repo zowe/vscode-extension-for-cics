@@ -11,7 +11,7 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
-import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
+import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
 import { isTheia } from "../utils/theiaCheck";
@@ -280,22 +280,38 @@ export class CICSTree
                 ...["Yes", "No"]);
         }
         if (answer === "Yes"){
-            for (const session of sessions){
-                try {
-                    await ProfileManagement.deleteProfile({ 
-                        name: session.label?.toString()!,
-                        rejectIfDependency: true
+            window.withProgress({
+                title: 'Delete Profile',
+                location: ProgressLocation.Notification,
+                cancellable: true
+                }, async (progress, token) => {
+                    token.onCancellationRequested(() => {
+                    console.log("Cancelling the delete command");
                     });
-                    const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-                    await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
+                    for (const index in sessions) {
+                        progress.report({
+                            message: `Deleting profile ${parseInt(index) + 1} of ${sessions.length}`,
+                            increment: (parseInt(index) / sessions.length) * 100,
+                        });
+                        try {
+                            await ProfileManagement.deleteProfile({ 
+                                name: sessions[parseInt(index)].label?.toString()!,
+                                rejectIfDependency: true
+                            });
+                            const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+                            await persistentStorage.removeLoadedCICSProfile(sessions[parseInt(index)].label!.toString());
 
-                    this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
-                } catch (error){
-                    window.showErrorMessage(error.message);
-                }
-            }
+                            this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== sessions[parseInt(index)]);
+                            this._onDidChangeTreeData.fire(undefined);
+                        } catch (error){
+                            window.showErrorMessage(error.message);
+                        }
+                    }
+                    
+                    }
+            );
             
-            this._onDidChangeTreeData.fire(undefined);
+            
         }
         
     }
