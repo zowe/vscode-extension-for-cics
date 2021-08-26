@@ -84,7 +84,7 @@ export class CICSRegionTree extends TreeItem {
           "..",
           "resources",
           "imgs",
-          "file-dark.svg"
+          "region-dark-disabled.svg"
         ),
         dark: join(
           __filename,
@@ -93,7 +93,7 @@ export class CICSRegionTree extends TreeItem {
           "..",
           "resources",
           "imgs",
-          "file-light.svg"
+          "region-light-disabled.svg"
         ),
       };
     } else {

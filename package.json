@@ -1,7 +1,7 @@
 {
   "name": "cics-extension-for-zowe",
-  "displayName": "CICSExtensionForZowe",
-  "description": "Extension to the Zowe Explorer for CICS",
+  "displayName": "Zowe Explorer for IBM CICS",
+  "description": "Extension to the Zowe Explorer for IBM CICS",
   "publisher": "Zowe",
   "repository": {
     "url": "https://github.com/zowe/vscode-extension-for-cics"
@@ -21,7 +21,7 @@
     "zowe.vscode-extension-for-zowe"
   ],
   "main": "./out/extension.js",
-  "icon": "resources/temp_logo.png",
+  "icon": "resources/zowe_cics_logo.png",
   "contributes": {
     "viewsWelcome": [],
     "views": {
@@ -117,16 +117,16 @@
         "command": "cics-extension-for-zowe.clearFilter",
         "title": "Clear Filter",
         "icon": {
-          "light": "resources/imgs/cross-dark.svg",
-          "dark": "resources/imgs/cross-light.svg"
+          "light": "resources/imgs/clear-filter-dark.svg",
+          "dark": "resources/imgs/clear-filter-light.svg"
         }
       },
       {
         "command": "cics-extension-for-zowe.clearPlexFilter",
         "title": "Clear Plex Filter",
         "icon": {
-          "light": "resources/imgs/cross-dark.svg",
-          "dark": "resources/imgs/cross-light.svg"
+          "light": "resources/imgs/clear-filter-dark.svg",
+          "dark": "resources/imgs/clear-filter-light.svg"
         }
       },
       {
