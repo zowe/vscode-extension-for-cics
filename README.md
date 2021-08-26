@@ -46,7 +46,7 @@ The list of resources are pre-filtered to exclude many of the IBM supplied ones 
 
 Use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.  
 
-The menu for Program in addition has the actions `Disable Program`, `NewCopy` and `PhaseIn` .  When a program is already disabled the first option is `Enable` to allow its enabement state to be toggled in which case it becomes `Disable`.  
+The menu for Program in addition has the actions `Disable Program`, `NewCopy` and `PhaseIn` .  When a program is already disabled the first option becomes `Enable Program` to allow its enabement state to be toggled.  
 
 Use `New Copy` <img src="./docs/images/program-newcopy-action.png" width="16px"/> and `Phase In` <img src="./docs/images/program-phasein-action.png" width="16px"/> actions to get the CICS region to load a fresh of the selected program into memory. This could be after you've edited a COBOL program source and successfully compiled it into a load library and now want to test your change.  Both actions can be performed on more than one program using multi-select.  
 
@@ -58,6 +58,6 @@ Following a `New Copy` or `Phase In` the updated value of the `newcopycnt` attri
 
 ## Release Notes
 
-Major refactor from initial release. New UI features like icons and an updated tree view. Increased functionality with new and improved commands.  Local Files and Local Transactions added to the resource tree.
+<!-- Major refactor from initial release. New UI features like icons and an updated tree view. Increased functionality with new and improved commands.  Local Files and Local Transactions added to the resource tree. -->
 
 ---
