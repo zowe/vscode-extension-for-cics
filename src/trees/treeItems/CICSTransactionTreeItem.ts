@@ -22,8 +22,8 @@ export class CICSTransactionTreeItem extends TreeItem {
     transaction: any,
     parentRegion: CICSRegionTree,
     public readonly iconPath = {
-      light: join(__filename, "..", "..", "..", "..", "resources", "imgs", "local-transaction-dark.svg"),
-      dark: join(__filename, "..", "..", "..", "..", "resources", "imgs", "local-transaction-light.svg"),
+      light: join(__filename, "..", "..", "resources", "imgs", "local-transaction-dark.svg"),
+      dark: join(__filename, "..", "..", "resources", "imgs", "local-transaction-light.svg"),
     }
   ) {
 

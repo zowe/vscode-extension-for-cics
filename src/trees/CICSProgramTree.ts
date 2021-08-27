@@ -27,14 +27,12 @@ export class CICSProgramTree extends TreeItem {
         __filename,
         "..",
         "..",
-        "..",
         "resources",
         "imgs",
         "programs-dark.svg"
       ),
       dark: join(
         __filename,
-        "..",
         "..",
         "..",
         "resources",

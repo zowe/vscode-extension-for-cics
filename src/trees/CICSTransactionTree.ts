@@ -27,14 +27,12 @@ export class CICSTransactionTree extends TreeItem {
         __filename,
         "..",
         "..",
-        "..",
         "resources",
         "imgs",
         "transactions-dark.svg"
       ),
       dark: join(
         __filename,
-        "..",
         "..",
         "..",
         "resources",

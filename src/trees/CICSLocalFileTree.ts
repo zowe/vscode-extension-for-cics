@@ -27,14 +27,12 @@ export class CICSLocalFileTree extends TreeItem {
         __filename,
         "..",
         "..",
-        "..",
         "resources",
         "imgs",
         "bars-dark.svg"
       ),
       dark: join(
         __filename,
-        "..",
         "..",
         "..",
         "resources",

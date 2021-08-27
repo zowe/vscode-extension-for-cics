@@ -22,8 +22,8 @@ export class CICSLocalFileTreeItem extends TreeItem {
     localFile: any,
     parentRegion: CICSRegionTree,
     public readonly iconPath = {
-      light: join(__filename, "..", "..", "..", "..", "resources", "imgs", "local-file-dark.svg"),
-      dark: join(__filename, "..", "..", "..", "..", "resources", "imgs", "local-file-light.svg"),
+      light: join(__filename, "..", "..", "resources", "imgs", "local-file-dark.svg"),
+      dark: join(__filename, "..", "..", "resources", "imgs", "local-file-light.svg"),
     }
   ) {
 

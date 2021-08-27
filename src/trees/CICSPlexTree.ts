@@ -24,14 +24,12 @@ export class CICSPlexTree extends TreeItem {
         __filename,
         "..",
         "..",
-        "..",
         "resources",
         "imgs",
         "list-dark.svg"
       ),
       dark: join(
         __filename,
-        "..",
         "..",
         "..",
         "resources",

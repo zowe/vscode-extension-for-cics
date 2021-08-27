@@ -21,21 +21,21 @@ export class CICSProgramTreeItem extends TreeItem {
     program: any,
     parentRegion: CICSRegionTree,
     public readonly iconPath = {
-      light: join(__filename, "..", "..", "..", "..", "resources", "imgs", "program-dark.svg"),
-      dark: join(__filename, "..", "..", "..", "..", "resources", "imgs", "program-light.svg"),
+      light: join(__filename, "..", "..", "resources", "imgs", "program-dark.svg"),
+      dark: join(__filename, "..", "..", "resources", "imgs", "program-light.svg"),
     }
   ) {
 
     super(
       `${program.program}${(
-        program.status.toLowerCase() === "disabled" && parseInt(program.newcopycnt) ? ` (New copy count: ${program.newcopycnt}) (Disabled)` : 
-        program.status.toLowerCase() === "disabled" && !parseInt(program.newcopycnt) ? ` (Disabled)` : 
-        program.status.toLowerCase() !== "disabled" && parseInt(program.newcopycnt) ? `  (New copy count: ${program.newcopycnt})` : 
-        ""
+        program.status.toLowerCase() === "disabled" && parseInt(program.newcopycnt) ? ` (New copy count: ${program.newcopycnt}) (Disabled)` :
+          program.status.toLowerCase() === "disabled" && !parseInt(program.newcopycnt) ? ` (Disabled)` :
+            program.status.toLowerCase() !== "disabled" && parseInt(program.newcopycnt) ? `  (New copy count: ${program.newcopycnt})` :
+              ""
       )}`,
       TreeItemCollapsibleState.None
     );
-    
+
     this.program = program;
     this.parentRegion = parentRegion;
     this.contextValue = `cicsprogram.${program.status.toLowerCase()}.${program.program

@@ -42,14 +42,12 @@ export class CICSRegionTree extends TreeItem {
         __filename,
         "..",
         "..",
-        "..",
         "resources",
         "imgs",
         "region-dark.svg"
       ),
       dark: join(
         __filename,
-        "..",
         "..",
         "..",
         "resources",
@@ -81,14 +79,12 @@ export class CICSRegionTree extends TreeItem {
           __filename,
           "..",
           "..",
-          "..",
           "resources",
           "imgs",
           "region-dark-disabled.svg"
         ),
         dark: join(
           __filename,
-          "..",
           "..",
           "..",
           "resources",
