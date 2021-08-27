@@ -30,7 +30,7 @@ export class CICSProgramTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "list-dark.svg"
+        "programs-dark.svg"
       ),
       dark: join(
         __filename,
@@ -39,7 +39,7 @@ export class CICSProgramTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "list-light.svg"
+        "programs-light.svg"
       ),
     }
   ) {
