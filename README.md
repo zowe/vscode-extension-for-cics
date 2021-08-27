@@ -1,8 +1,10 @@
 # Zowe CICS Explorer
 
-[![version](https://vsmarketplacebadge.apphb.com/version-short/zowe.zowe-explorer-cics-extension.svg)](https://vsmarketplacebadge.apphb.com/version-short/zowe.zowe-explorer-cics-extension.svg)
-[![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/zowe.zowe-explorer-cics-extension.svg)](https://vsmarketplacebadge.apphb.com/downloads-short/zowe.zowe-explorer-cics-extension.svg)
+[![version](https://vsmarketplacebadge.apphb.com/version-short/zowe.cics-extension-for-zowe.svg)](https://vsmarketplacebadge.apphb.com/version-short/Zowe.cics-extension-for-zowe.svg)
+[![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/zowe.cics-extension-for-zowe.svg)](https://vsmarketplacebadge.apphb.com/downloads-short/Zowe.cics-extension-for-zowe.svg)
 [![slack](https://img.shields.io/badge/chat-on%20Slack-blue)](https://openmainframeproject.slack.com/archives/CUVE37Z5F)
+[![open issues](https://img.shields.io/github/issues/zowe/vscode-extension-for-cics)](https://github.com/zowe/vscode-extension-for-cics/issues)
+
 
 This CICS Extension for Zowe Explorer adds additional functionality to the popular VSCode extension, [Zowe Explorer](https://github.com/zowe/vscode-extension-for-zowe). This extension allows interactions with CICS regions and programs, and the ability to run commands against them.
 
