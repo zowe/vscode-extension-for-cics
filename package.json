@@ -361,7 +361,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "build": "rm -rf out && npm run licenses && tsc -p ./",
+    "build": "rm -rf out && npm run lint && npm run licenses && tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run build && npm run lint",
