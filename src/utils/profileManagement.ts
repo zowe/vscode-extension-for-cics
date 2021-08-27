@@ -9,93 +9,227 @@
 *
 */
 
-import { KeytarCredentialManager } from "./KeytarCredentialManager";
-import { LocalizeFunc, loadMessageBundle } from "vscode-nls";
-import { getImperativeConfig } from "@zowe/cli";
-import { existsSync, readFileSync } from "fs";
-import { workspace, env } from "vscode";
+import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile } from "@zowe/imperative";
+import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
+import axios from "axios";
 import { window } from "vscode";
-import { homedir } from "os";
-import { join } from "path";
-import {
-  CredentialManagerFactory,
-  ImperativeError,
-  CliProfileManager,
-  ImperativeConfig,
-} from "@zowe/imperative";
+import { xml2json } from "xml-js";
+import cicsProfileMeta from "./profileDefinition";
 
-const localize: LocalizeFunc = loadMessageBundle();
-declare const nonWebpackRequire: typeof require;
-declare const webpackRequire: typeof require;
+export class ProfileManagement {
 
-export async function loadProfileManager() {
-  const keytar = getSecurityModules("keytar");
-  if (keytar) {
-    KeytarCredentialManager.keytar = keytar;
+  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('1.18.0');
+  private static profilesCache = ProfileManagement.zoweExplorerAPI.getExplorerExtenderApi().getProfilesCache();
 
-    try {
-      await CredentialManagerFactory.initialize({
-        service: "Zowe-Plugin",
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        Manager: KeytarCredentialManager,
-        displayName: localize("displayName", "Zowe Explorer"),
-      });
-    } catch (err) {
-      throw new ImperativeError({ msg: err.toString() });
-    }
+  constructor() { }
+
+  public static apiDoesExist() {
+    if (ProfileManagement.zoweExplorerAPI) { return true; }
+    return false;
   }
 
-  await CliProfileManager.initialize({
-    configuration: getImperativeConfig().profiles!,
-    profileRootDirectory: join(getZoweDir(), "profiles"),
-  });
-}
-
-function getSecurityModules(moduleName: string): NodeRequire | undefined {
-  let imperativeIsSecure: boolean = false;
-  const r = typeof webpackRequire === "function" ? nonWebpackRequire : require;
-  try {
-    const fileName = join(getZoweDir(), "settings", "imperative.json");
-    let settings: any;
-    if (existsSync(fileName)) {
-      settings = JSON.parse(readFileSync(fileName).toString());
-    }
-    const value1 = settings?.overrides.CredentialManager;
-    const value2 = settings?.overrides["credential-manager"];
-    imperativeIsSecure =
-      (typeof value1 === "string" && value1.length > 0) ||
-      (typeof value2 === "string" && value2.length > 0);
-  } catch (error) {
-    window.showWarningMessage(error.message);
-    return undefined;
+  public static async registerCICSProfiles() {
+    await ProfileManagement.zoweExplorerAPI.getExplorerExtenderApi().initForZowe('cics', cicsProfileMeta);
   }
-  if (imperativeIsSecure) {
-    // Workaround for Theia issue (https://github.com/eclipse-theia/theia/issues/4935)
-    const appRoot = env.appRoot;
-    try {
-      return r(`${appRoot}/node_modules/${moduleName}`);
-    } catch (err) {
-      /* Do nothing */
-    }
-    try {
-      return r(`${appRoot}/node_modules.asar/${moduleName}`);
-    } catch (err) {
-      /* Do nothing */
-    }
-    window.showWarningMessage(
-      localize(
-        "initialize.module.load",
-        "Credentials not managed, unable to load security file: "
-      ) + moduleName
-    );
-  }
-  return undefined;
-}
 
-export function getZoweDir(): string {
-  ImperativeConfig.instance.loadedConfig = {
-    defaultHome: join(homedir(), ".zowe"),
-    envVariablePrefix: "ZOWE",
-  };
-  return ImperativeConfig.instance.cliHome;
+  public static getExplorerApis() {
+    return ProfileManagement.zoweExplorerAPI;
+  }
+
+  public static getProfilesCache() {
+    return ProfileManagement.profilesCache;
+  }
+
+  public static async createNewProfile(formResponse: ISaveProfile) {
+    await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
+    await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+  }
+
+  public static async updateProfile(formResponse: IUpdateProfile) {
+    const profile = await ProfileManagement.profilesCache.getCliProfileManager('cics').update(formResponse);
+    await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+    return profile;
+  }
+
+  public static async deleteProfile(formResponse: IDeleteProfile) {
+    await ProfileManagement.profilesCache.getCliProfileManager('cics').delete(formResponse);
+    await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+  }
+
+  public static async getPlexInfo(profile: IProfileLoaded) {
+
+    const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+    const infoLoaded: { plexname: string | null, regions: any[]; }[] = [];
+
+    if (profile!.profile!.cicsPlex) {
+      if (profile!.profile!.regionName) {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Both Supplied, no searching required - Only load 1 region
+         */
+
+        const singleRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, {
+          auth: {
+            username: profile!.profile!.user,
+            password: profile!.profile!.password,
+          }
+        });
+        const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
+          const singleRegion = jsonFromXml.response.records.cicsmanagedregion._attributes;
+          infoLoaded.push({
+            plexname: profile!.profile!.cicsPlex,
+            regions: [singleRegion]
+          });
+        } else {
+          window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} in plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
+        }
+
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+      } else {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Plex given - must search for regions
+         */
+
+        const allRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}`, {
+          auth: {
+            username: profile!.profile!.user,
+            password: profile!.profile!.password,
+          }
+        });
+        const jsonFromXml = JSON.parse(xml2json(allRegionResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
+          const allRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
+          infoLoaded.push({
+            plexname: profile!.profile!.cicsPlex,
+            regions: allRegions
+          });
+        } else {
+          window.showErrorMessage(`Cannot find plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
+        }
+
+
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+      }
+    } else {
+      if (profile!.profile!.regionName) {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Region but no plex - Single region system, use that
+         */
+
+        const singleRegionResponse = await axios.get(`${URL}/CICSRegion/${profile!.profile!.regionName}`, {
+          auth: {
+            username: profile!.profile!.user,
+            password: profile!.profile!.password,
+          }
+        });
+        const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsregion) {
+          const singleRegion = jsonFromXml.response.records.cicsregion._attributes;
+          infoLoaded.push({
+            plexname: null,
+            regions: [singleRegion]
+          });
+        } else {
+          window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} for profile ${profile!.name}`);
+        }
+
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+      } else {
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        /**
+         * Nothing given - Test if plex and find all info
+         */
+        try {
+          const testIfPlexResponse = await axios.get(`${URL}/CICSCICSPlex`, {
+            auth: {
+              username: profile!.profile!.user,
+              password: profile!.profile!.password,
+            }
+          });
+          if (testIfPlexResponse.status === 200) {
+            // Plex
+            const jsonFromXml = JSON.parse(xml2json(testIfPlexResponse.data, { compact: true, spaces: 4 }));
+            if (jsonFromXml.response.records && jsonFromXml.response.records.cicscicsplex) {
+              const returnedPlexes = jsonFromXml.response.records.cicscicsplex.map((item: { _attributes: any; }) => item._attributes);
+
+
+              for (const plex of returnedPlexes) {
+                try {
+                  const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.plexname}`, {
+                    auth: {
+                      username: profile!.profile!.user,
+                      password: profile!.profile!.password,
+                    }
+                  });
+                  if (regionResponse.status === 200) {
+                    const jsonFromXml = JSON.parse(xml2json(regionResponse.data, { compact: true, spaces: 4 }));
+                    if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
+                      const returnedRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
+                      infoLoaded.push({
+                        plexname: plex.plexname,
+                        regions: returnedRegions
+                      });
+                    }
+                  }
+                } catch (error) {
+                  // console.log(error);
+                }
+              }
+            }
+
+          } else {
+            // Not Plex
+
+            const singleRegion = await axios.get(`${URL}/CICSRegion`, {
+              auth: {
+                username: profile!.profile!.user,
+                password: profile!.profile!.password,
+              }
+            });
+            const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+            const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
+            infoLoaded.push({
+              plexname: null,
+              regions: [returnedRegion]
+            });
+          }
+        } catch (error) {
+          // Not Plex - Could be error
+
+          const singleRegion = await axios.get(`${URL}/CICSRegion`, {
+            auth: {
+              username: profile!.profile!.user,
+              password: profile!.profile!.password,
+            }
+          });
+          const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+          const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
+          infoLoaded.push({
+            plexname: null,
+            regions: [returnedRegion]
+          });
+
+        }
+      }
+    }
+    return infoLoaded;
+  }
 }

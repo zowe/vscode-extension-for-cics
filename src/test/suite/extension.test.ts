@@ -14,13 +14,19 @@ import * as assert from 'assert';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from 'vscode';
-// import * as myExtension from '../../extension';
+import { ProfileManagement } from '../../utils/profileManagement';
 
-suite('Extension Test Suite', () => {
+suite('Profile Management Tests', async () => {
 	vscode.window.showInformationMessage('Start all tests.');
 
-	test('Sample test', () => {
-		assert.equal(-1, [1, 2, 3].indexOf(5));
-		assert.equal(-1, [1, 2, 3].indexOf(0));
+	test('Contains Zowe Explorer APIs', () => {
+		assert.strictEqual(ProfileManagement.apiDoesExist(), true);
 	});
+	test('Able to retrieve ProfilesCache', () => {
+		assert.strictEqual(ProfileManagement.getProfilesCache() ? true : false, true);
+	});
+	test('Includes cics profile type', () => {
+		assert.strictEqual(ProfileManagement.getProfilesCache().getAllTypes().includes('cics'), true);
+	});
+
 });

@@ -1,193 +1,393 @@
 {
-	"name": "cics-extension-for-zowe",
-	"displayName": "CICSExtensionForZowe",
-	"description": "Extension to the Zowe Explorer for CICS",
-	"publisher": "Zowe",
-	"repository": {
-		"url": "https://github.com/zowe/vscode-extension-for-cics"
-	},
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.50.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:cics-extension-for-zowe.addSession",
-		"onView:cics-view"
-	],
-	"extensionDependencies": [
-		"zowe.vscode-extension-for-zowe"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"viewsWelcome": [],
-		"views": {
-			"zowe": [
-				{
-					"id": "cics-view",
-					"name": "cics"
-				}
-			]
-		},
-		"commands": [
-			{
-				"command": "cics-extension-for-zowe.addSession",
-				"title": "Create a CICS Profile",
-				"icon": {
-					"light": "resources/imgs/plus-dark.svg",
-					"dark": "resources/imgs/plus-light.svg"
-				}
-			},
-			{
-				"command": "cics-extension-for-zowe.newCopyProgram",
-				"title": "New Copy",
-				"icon": {
-					"light": "resources/imgs/newcopy-dark.svg",
-					"dark": "resources/imgs/newcopy-light.svg"
-				}
-			},
-			{
-				"command": "cics-extension-for-zowe.refreshTree",
-				"title": "Refresh",
-				"icon": {
-					"light": "resources/imgs/refresh-dark.svg",
-					"dark": "resources/imgs/refresh-light.svg"
-				}
-			},
-			{
-				"command": "cics-extension-for-zowe.filterPrograms",
-				"title": "Filter Programs",
-				"icon": {
-					"light": "resources/imgs/filter-dark.svg",
-					"dark": "resources/imgs/filter-light.svg"
-				}
-			},
-			{
-				"command": "cics-extension-for-zowe.showAttributes",
-				"title": "Show Attributes"
-			},
-			{
-				"command": "cics-extension-for-zowe.showRegionAttributes",
-				"title": "Show Attributes"
-			},
-			{
-				"command": "cics-extension-for-zowe.enableProgram",
-				"title": "Enable Program"
-			},
-			{
-				"command": "cics-extension-for-zowe.disableProgram",
-				"title": "Disable Program"
-			},
-			{
-				"command": "cics-extension-for-zowe.phaseInCommand",
-				"title": "Phase In",
-				"icon": {
-					"light": "resources/imgs/phasein-dark.svg",
-					"dark": "resources/imgs/phasein-light.svg"
-				}
-			},
-			{
-				"command": "cics-extension-for-zowe.removeSession",
-				"title": "Remove Profile"
-			}
-		],
-		"menus": {
-			"view/title": [
-				{
-					"command": "cics-extension-for-zowe.refreshTree",
-					"when": "view == cics-view",
-					"group": "navigation"
-				},
-				{
-					"command": "cics-extension-for-zowe.addSession",
-					"when": "view == cics-view",
-					"group": "navigation"
-				}
-			],
-			"view/item/context": [
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
-					"command": "cics-extension-for-zowe.newCopyProgram",
-					"group": "inline"
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
-					"command": "cics-extension-for-zowe.newCopyProgram",
-					"group": ""
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
-					"command": "cics-extension-for-zowe.phaseInCommand",
-					"group": "inline"
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
-					"command": "cics-extension-for-zowe.phaseInCommand",
-					"group": ""
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsregion.*/",
-					"command": "cics-extension-for-zowe.showRegionAttributes",
-					"group": ""
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsregion.*/",
-					"command": "cics-extension-for-zowe.filterPrograms",
-					"group": "inline"
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
-					"command": "cics-extension-for-zowe.showAttributes",
-					"group": ""
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsprogram.disabled.*/",
-					"command": "cics-extension-for-zowe.enableProgram",
-					"group": ""
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicsprogram.enabled.*/",
-					"command": "cics-extension-for-zowe.disableProgram",
-					"group": ""
-				},
-				{
-					"when": "view == cics-view && viewItem =~ /^cicssession.*/",
-					"command": "cics-extension-for-zowe.removeSession",
-					"title": "Remove Session"
-				}
-			]
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "rm -rf out && npm run licenses && tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js",
-		"licenses": "node ./update.licenses.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.0",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.50.0",
-		"@typescript-eslint/eslint-plugin": "^4.1.1",
-		"@typescript-eslint/parser": "^4.1.1",
-		"eslint": "^7.9.0",
-		"glob": "^7.1.6",
-		"mocha": "^8.1.3",
-		"shebang-regex": "^3.0.0",
-		"typescript": "^4.0.2",
-		"vscode-test": "^1.4.0"
-	},
-	"dependencies": {
-		"@zowe/cics-for-zowe-cli": "^4.0.2",
-		"@zowe/cli": "^6.30.0",
-		"@zowe/imperative": "^4.8.1",
-		"@zowe/zowe-explorer-api": "^1.13.1",
-		"vscode-nls": "^5.0.0"
-	}
+  "name": "cics-extension-for-zowe",
+  "displayName": "Zowe Explorer for IBM CICS",
+  "description": "Extension to the Zowe Explorer for IBM CICS",
+  "publisher": "Zowe",
+  "repository": {
+    "url": "https://github.com/zowe/vscode-extension-for-cics"
+  },
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:cics-extension-for-zowe.addSession",
+    "onView:cics-view"
+  ],
+  "extensionDependencies": [
+    "zowe.vscode-extension-for-zowe"
+  ],
+  "main": "./out/extension.js",
+  "icon": "resources/zowe_cics_logo.png",
+  "contributes": {
+    "viewsWelcome": [],
+    "views": {
+      "zowe": [
+        {
+          "id": "cics-view",
+          "name": "cics"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "cics-extension-for-zowe.addSession",
+        "title": "Create a CICS Profile",
+        "icon": {
+          "light": "resources/imgs/plus-dark.svg",
+          "dark": "resources/imgs/plus-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.newCopyProgram",
+        "title": "New Copy",
+        "icon": {
+          "light": "resources/imgs/newcopy-dark.svg",
+          "dark": "resources/imgs/newcopy-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.refreshTree",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/imgs/refresh-dark.svg",
+          "dark": "resources/imgs/refresh-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterPrograms",
+        "title": "Filter Programs",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterProgramDefinitions",
+        "title": "Filter Program Definitions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterTransactionDefinitions",
+        "title": "Filter Transaction Definitions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterFileDefinitions",
+        "title": "Filter File Definitions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterTransactions",
+        "title": "Filter Transactions",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterLocalFiles",
+        "title": "Filter Local Files",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterPlexResources",
+        "title": "Filter Plex Resources",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.clearFilter",
+        "title": "Clear Filter",
+        "icon": {
+          "light": "resources/imgs/clear-filter-dark.svg",
+          "dark": "resources/imgs/clear-filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.clearPlexFilter",
+        "title": "Clear Plex Filter",
+        "icon": {
+          "light": "resources/imgs/clear-filter-dark.svg",
+          "dark": "resources/imgs/clear-filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.showProgramAttributes",
+        "title": "Show Attributes"
+      },
+      {
+        "command": "cics-extension-for-zowe.showTransactionAttributes",
+        "title": "Show Attributes"
+      },
+      {
+        "command": "cics-extension-for-zowe.showLocalFileAttributes",
+        "title": "Show Attributes"
+      },
+      {
+        "command": "cics-extension-for-zowe.showRegionAttributes",
+        "title": "Show Attributes"
+      },
+      {
+        "command": "cics-extension-for-zowe.enableProgram",
+        "title": "Enable Program"
+      },
+      {
+        "command": "cics-extension-for-zowe.disableProgram",
+        "title": "Disable Program"
+      },
+      {
+        "command": "cics-extension-for-zowe.phaseInCommand",
+        "title": "Phase In",
+        "icon": {
+          "light": "resources/imgs/phasein-dark.svg",
+          "dark": "resources/imgs/phasein-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.removeSession",
+        "title": "Hide Profile"
+      },
+      {
+        "command": "cics-extension-for-zowe.updateSession",
+        "title": "Update Profile"
+      },
+      {
+        "command": "cics-extension-for-zowe.deleteSession",
+        "title": "Delete Profile"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "cics-extension-for-zowe.refreshTree",
+          "when": "view == cics-view",
+          "group": "navigation"
+        },
+        {
+          "command": "cics-extension-for-zowe.addSession",
+          "when": "view == cics-view",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+          "command": "cics-extension-for-zowe.newCopyProgram",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+          "command": "cics-extension-for-zowe.newCopyProgram",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+          "command": "cics-extension-for-zowe.phaseInCommand",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+          "command": "cics-extension-for-zowe.phaseInCommand",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsregion.*/",
+          "command": "cics-extension-for-zowe.showRegionAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreeprogram.*/",
+          "command": "cics-extension-for-zowe.filterPrograms",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreeprogram.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreetransaction.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreelocalfile.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreetransaction.*/",
+          "command": "cics-extension-for-zowe.filterTransactions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreelocalfile.*/",
+          "command": "cics-extension-for-zowe.filterLocalFiles",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionprogram.*/",
+          "command": "cics-extension-for-zowe.filterProgramDefinitions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionprogram.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitiontransaction.*/",
+          "command": "cics-extension-for-zowe.filterTransactionDefinitions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitiontransaction.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionfile.*/",
+          "command": "cics-extension-for-zowe.filterFileDefinitions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedefinitionfile.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
+          "command": "cics-extension-for-zowe.filterPlexResources",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
+          "command": "cics-extension-for-zowe.clearPlexFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsprogram.*/",
+          "command": "cics-extension-for-zowe.showProgramAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
+          "command": "cics-extension-for-zowe.showTransactionAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslocalfile.*/",
+          "command": "cics-extension-for-zowe.showLocalFileAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsprogram.disabled.*/",
+          "command": "cics-extension-for-zowe.enableProgram",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsprogram.enabled.*/",
+          "command": "cics-extension-for-zowe.disableProgram",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicssession.*/",
+          "command": "cics-extension-for-zowe.removeSession",
+          "title": "Remove Session"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicssession.*/",
+          "command": "cics-extension-for-zowe.updateSession",
+          "title": "Update Session"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicssession.*/",
+          "command": "cics-extension-for-zowe.deleteSession",
+          "title": "Delete Session"
+        }
+      ]
+    },
+    "configuration": {
+      "properties": {
+        "Zowe.CICS.Persistent": {
+          "default": {
+            "persistence": true,
+            "programSearchHistory": [],
+            "transactionSearchHistory": [],
+            "localFileSearchHistory": [],
+            "loadedCICSProfile": []
+          },
+          "description": "Zowe CICS Extension History",
+          "scope": "window"
+        },
+        "Zowe.CICS.Program.Filter": {
+          "type": "string",
+          "default": "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
+          "description": "Default filter criteria for Programs",
+          "scope": "window"
+        },
+        "Zowe.CICS.Transaction.Filter": {
+          "type": "string",
+          "default": "NOT (program=DFH* OR program=EYU*)",
+          "description": "Default filter criteria for Transactions",
+          "scope": "window"
+        },
+        "Zowe.CICS.LocalFile.Filter": {
+          "type": "string",
+          "default": "file=*",
+          "description": "Default filter criteria for Local Files",
+          "scope": "window"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "rm -rf out && npm run lint && npm run licenses && tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run build && npm run lint",
+    "test": "node ./out/test/runTest.js",
+    "licenses": "node ./update.licenses.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.0",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.50.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "shebang-regex": "^3.0.0",
+    "typescript": "^4.0.2",
+    "vscode-test": "^1.4.0"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@zowe/cics-for-zowe-cli": "^4.0.2",
+    "@zowe/imperative": "^4.8.1",
+    "@zowe/zowe-explorer-api": "^1.18.1",
+    "axios": "^0.21.1",
+    "xml-js": "^1.6.11"
+  }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" standalone="yes"?>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="cogs" class="svg-inline--fa fa-cogs fa-w-20" role="img" viewBox="0 0 640 700" style="zoom: 1;">
+
+<defs>
+    <marker id="arrowhead-right" markerWidth="4" markerHeight="3" 
+    refX="0" refY="1.5" orient="auto"  fill="#5555ff">
+      <polygon points="0 0, 3 1.5, 0 3" />
+    </marker>
+</defs>
+
+<defs>
+    <marker id="arrowhead-left" markerWidth="4" markerHeight="3" 
+    refX="2" refY="1.5" orient="auto" fill="#5555ff">
+      <polygon points="0 1.5, 3 3, 3 0" />
+    </marker>
+</defs>
+
+<line x1="250" y1="350" x2="370" y2="350" stroke="#5555ff" stroke-width="35" marker-end="url(#arrowhead-right)" marker-start="url(#arrowhead-left)"/>
+
+<line x1="250" y1="480" x2="370" y2="480" stroke="#5555ff" stroke-width="35" marker-end="url(#arrowhead-right)" marker-start="url(#arrowhead-left)"/>
+
+<rect fill-opacity="10%" fill="transparent" x="110" y="30" width="440" height="590" stroke="#313131" stroke-width="60" rx="40" ry="40"/>
+
+</svg>

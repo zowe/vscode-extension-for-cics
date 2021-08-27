@@ -11,35 +11,64 @@
 
 import { CicsCmciConstants, CicsCmciRestClient } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
-import { commands, window } from "vscode";
-import { CICSTreeDataProvider } from "../trees/treeProvider";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSRegionTree } from "../trees/CICSRegionTree";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getPhaseInCommand(tree: CICSTreeDataProvider) {
+export function getPhaseInCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.phaseInCommand",
-    async (node) => {
-      if (node) {
-        window.showInformationMessage(
-          `Phase-In Requested for program ${node.label}`
-        );
+    async (clickedNode) => {
+      if (clickedNode) {
         try {
-          const response = await performPhaseIn(
-            node.parentRegion.parentSession.session,
-            {
-              name: node.label,
-              regionName: node.parentRegion.label,
-              cicsPlex: node.parentRegion.parentSession.cicsPlex,
-            }
-          );
+          const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== clickedNode);
+          const allSelectedNodes = [clickedNode, ...selectedNodes];
+          let parentRegions : CICSRegionTree[] = [];
 
-          window.showInformationMessage(
-            `New Copy Count for ${node.label} = ${response.response.records.cicsprogram.newcopycnt}`
-          );
-          // tree.refresh();
+          window.withProgress({
+            title: 'Phase In',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the Phase In");
+            });
+          for (const index in allSelectedNodes) {
+            progress.report({
+              message: `Phase In ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+              increment: (parseInt(index) / allSelectedNodes.length) * 100,
+            });
+            try {
+              const currentNode = allSelectedNodes[parseInt(index)];
+              await performPhaseIn(
+                currentNode.parentRegion.parentSession.session,
+                {
+                  name: currentNode.program.program,
+                  regionName: currentNode.parentRegion.label,
+                  cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                }
+              );
+
+              if(!parentRegions.includes(currentNode.parentRegion)){
+                parentRegions.push(currentNode.parentRegion);
+              }
+            } catch(err){
+              // @ts-ignore
+              window.showErrorMessage(err);
+            }
+          }
+          for (const parentRegion of parentRegions){
+            const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+            await programTree.loadContents();
+          }
+          tree._onDidChangeTreeData.fire(undefined);
+        });
         } catch (err) {
-          console.log(err);
+          // @ts-ignore
           window.showErrorMessage(err);
         }
+      } else {
+        window.showErrorMessage("No CICS program selected");
       }
     }
   );

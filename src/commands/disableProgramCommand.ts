@@ -13,39 +13,52 @@ import {
   CicsCmciConstants,
   CicsCmciRestClient,
   ICMCIApiResponse,
-  IURIMapParms,
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
-import { commands, window } from "vscode";
-import { CICSTreeDataProvider } from "../trees/treeProvider";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
 
-export function getDisableProgramCommand(tree: CICSTreeDataProvider) {
+export function getDisableProgramCommand(treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.disableProgram",
     async (node) => {
       if (node) {
-        window.showInformationMessage(
-          `Disabling program ${node.program.program}`
-        );
         try {
-          const response = await disableProgram(
-            node.parentRegion.parentSession.session,
-            {
-              name: node.program.program,
-              regionName: node.parentRegion.label,
-              cicsPlex: node.parentRegion.parentSession.cicsPlex,
+
+          let selectedNodes = treeview.selection;
+
+          window.withProgress({
+            title: 'Disable',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the Disable");
+            });
+            for (const index in selectedNodes) {
+              progress.report({
+                message: `Disabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
+                increment: (parseInt(index) / selectedNodes.length) * 100,
+              });
+              try {
+                const currentNode = selectedNodes[parseInt(index)];
+
+                
+                await disableProgram(
+                  currentNode.parentRegion.parentSession.session,
+                {
+                  name: currentNode.program.program,
+                  regionName: currentNode.parentRegion.label,
+                  cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                }
+              );
+            } catch(err){
+              // @ts-ignore
+              window.showErrorMessage(err);
             }
-          );
-
-          window.showInformationMessage(
-            `Program ${node.program.program} STATUS: - ${response.response.records.cicsprogram.status}`
-          );
-
-          tree.refresh();
-          
-        } catch (err) {
-          console.log(err);
-
+            } 
+          });
+      } catch (err) {
+          // @ts-ignore
           window.showErrorMessage(err);
         }
       } else {
@@ -57,7 +70,7 @@ export function getDisableProgramCommand(tree: CICSTreeDataProvider) {
 
 async function disableProgram(
   session: AbstractSession,
-  parms: IURIMapParms
+  parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {
     request: {

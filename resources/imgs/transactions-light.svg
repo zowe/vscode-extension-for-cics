@@ -1,0 +1,13 @@
+<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="list" class="svg-inline--fa fa-list fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+
+<line x1="200" y1="95" x2="480" y2="95" stroke="#cccccc" stroke-width="70" stroke-linecap="round"/>
+
+<polygon points="130, 35, 130, 155, 0, 95" fill="#ffffcc"/>
+
+<line x1="40" y1="255" x2="480" y2="255" stroke="#cccccc" stroke-width="70" stroke-linecap="round"/>
+
+<line x1="40" y1="415" x2="330" y2="415" stroke="#cccccc" stroke-width="70" stroke-linecap="round"/>
+
+<polygon points="400, 355, 400, 475, 520, 410" fill="#ffffcc"/>
+
+</svg>

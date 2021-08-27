@@ -9,12 +9,12 @@
 *
 */
 
-import { CICSTreeDataProvider } from "../trees/treeProvider";
 import { commands } from "vscode";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getAddSessionCommand(tree: CICSTreeDataProvider) {
+export function getAddSessionCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.addSession",
-    async () => tree.addSession()
+    async () => tree.addProfile()
   );
 }

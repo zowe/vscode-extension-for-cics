@@ -13,39 +13,52 @@ import {
   CicsCmciConstants,
   CicsCmciRestClient,
   ICMCIApiResponse,
-  IURIMapParms,
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
-import { commands, window } from "vscode";
-import { CICSTreeDataProvider } from "../trees/treeProvider";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
 
-export function getEnableProgramCommand(tree: CICSTreeDataProvider) {
+
+export function getEnableProgramCommand(treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.enableProgram",
-    async (node) => {
-      if (node) {
-        window.showInformationMessage(
-          `Enabling program ${node.program.program}`
-        );
-
+    async (clickedNode) => {
+      if (clickedNode) {
         try {
-          const response = await enableProgram(
-            node.parentRegion.parentSession.session,
-            {
-              name: node.program.program,
-              regionName: node.parentRegion.label,
-              cicsPlex: node.parentRegion.parentSession.cicsPlex,
+          let selectedNodes = treeview.selection;
+
+          window.withProgress({
+            title: 'Enable',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the Enable");
+            });
+            for (const index in selectedNodes) {
+              progress.report({
+                message: `Enabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
+                increment: (parseInt(index) / selectedNodes.length) * 100,
+              });
+              try {
+                const currentNode = selectedNodes[parseInt(index)];
+
+                await enableProgram(
+                  currentNode.parentRegion.parentSession.session,
+                  {
+                    name: currentNode.program.program,
+                    regionName: currentNode.parentRegion.label,
+                    cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                  }
+                );
+                
+              } catch(err){
+                // @ts-ignore
+                window.showErrorMessage(err);
+              }
             }
-          );
-
-          window.showInformationMessage(
-            `Program ${node.program.program} STATUS: - ${response.response.records.cicsprogram.status}`
-          );
-
-          tree.refresh();
+        });
         } catch (err) {
-          console.log(err);
-
+          // @ts-ignore
           window.showErrorMessage(err);
         }
       } else {
@@ -57,7 +70,7 @@ export function getEnableProgramCommand(tree: CICSTreeDataProvider) {
 
 async function enableProgram(
   session: AbstractSession,
-  parms: IURIMapParms
+  parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {
     request: {

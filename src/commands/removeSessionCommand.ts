@@ -9,18 +9,42 @@
 *
 */
 
-import { CICSTreeDataProvider } from "../trees/treeProvider";
-import { commands, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getRemoveSessionCommand(tree: CICSTreeDataProvider) {
+export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.removeSession",
     async (node) => {
       if (node) {
-        await tree.removeSession(node);
-        tree.refresh();
+          const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
+          const allSelectedNodes = [node, ...selectedNodes];
+          window.withProgress({
+            title: 'Hide Profile',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the hide command");
+            });
+            for (const index in allSelectedNodes) {
+              progress.report({
+                message: `Hiding ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+                increment: (parseInt(index) / allSelectedNodes.length) * 100,
+              });
+              try {
+                const currentNode = allSelectedNodes[parseInt(index)];
+
+                await tree.removeSession(currentNode);
+
+              } catch(err){
+                // @ts-ignore
+                window.showErrorMessage(err);
+              }
+            }
+          });
       } else {
-        window.showErrorMessage("No CICS program selected");
+        window.showErrorMessage("No profile selected to remove");
       }
     }
   );

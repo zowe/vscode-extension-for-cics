@@ -10,20 +10,33 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { CICSProgramTreeItem } from "./CICSProgramTree";
-import { CICSSessionTreeItem } from "./CICSSessionTree";
 import { join } from "path";
+import { CICSProgramTree } from "./CICSProgramTree";
+import { CICSTransactionTree } from "./CICSTransactionTree";
+import { CICSLocalFileTree } from "./CICSLocalFileTree";
+import { CICSSessionTree } from "./CICSSessionTree";
+import { CICSPlexTree } from "./CICSPlexTree";
 
-export class CICSRegionTreeItem extends TreeItem {
-  children: CICSProgramTreeItem[];
-  parentSession: CICSSessionTreeItem;
+export class CICSRegionTree extends TreeItem {
+  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree] | null; //CICSDefinitionTree
   region: any;
+  parentSession: CICSSessionTree;
+  parentPlex: CICSPlexTree | undefined;
+  isActive: true | false;
+
+  public getRegionName() {
+    return this.region.applid || this.region.cicsname;
+  }
+
+  public getIsActive(){
+    return this.isActive;
+  }
 
   constructor(
     regionName: string,
-    parentSession: CICSSessionTreeItem,
     region: any,
-    children?: CICSProgramTreeItem[] | CICSProgramTreeItem | undefined,
+    parentSession: CICSSessionTree,
+    parentPlex: CICSPlexTree | undefined,
     public iconPath = {
       light: join(
         __filename,
@@ -46,13 +59,46 @@ export class CICSRegionTreeItem extends TreeItem {
     }
   ) {
     super(regionName, TreeItemCollapsibleState.Collapsed);
-    this.children = !Array.isArray(children) ? [children!] : children;
-    this.parentSession = parentSession;
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-  }
 
-  public addProgramChild(programTreeItem: CICSProgramTreeItem) {
-    this.children.push(programTreeItem);
+    this.parentSession = parentSession;
+    if (parentPlex) {
+      this.parentPlex = parentPlex;
+    }
+
+    if(this.parentPlex){
+      this.isActive = region.cicsstate === "ACTIVE" ? true : false;
+    } else {
+      this.isActive = region.cicsstatus === "ACTIVE" ? true : false;
+    }
+    
+    if(!this.isActive){
+      this.children = null;
+      this.collapsibleState = TreeItemCollapsibleState.None;
+      this.iconPath = {
+        light: join(
+          __filename,
+          "..",
+          "..",
+          "..",
+          "resources",
+          "imgs",
+          "region-dark-disabled.svg"
+        ),
+        dark: join(
+          __filename,
+          "..",
+          "..",
+          "..",
+          "resources",
+          "imgs",
+          "region-light-disabled.svg"
+        ),
+      };
+    } else {
+      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)]; //, new CICSDefinitionTree(this)
+    }
+    
   }
 }

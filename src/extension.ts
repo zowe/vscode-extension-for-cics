@@ -12,97 +12,98 @@
 import { getDisableProgramCommand } from "./commands/disableProgramCommand";
 import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
-import { ZoweExplorerApi, ProfilesCache } from "@zowe/zowe-explorer-api";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
-import { loadProfileManager } from "./utils/profileManagement";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
-import { getRefreshCommand } from "./commands/refreshCommand";
-import { ExtensionContext, window, extensions } from "vscode";
+import { ExtensionContext, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
-import { CICSTreeDataProvider } from "./trees/treeProvider";
-import { ProfileStorage } from "./utils/profileStorage";
-import { CicsApi } from "./utils/CicsSession";
-import { Logger } from "@zowe/imperative";
 import {
   getShowAttributesCommand,
   getShowRegionAttributes,
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
+import { ProfileManagement } from "./utils/profileManagement";
+import { CICSTree } from "./trees/CICSTree";
+import { getShowTransactionAttributesCommand } from "./commands/showTransactionAttributesCommand";
+import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttributesCommand";
+import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
+import { getClearProgramFilterCommand } from "./commands/clearProgramFilterCommand";
+import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
+import { getFilterProgramDefinitionsCommand } from "./commands/filterProgramDefinitionsCommand";
+import { getFilterTransactionDefinitionsCommand } from "./commands/filterTransactionDefinitionsCommand";
+import { getFilterFileDefinitionsCommand } from "./commands/filterFileDefinitionsCommand";
+import { getFilterPlexResources } from "./commands/getFilterPlexResources";
+import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
+import { getRefreshCommand } from "./commands/refreshCommand";
+import { getUpdateSessionCommand } from "./commands/updateSessionCommand";
+import { getDeleteSessionCommand } from "./commands/deleteSessionCommand";
 
 export async function activate(context: ExtensionContext) {
-  const treeDataProv = new CICSTreeDataProvider();
-  window
-    .createTreeView("cics-view", {
-      treeDataProvider: treeDataProv,
-      showCollapseAll: true,
-    })
-    .onDidExpandElement((node) => {
-      if (node.element.session) {
-      } else if (node.element.region) {
-        treeDataProv.loadPrograms(node.element);
-      }
-    });
 
-  context.subscriptions.push(
-    getAddSessionCommand(treeDataProv),
-    getRefreshCommand(treeDataProv),
-    getNewCopyCommand(treeDataProv),
-    getShowAttributesCommand(),
-    getPhaseInCommand(treeDataProv),
-    getShowRegionAttributes(),
-    getEnableProgramCommand(treeDataProv),
-    getDisableProgramCommand(treeDataProv),
-    getRemoveSessionCommand(treeDataProv),
-    getFilterProgramsCommand(treeDataProv)
-  );
-
-  const zoweExplorerApi = extensions.getExtension(
-    "Zowe.vscode-extension-for-zowe"
-  );
-
-  if (zoweExplorerApi && zoweExplorerApi.exports) {
-    const importedApi =
-      zoweExplorerApi.exports as ZoweExplorerApi.IApiRegisterClient;
-
-    importedApi.registerMvsApi(new CicsApi());
-
+  if (ProfileManagement.apiDoesExist()) {
+    await ProfileManagement.registerCICSProfiles();
+    ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
+    await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
     window.showInformationMessage(
       "Zowe Explorer was modified for the CICS Extension"
     );
-
-    if (
-      importedApi.getExplorerExtenderApi &&
-      importedApi.getExplorerExtenderApi().reloadProfiles
-    ) {
-      await loadProfileManager();
-
-      const prof = new ProfilesCache(Logger.getAppLogger());
-
-      await prof.refresh(importedApi);
-      await importedApi.getExplorerExtenderApi().reloadProfiles();
-      const defaultProfile = prof.getDefaultProfile("cics");
-
-      const profileStorage = new ProfileStorage();
-
-      // @ts-ignore
-      for (const profile of prof.profilesByType) {
-        if (profile[0] === "cics") {
-          profileStorage.setProfiles(profile[1]);
-          break;
-        }
-      }
-
-      if (defaultProfile && defaultProfile.profile) {
-        window.showInformationMessage(
-          `Default CICS Profile (${defaultProfile.name}) found. Loading it now...`
-        );
-        treeDataProv.loadExistingProfile(defaultProfile);
-        // treeDataProv.addSession(defaultProfile);
-      } else {
-        window.showInformationMessage("No Default CICS Profile found.");
-      }
-    }
   }
+
+  const treeDataProv = new CICSTree();
+  const treeview = window
+    .createTreeView("cics-view", {
+      treeDataProvider: treeDataProv,
+      showCollapseAll: true,
+      canSelectMany: true
+    });
+
+  treeview.onDidExpandElement(async (node) => {
+    if (node.element.contextValue.includes("cicssession.")) {
+    } else if (node.element.contextValue.includes("cicsplex.")) {
+    } else if (node.element.contextValue.includes("cicsregion.")) {
+
+      for (const child of node.element.children) {
+        await child.loadContents();
+      }
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+
+    } else if (node.element.contextValue.includes("cicsprogram.")) {
+    }
+  });
+
+
+  context.subscriptions.push(
+    getAddSessionCommand(treeDataProv),
+    getRemoveSessionCommand(treeDataProv, treeview),
+    getUpdateSessionCommand(treeDataProv),
+    getDeleteSessionCommand(treeDataProv, treeview),
+
+    getRefreshCommand(treeDataProv),
+
+    getNewCopyCommand(treeDataProv, treeview),
+    getPhaseInCommand(treeDataProv, treeview),
+
+    getEnableProgramCommand(treeview),
+    getDisableProgramCommand(treeview),
+
+
+    getShowRegionAttributes(),
+    getShowAttributesCommand(),
+    getShowTransactionAttributesCommand(),
+    getShowLocalFileAttributesCommand(),
+
+    getFilterProgramsCommand(treeDataProv),
+    getFilterTransactionCommand(treeDataProv),
+    getFilterLocalFilesCommand(treeDataProv),
+
+    getFilterProgramDefinitionsCommand(treeDataProv),
+    getFilterTransactionDefinitionsCommand(treeDataProv),
+    getFilterFileDefinitionsCommand(treeDataProv),
+
+    getFilterPlexResources(treeDataProv),
+
+    getClearProgramFilterCommand(treeDataProv),
+    getClearPlexFilterCommand(treeDataProv)
+  );
 }
 
-export function deactivate() {}
+export function deactivate() { }

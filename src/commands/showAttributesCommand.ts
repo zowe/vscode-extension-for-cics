@@ -10,11 +10,11 @@
 */
 
 import { commands, window, WebviewPanel } from "vscode";
-import { getAttributesHtml } from "../trees/webviewHTML";
+import { getAttributesHtml } from "../utils/webviewHTML";
 
 export function getShowAttributesCommand() {
   return commands.registerCommand(
-    "cics-extension-for-zowe.showAttributes",
+    "cics-extension-for-zowe.showProgramAttributes",
     async (node) => {
       if (node) {
         const program = node.program;
@@ -50,21 +50,20 @@ export function getShowRegionAttributes() {
     async (node) => {
       if (node) {
         const region = node.region;
-
         const attributeHeadings = Object.keys(region);
         let webText = `<tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..." /></th><th class="valueHeading">Value</th></tr>`;
         for (const heading of attributeHeadings) {
           webText += `<tr><th class="colHeading">${heading}</th><td>${region[heading]}</td></tr>`;
         }
 
-        const webviewHTML = getAttributesHtml(region.applid, webText);
+        const webviewHTML = getAttributesHtml(node.getRegionName(), webText);
 
         const column = window.activeTextEditor
           ? window.activeTextEditor.viewColumn
           : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
-          `Attributes - ${region.applid}`,
+          `Attributes - ${node.getRegionName()}`,
           column || 1,
           { enableScripts: true }
         );

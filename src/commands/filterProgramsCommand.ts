@@ -9,37 +9,46 @@
 *
 */
 
-import { CICSTreeDataProvider } from "../trees/treeProvider";
 import { commands, window } from "vscode";
-import { CICSProgramTreeItem } from "../trees/CICSProgramTree";
+import { CICSTree } from "../trees/CICSTree";
+import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
+import { PersistentStorage } from "../utils/PersistentStorage";
 
-export function getFilterProgramsCommand(tree: CICSTreeDataProvider) {
+export function getFilterProgramsCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterPrograms",
     async (node) => {
       if (node) {
-        const filter = await window.showInputBox({
-          prompt: "Input a string you want the resulting programs to contain.",
-          ignoreFocusOut: true,
+        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+        let pattern: string;
+        const desc = new FilterDescriptor("\uFF0B Create New Program Filter");
+        const items = persistentStorage.getProgramSearchHistory().map(loadedFilter => {
+          return { label: loadedFilter };
         });
 
-        const regex = filter ? new RegExp(filter.toUpperCase()) : undefined;
-
-        node.children = [];
-
-        await tree.loadPrograms(node);
-
-        node.children = node.children.filter((program: CICSProgramTreeItem) => {
-          if (!regex) {
-            return true;
+        const quickpick = window.createQuickPick();
+        quickpick.items = [desc, ...items];
+        quickpick.placeholder = "Select past filter or create new...";
+        quickpick.ignoreFocusOut = true;
+        quickpick.show();
+        const choice = await resolveQuickPickHelper(quickpick);
+        quickpick.hide();
+        if (!choice) {
+          window.showInformationMessage("No Selection Made");
+          return;
+        }
+        if (choice instanceof FilterDescriptor) {
+          if (quickpick.value) {
+            pattern = quickpick.value;
           }
-          return regex.test(program!.label!);
-        });
+        } else {
+          pattern = choice.label;
+        }
+        await persistentStorage.addProgramSearchHistory(pattern!);
+        node.setFilter(pattern!);
+        await node.loadContents();
         tree._onDidChangeTreeData.fire(undefined);
       }
     }
   );
-}
-function program(program: any) {
-  throw new Error("Function not implemented.");
 }

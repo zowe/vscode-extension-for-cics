@@ -9,32 +9,94 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { CICSRegionTreeItem } from "./CICSRegionTree";
+import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
 import { join } from "path";
+import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
+import { CICSRegionTree } from "./CICSRegionTree";
+import { getResource } from "@zowe/cics-for-zowe-cli";
 
-export class CICSProgramTreeItem extends TreeItem {
-  program: any;
-  parentRegion: CICSRegionTreeItem;
+export class CICSProgramTree extends TreeItem {
+  children: CICSProgramTreeItem[] = [];
+  parentRegion: CICSRegionTree;
+  activeFilter: string | undefined = undefined;
 
   constructor(
-    program: any,
-    parentRegion: CICSRegionTreeItem,
+    parentRegion: CICSRegionTree,
     public readonly iconPath = {
-      light: join(__filename, "..", "..", "..", "resources", "imgs", "program-dark.svg"),
-      dark: join(__filename, "..", "..", "..", "resources", "imgs", "program-light.svg"),
+      light: join(
+        __filename,
+        "..",
+        "..",
+        "..",
+        "resources",
+        "imgs",
+        "programs-dark.svg"
+      ),
+      dark: join(
+        __filename,
+        "..",
+        "..",
+        "..",
+        "resources",
+        "imgs",
+        "programs-light.svg"
+      ),
     }
   ) {
-
-    super(
-      `${program.program}${program.status.toLowerCase() === "disabled" ? " (Disabled)" : ""
-      }`,
-      TreeItemCollapsibleState.None
-    );
-    console.log(iconPath.light);
-    this.program = program;
+    super('Programs', TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
     this.parentRegion = parentRegion;
-    this.contextValue = `cicsprogram.${program.status.toLowerCase()}.${program.program
-      }`;
+  }
+
+  public addProgram(program: CICSProgramTreeItem) {
+    this.children.push(program);
+  }
+
+  public async loadContents() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.Program.Filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('Zowe.CICS.Program.Filter', 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)');
+      defaultCriteria = 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)';
+    }
+    const criteria = this.activeFilter ? `PROGRAM=${this.activeFilter}` : defaultCriteria;
+
+    this.children = [];
+    try {
+      const programResponse = await getResource(this.parentRegion.parentSession.session, {
+        name: "CICSProgram",
+        regionName: this.parentRegion.getRegionName(),
+        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
+        criteria: criteria
+      });
+      for (const program of Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram]) {
+        const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
+        //@ts-ignore
+        this.addProgram(newProgramItem);
+      }
+    } catch (error) {
+      // @ts-ignore
+      if (error!.mMessage!.includes('exceeded a resource limit')) {
+        window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);
+        // @ts-ignore
+      } else if (error!.mMessage!.replaceAll(' ', '').includes('recordcount:0')) {
+        window.showInformationMessage(`No programs found`);
+      } else {
+        window.showErrorMessage(`Something went wrong when fetching programs`);
+      }
+    }
+  }
+
+  public clearFilter() {
+    this.activeFilter = undefined;
+    this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
+    this.label = `Programs`;
+    this.collapsibleState = TreeItemCollapsibleState.Expanded;
+  }
+
+  public setFilter(newFilter: string) {
+    this.activeFilter = newFilter;
+    this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
+    this.label = `Programs (${this.activeFilter})`;
+    this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 }
