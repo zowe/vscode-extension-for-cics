@@ -18,7 +18,7 @@ import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
 
 export class CICSRegionTree extends TreeItem {
-  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree] | null; //CICSDefinitionTree
+  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree] | null;
   region: any;
   parentSession: CICSSessionTree;
   parentPlex: CICSPlexTree | undefined;
@@ -28,7 +28,7 @@ export class CICSRegionTree extends TreeItem {
     return this.region.applid || this.region.cicsname;
   }
 
-  public getIsActive(){
+  public getIsActive() {
     return this.isActive;
   }
 
@@ -67,13 +67,13 @@ export class CICSRegionTree extends TreeItem {
       this.parentPlex = parentPlex;
     }
 
-    if(this.parentPlex){
+    if (this.parentPlex) {
       this.isActive = region.cicsstate === "ACTIVE" ? true : false;
     } else {
       this.isActive = region.cicsstatus === "ACTIVE" ? true : false;
     }
-    
-    if(!this.isActive){
+
+    if (!this.isActive) {
       this.children = null;
       this.collapsibleState = TreeItemCollapsibleState.None;
       this.iconPath = {
@@ -97,8 +97,8 @@ export class CICSRegionTree extends TreeItem {
         ),
       };
     } else {
-      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)]; //, new CICSDefinitionTree(this)
+      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)];
     }
-    
+
   }
 }
