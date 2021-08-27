@@ -52,11 +52,13 @@ export function getDisableProgramCommand(treeview: TreeView<any>) {
                 }
               );
             } catch(err){
+              // @ts-ignore
               window.showErrorMessage(err);
             }
             } 
           });
       } catch (err) {
+          // @ts-ignore
           window.showErrorMessage(err);
         }
       } else {

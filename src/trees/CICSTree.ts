@@ -222,7 +222,8 @@ export class CICSTree
                 await ProfileManagement.createNewProfile(message);
                 await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
             } catch (error) {
-                window.showErrorMessage(error.message);
+                // @ts-ignore
+                window.showErrorMessage(error);
             }
         } else {
             const column = window.activeTextEditor
@@ -246,7 +247,8 @@ export class CICSTree
                     await ProfileManagement.createNewProfile(message);
                     await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
                 } catch (error) {
-                    window.showErrorMessage(error.message);
+                    // @ts-ignore
+                    window.showErrorMessage(error);
                 }
             });
 
@@ -268,52 +270,53 @@ export class CICSTree
 
     async deleteSession(sessions: CICSSessionTree[]) {
         let answer;
-        if(sessions.length === 1){
+        if (sessions.length === 1) {
             answer = await window.showInformationMessage(
-                `Are you sure you want to delete the profile "${sessions[0].label?.toString()!}"`, 
+                `Are you sure you want to delete the profile "${sessions[0].label?.toString()!}"`,
                 ...["Yes", "No"]);
-        } else if (sessions.length > 1){
+        } else if (sessions.length > 1) {
             answer = await window.showInformationMessage(
-                `Are you sure you want to delete the profiles "${sessions.map((sessionTree)=>{
+                `Are you sure you want to delete the profiles "${sessions.map((sessionTree) => {
                     return sessionTree.label?.toString()!;
-                })}"`, 
+                })}"`,
                 ...["Yes", "No"]);
         }
-        if (answer === "Yes"){
+        if (answer === "Yes") {
             window.withProgress({
                 title: 'Delete Profile',
                 location: ProgressLocation.Notification,
                 cancellable: true
-                }, async (progress, token) => {
-                    token.onCancellationRequested(() => {
+            }, async (progress, token) => {
+                token.onCancellationRequested(() => {
                     console.log("Cancelling the delete command");
+                });
+                for (const index in sessions) {
+                    progress.report({
+                        message: `Deleting profile ${parseInt(index) + 1} of ${sessions.length}`,
+                        increment: (parseInt(index) / sessions.length) * 100,
                     });
-                    for (const index in sessions) {
-                        progress.report({
-                            message: `Deleting profile ${parseInt(index) + 1} of ${sessions.length}`,
-                            increment: (parseInt(index) / sessions.length) * 100,
+                    try {
+                        await ProfileManagement.deleteProfile({
+                            name: sessions[parseInt(index)].label?.toString()!,
+                            rejectIfDependency: true
                         });
-                        try {
-                            await ProfileManagement.deleteProfile({ 
-                                name: sessions[parseInt(index)].label?.toString()!,
-                                rejectIfDependency: true
-                            });
-                            const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-                            await persistentStorage.removeLoadedCICSProfile(sessions[parseInt(index)].label!.toString());
+                        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+                        await persistentStorage.removeLoadedCICSProfile(sessions[parseInt(index)].label!.toString());
 
-                            this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== sessions[parseInt(index)]);
-                            this._onDidChangeTreeData.fire(undefined);
-                        } catch (error){
-                            window.showErrorMessage(error.message);
-                        }
+                        this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== sessions[parseInt(index)]);
+                        this._onDidChangeTreeData.fire(undefined);
+                    } catch (error) {
+                        // @ts-ignore
+                        window.showErrorMessage(error);
                     }
-                    
-                    }
+                }
+
+            }
             );
-            
-            
+
+
         }
-        
+
     }
 
     async updateSession(session: CICSSessionTree) {
@@ -349,7 +352,8 @@ export class CICSTree
                 await this.removeSession(session, updatedProfile, position);
 
             } catch (error) {
-                window.showErrorMessage(error.message);
+                // @ts-ignore
+                window.showErrorMessage(error);
             }
         });
 

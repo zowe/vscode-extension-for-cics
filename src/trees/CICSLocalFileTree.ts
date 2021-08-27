@@ -74,9 +74,11 @@ export class CICSLocalFileTree extends TreeItem {
         this.addLocalFile(newLocalFileItem);
       }
     } catch (error) {
-      if (error.mMessage.includes('exceeded a resource limit')) {
+      // @ts-ignore
+      if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a local file filter to narrow search`);
-      } else if (error.mMessage.replaceAll(' ', '').includes('recordcount:0')) {
+        // @ts-ignore
+      } else if (error!.mMessage!.replaceAll(' ', '').includes('recordcount:0')) {
         window.showInformationMessage(`No local files found`);
       } else {
         window.showErrorMessage(`Something went wrong when fetching local files`);

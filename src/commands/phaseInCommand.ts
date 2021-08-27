@@ -53,6 +53,7 @@ export function getPhaseInCommand(tree: CICSTree, treeview: TreeView<any>) {
                 parentRegions.push(currentNode.parentRegion);
               }
             } catch(err){
+              // @ts-ignore
               window.showErrorMessage(err);
             }
           }
@@ -63,6 +64,7 @@ export function getPhaseInCommand(tree: CICSTree, treeview: TreeView<any>) {
           tree._onDidChangeTreeData.fire(undefined);
         });
         } catch (err) {
+          // @ts-ignore
           window.showErrorMessage(err);
         }
       } else {

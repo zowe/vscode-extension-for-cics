@@ -38,6 +38,7 @@ export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>)
                 await tree.removeSession(currentNode);
 
               } catch(err){
+                // @ts-ignore
                 window.showErrorMessage(err);
               }
             }
