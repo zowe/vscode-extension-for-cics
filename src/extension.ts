@@ -28,9 +28,6 @@ import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttri
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
 import { getClearProgramFilterCommand } from "./commands/clearProgramFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
-import { getFilterProgramDefinitionsCommand } from "./commands/filterProgramDefinitionsCommand";
-import { getFilterTransactionDefinitionsCommand } from "./commands/filterTransactionDefinitionsCommand";
-import { getFilterFileDefinitionsCommand } from "./commands/filterFileDefinitionsCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
 import { getRefreshCommand } from "./commands/refreshCommand";
@@ -82,9 +79,8 @@ export async function activate(context: ExtensionContext) {
     getNewCopyCommand(treeDataProv, treeview),
     getPhaseInCommand(treeDataProv, treeview),
 
-    getEnableProgramCommand(treeview),
-    getDisableProgramCommand(treeview),
-
+    getEnableProgramCommand(treeDataProv, treeview),
+    getDisableProgramCommand(treeDataProv, treeview),
 
     getShowRegionAttributes(),
     getShowAttributesCommand(),
@@ -94,10 +90,6 @@ export async function activate(context: ExtensionContext) {
     getFilterProgramsCommand(treeDataProv),
     getFilterTransactionCommand(treeDataProv),
     getFilterLocalFilesCommand(treeDataProv),
-
-    getFilterProgramDefinitionsCommand(treeDataProv),
-    getFilterTransactionDefinitionsCommand(treeDataProv),
-    getFilterFileDefinitionsCommand(treeDataProv),
 
     getFilterPlexResources(treeDataProv),
 

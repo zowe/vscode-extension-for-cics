@@ -16,15 +16,18 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSRegionTree } from "../trees/CICSRegionTree";
+import { CICSTree } from "../trees/CICSTree";
 
 
-export function getEnableProgramCommand(treeview: TreeView<any>) {
+export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.enableProgram",
     async (clickedNode) => {
       if (clickedNode) {
         try {
           let selectedNodes = treeview.selection;
+          let parentRegions: CICSRegionTree[] = [];
 
           window.withProgress({
             title: 'Enable',
@@ -50,13 +53,20 @@ export function getEnableProgramCommand(treeview: TreeView<any>) {
                     cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                   }
                 );
-                
-              } catch(err){
+                if (!parentRegions.includes(currentNode.parentRegion)) {
+                  parentRegions.push(currentNode.parentRegion);
+                }
+              } catch (err) {
                 // @ts-ignore
                 window.showErrorMessage(err);
               }
             }
-        });
+            for (const parentRegion of parentRegions) {
+              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+              await programTree.loadContents();
+            }
+            tree._onDidChangeTreeData.fire(undefined);
+          });
         } catch (err) {
           // @ts-ignore
           window.showErrorMessage(err);
