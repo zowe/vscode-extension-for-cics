@@ -16,15 +16,17 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSRegionTree } from "../trees/CICSRegionTree";
+import { CICSTree } from "../trees/CICSTree";
 
-export function getDisableProgramCommand(treeview: TreeView<any>) {
+export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.disableProgram",
     async (node) => {
       if (node) {
         try {
-
           let selectedNodes = treeview.selection;
+          let parentRegions: CICSRegionTree[] = [];
 
           window.withProgress({
             title: 'Disable',
@@ -42,22 +44,30 @@ export function getDisableProgramCommand(treeview: TreeView<any>) {
               try {
                 const currentNode = selectedNodes[parseInt(index)];
 
-                
+
                 await disableProgram(
                   currentNode.parentRegion.parentSession.session,
-                {
-                  name: currentNode.program.program,
-                  regionName: currentNode.parentRegion.label,
-                  cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                  {
+                    name: currentNode.program.program,
+                    regionName: currentNode.parentRegion.label,
+                    cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                  }
+                );
+                if (!parentRegions.includes(currentNode.parentRegion)) {
+                  parentRegions.push(currentNode.parentRegion);
                 }
-              );
-            } catch(err){
-              // @ts-ignore
-              window.showErrorMessage(err);
+              } catch (err) {
+                // @ts-ignore
+                window.showErrorMessage(err);
+              }
             }
-            } 
+            for (const parentRegion of parentRegions) {
+              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+              await programTree.loadContents();
+            }
+            tree._onDidChangeTreeData.fire(undefined);
           });
-      } catch (err) {
+        } catch (err) {
           // @ts-ignore
           window.showErrorMessage(err);
         }
