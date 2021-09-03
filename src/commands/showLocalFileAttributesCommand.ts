@@ -20,10 +20,12 @@ export function getShowLocalFileAttributesCommand() {
         const localFile = node.localFile;
 
         const attributeHeadings = Object.keys(localFile);
-        let webText = `<tr><th class="headingTH">Attribute <input type="text" id="searchBox" /></th><th class="valueHeading">Value</th></tr>`;
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
         for (const heading of attributeHeadings) {
           webText += `<tr><th class="colHeading">${heading}</th><td>${localFile[heading]}</td></tr>`;
         }
+        webText += "</tbody>";
 
         const webviewHTML = getAttributesHtml(localFile.file, webText);
 
@@ -32,7 +34,7 @@ export function getShowLocalFileAttributesCommand() {
           : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
-          `Attributes - ${localFile.file}`,
+          `CICS Local File ${node.parentRegion.label}(${localFile.file})`,
           column || 1,
           { enableScripts: true }
         );

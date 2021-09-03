@@ -20,19 +20,20 @@ export function getShowAttributesCommand() {
         const program = node.program;
 
         const attributeHeadings = Object.keys(program);
-        let webText = `<tr><th class="headingTH">Attribute <input type="text" id="searchBox" /></th><th class="valueHeading">Value</th></tr>`;
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
         for (const heading of attributeHeadings) {
-          webText += `<tr><th class="colHeading">${heading}</th><td>${program[heading]}</td></tr>`;
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${program[heading]}</td></tr>`;
         }
+        webText += "</tbody>";
 
         const webviewHTML = getAttributesHtml(program.program, webText);
-
         const column = window.activeTextEditor
           ? window.activeTextEditor.viewColumn
           : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
-          `Attributes - ${program.program}`,
+          `CICS Program ${node.parentRegion.label}(${program.program})`,
           column || 1,
           { enableScripts: true }
         );
@@ -51,10 +52,12 @@ export function getShowRegionAttributes() {
       if (node) {
         const region = node.region;
         const attributeHeadings = Object.keys(region);
-        let webText = `<tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..." /></th><th class="valueHeading">Value</th></tr>`;
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..." /></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
         for (const heading of attributeHeadings) {
-          webText += `<tr><th class="colHeading">${heading}</th><td>${region[heading]}</td></tr>`;
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${region[heading]}</td></tr>`;
         }
+        webText += "</tbody>";
 
         const webviewHTML = getAttributesHtml(node.getRegionName(), webText);
 
@@ -63,7 +66,7 @@ export function getShowRegionAttributes() {
           : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
-          `Attributes - ${node.getRegionName()}`,
+          `CICS Region ${node.getRegionName()}`,
           column || 1,
           { enableScripts: true }
         );

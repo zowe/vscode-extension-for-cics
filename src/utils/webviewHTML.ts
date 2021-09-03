@@ -309,12 +309,19 @@ export const getAttributesHtml = (title: string, webText: string) => {
   <html lang="en">
   <head>
       <meta charset="UTF-8">
-      <title>${title}"</title>
+      <title>${title}</title>
       <style>
       * {
         background-color: var(--vscode-editor-background);
         color: var(--vscode-editor-foreground);
       }
+
+      thead th {
+        position: sticky;
+        top: 0;
+      }
+
+
       table {
         border:1px solid var(--vscode-editor-foreground);
         width: 90%;
@@ -327,7 +334,7 @@ export const getAttributesHtml = (title: string, webText: string) => {
       }
       td {
         border:1px solid var(--vscode-editor-foreground);
-        padding: 1rem 0.5rem;
+        padding: 0.3rem 0.5rem;
       }
       h1 {
         width: 100%;
@@ -360,8 +367,8 @@ export const getAttributesHtml = (title: string, webText: string) => {
       </style>
   </head>
   <body>
-  <h1>${title}</h1>
   <div>
+  
   <table id="resultsTable">
   ${webText}
   </table>
@@ -373,7 +380,7 @@ export const getAttributesHtml = (title: string, webText: string) => {
       for(let row of tableRows){
         if(row.children[1].innerText !== 'Value'){
           row.style.display = 
-              row.children[0].innerText.includes(e.target.value) ? '' : 'none';  
+              row.children[0].innerText.toUpperCase().includes(e.target.value.toUpperCase()) ? '' : 'none';  
         }
       }
     });

@@ -20,10 +20,12 @@ export function getShowTransactionAttributesCommand() {
         const transaction = node.transaction;
 
         const attributeHeadings = Object.keys(transaction);
-        let webText = `<tr><th class="headingTH">Attribute <input type="text" id="searchBox" /></th><th class="valueHeading">Value</th></tr>`;
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
         for (const heading of attributeHeadings) {
           webText += `<tr><th class="colHeading">${heading}</th><td>${transaction[heading]}</td></tr>`;
         }
+        webText += "</tbody>";
 
         const webviewHTML = getAttributesHtml(transaction.tranid, webText);
 
@@ -32,7 +34,7 @@ export function getShowTransactionAttributesCommand() {
           : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
-          `Attributes - ${transaction.tranid}`,
+          `CICS Local Transaction ${node.parentRegion.label}(${transaction.tranid})`,
           column || 1,
           { enableScripts: true }
         );
