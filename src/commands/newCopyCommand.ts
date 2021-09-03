@@ -38,7 +38,6 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
                 increment: (parseInt(index) / allSelectedNodes.length) * 100,
               });
               try {
-
                 const currentNode = allSelectedNodes[parseInt(index)];
 
                 await programNewcopy(
@@ -53,8 +52,24 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
                   parentRegions.push(currentNode.parentRegion);
                 }
               } catch (err) {
-                // @ts-ignore
-                window.showErrorMessage(err);
+                const mMessageArr = err.mMessage.replaceAll(' ', '').split("\n");
+                let resp;
+                let resp2;
+                let respAlt;
+                let eibfnAlt;
+                for (const val of mMessageArr) {
+                  const values = val.split(":");
+                  if (values[0] === "resp"){
+                    resp = values[1];
+                  } else if (values[0] === "resp2"){
+                    resp2 = values[1];
+                  } else if (values[0] === "resp_alt"){
+                    respAlt = values[1];
+                  } else if (values[0] === "eibfn_alt"){
+                    eibfnAlt = values[1];
+                  }
+                }
+                window.showErrorMessage(`Perform NEWCOPY on Program "${allSelectedNodes[parseInt(index)].program.program}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
               }
             }
             for (const parentRegion of parentRegions) {
