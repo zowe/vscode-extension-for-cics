@@ -58,8 +58,20 @@ export class CICSLocalFileTree extends TreeItem {
       await workspace.getConfiguration().update('Zowe.CICS.LocalFile.Filter', 'file=*');
       defaultCriteria = 'file=*';
     }
-    const criteria = this.activeFilter ? `file=${this.activeFilter}` : defaultCriteria;
-
+    let criteria;
+    if (this.activeFilter) {
+      const splitActiveFilter = this.activeFilter.split(",");
+      criteria = "(";
+      for(const index in splitActiveFilter!){
+        criteria += `file=${splitActiveFilter[parseInt(index)]}`;
+        if (parseInt(index) !== splitActiveFilter.length-1){
+          criteria += " OR ";
+        }
+      }
+      criteria += ")";
+    } else {
+      criteria = defaultCriteria;
+    }
     this.children = [];
     try {
       const localFileResponse = await getResource(this.parentRegion.parentSession.session, {

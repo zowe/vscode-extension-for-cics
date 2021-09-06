@@ -21,7 +21,7 @@ export function getFilterLocalFilesCommand(tree: CICSTree) {
       if (node) {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
-        const desc = new FilterDescriptor("\uFF0B Create New Local File Filter");
+        const desc = new FilterDescriptor("\uFF0B Create New Local File Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
         const items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
@@ -39,10 +39,10 @@ export function getFilterLocalFilesCommand(tree: CICSTree) {
         }
         if (choice instanceof FilterDescriptor) {
           if (quickpick.value) {
-            pattern = quickpick.value;
+            pattern = quickpick.value.replace(/\s/g, '');
           }
         } else {
-          pattern = choice.label;
+          pattern = choice.label.replace(/\s/g, '');
         }
         await persistentStorage.addLocalFileSearchHistory(pattern!);
         node.setFilter(pattern!);
