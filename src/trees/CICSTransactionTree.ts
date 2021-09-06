@@ -58,8 +58,20 @@ export class CICSTransactionTree extends TreeItem {
       await workspace.getConfiguration().update('Zowe.CICS.Transaction.Filter', 'NOT (program=DFH* OR program=EYU*)');
       defaultCriteria = 'NOT (program=DFH* OR program=EYU*)';
     }
-    const criteria = this.activeFilter ? `tranid=${this.activeFilter}` : defaultCriteria;
-
+    let criteria;
+    if (this.activeFilter) {
+      const splitActiveFilter = this.activeFilter.split(",");
+      criteria = "(";
+      for(const index in splitActiveFilter!){
+        criteria += `tranid=${splitActiveFilter[parseInt(index)]}`;
+        if (parseInt(index) !== splitActiveFilter.length-1){
+          criteria += " OR ";
+        }
+      }
+      criteria += ")";
+    } else {
+      criteria = defaultCriteria;
+    }
     this.children = [];
     try {
       const transactionResponse = await getResource(this.parentRegion.parentSession.session, {

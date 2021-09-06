@@ -22,7 +22,7 @@ export function getFilterTransactionCommand(tree: CICSTree) {
 
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
-        const desc = new FilterDescriptor("\uFF0B Create New Transaction Filter");
+        const desc = new FilterDescriptor("\uFF0B Create New Transaction Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
         const items = persistentStorage.getTransactionSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
@@ -39,10 +39,10 @@ export function getFilterTransactionCommand(tree: CICSTree) {
         }
         if (choice instanceof FilterDescriptor) {
           if (quickpick.value) {
-            pattern = quickpick.value;
+            pattern = quickpick.value.replace(/\s/g, '');
           }
         } else {
-          pattern = choice.label;
+          pattern = choice.label.replace(/\s/g, '');
         }
         await persistentStorage.addTransactionSearchHistory(pattern!);
         node.setFilter(pattern!);
