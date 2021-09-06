@@ -21,7 +21,7 @@ export function getFilterProgramsCommand(tree: CICSTree) {
       if (node) {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
-        const desc = new FilterDescriptor("\uFF0B Create New Program Filter");
+        const desc = new FilterDescriptor("\uFF0B Create New Program Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
         const items = persistentStorage.getProgramSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
