@@ -39,10 +39,10 @@ export function getFilterProgramsCommand(tree: CICSTree) {
         }
         if (choice instanceof FilterDescriptor) {
           if (quickpick.value) {
-            pattern = quickpick.value;
+            pattern = quickpick.value.replace(/\s/g, '');
           }
         } else {
-          pattern = choice.label;
+          pattern = choice.label.replace(/\s/g, '');
         }
         await persistentStorage.addProgramSearchHistory(pattern!);
         node.setFilter(pattern!);

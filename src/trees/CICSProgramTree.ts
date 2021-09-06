@@ -58,8 +58,20 @@ export class CICSProgramTree extends TreeItem {
       await workspace.getConfiguration().update('Zowe.CICS.Program.Filter', 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)');
       defaultCriteria = 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)';
     }
-    const criteria = this.activeFilter ? `PROGRAM=${this.activeFilter}` : defaultCriteria;
-
+    let criteria;
+    if (this.activeFilter) {
+      const splitActiveFilter = this.activeFilter.split(",");
+      criteria = "(";
+      for(const index in splitActiveFilter!){
+        criteria += `PROGRAM=${splitActiveFilter[parseInt(index)]}`;
+        if (parseInt(index) !== splitActiveFilter.length-1){
+          criteria += " OR ";
+        }
+      }
+      criteria += ")";
+    } else {
+      criteria = defaultCriteria;
+    }
     this.children = [];
     try {
       const programResponse = await getResource(this.parentRegion.parentSession.session, {
