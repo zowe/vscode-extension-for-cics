@@ -262,7 +262,7 @@ export class CICSTree
         await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
 
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
-        if (profile && position) {
+        if (profile && position !== undefined) {
             await this.loadProfile(profile!, position);
         }
         this._onDidChangeTreeData.fire(undefined);
