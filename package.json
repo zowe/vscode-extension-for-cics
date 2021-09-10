@@ -130,6 +130,22 @@
         "title": "Disable Program"
       },
       {
+        "command": "cics-extension-for-zowe.enableTransaction",
+        "title": "Enable Transaction"
+      },
+      {
+        "command": "cics-extension-for-zowe.disableTransaction",
+        "title": "Disable Transaction"
+      },
+      {
+        "command": "cics-extension-for-zowe.enableLocalFile",
+        "title": "Enable Local File"
+      },
+      {
+        "command": "cics-extension-for-zowe.disableLocalFile",
+        "title": "Disable Local File"
+      },
+      {
         "command": "cics-extension-for-zowe.phaseInCommand",
         "title": "Phase In",
         "icon": {
@@ -252,6 +268,26 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicsprogram.enabled.*/",
           "command": "cics-extension-for-zowe.disableProgram",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstransaction.disabled.*/",
+          "command": "cics-extension-for-zowe.enableTransaction",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstransaction.enabled.*/",
+          "command": "cics-extension-for-zowe.disableTransaction",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslocalfile.disabled.*/",
+          "command": "cics-extension-for-zowe.enableLocalFile",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslocalfile.enabled.*/",
+          "command": "cics-extension-for-zowe.disableLocalFile",
           "group": ""
         },
         {

@@ -14,41 +14,39 @@ import {
   CicsCmciRestClient,
   ICMCIApiResponse,
 } from "@zowe/cics-for-zowe-cli";
-import { AbstractSession } from "@zowe/imperative";
+import { AbstractSession, couldNotInstantiateCommandHandler } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 
-
-export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
+export function getDisableTransactionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.enableProgram",
-    async (clickedNode) => {
-      if (clickedNode) {
+    "cics-extension-for-zowe.disableTransaction",
+    async (node) => {
+      if (node) {
         try {
           let selectedNodes = treeview.selection;
           let parentRegions: CICSRegionTree[] = [];
 
           window.withProgress({
-            title: 'Enable',
+            title: 'Disable',
             location: ProgressLocation.Notification,
             cancellable: true
           }, async (progress, token) => {
             token.onCancellationRequested(() => {
-              console.log("Cancelling the Enable");
+              console.log("Cancelling the Disable");
             });
             for (const index in selectedNodes) {
               progress.report({
-                message: `Enabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
+                message: `Disabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
                 increment: (parseInt(index) / selectedNodes.length) * 100,
               });
               try {
                 const currentNode = selectedNodes[parseInt(index)];
-                
-                await enableProgram(
+                await disableTransaction(
                   currentNode.parentRegion.parentSession.session,
                   {
-                    name: currentNode.program.program,
+                    name: currentNode.transaction.tranid,
                     regionName: currentNode.parentRegion.label,
                     cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                   }
@@ -57,12 +55,28 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
                   parentRegions.push(currentNode.parentRegion);
                 }
               } catch (err) {
-                // @ts-ignore
-                window.showErrorMessage(err);
+                const mMessageArr = err.mMessage.replaceAll(' ', '').split("\n");
+                let resp;
+                let resp2;
+                let respAlt;
+                let eibfnAlt;
+                for (const val of mMessageArr) {
+                  const values = val.split(":");
+                  if (values[0] === "resp"){
+                    resp = values[1];
+                  } else if (values[0] === "resp2"){
+                    resp2 = values[1];
+                  } else if (values[0] === "resp_alt"){
+                    respAlt = values[1];
+                  } else if (values[0] === "eibfn_alt"){
+                    eibfnAlt = values[1];
+                  }
+                }
+                window.showErrorMessage(`Perform DISABLE on Transaction "${selectedNodes[parseInt(index)].transaction.tranid}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
               }
             }
             for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
               await programTree.loadContents();
             }
             tree._onDidChangeTreeData.fire(undefined);
@@ -72,13 +86,13 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
           window.showErrorMessage(err);
         }
       } else {
-        window.showErrorMessage("No CICS program selected");
+        window.showErrorMessage("No CICS transaction selected");
       }
     }
   );
 }
 
-async function enableProgram(
+async function disableTransaction(
   session: AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
@@ -86,7 +100,7 @@ async function enableProgram(
     request: {
       action: {
         $: {
-          name: "ENABLE",
+          name: "DISABLE",
         },
       },
     },
@@ -97,14 +111,13 @@ async function enableProgram(
     "/" +
     CicsCmciConstants.CICS_SYSTEM_MANAGEMENT +
     "/" +
-    CicsCmciConstants.CICS_PROGRAM_RESOURCE +
+    CicsCmciConstants.CICS_LOCAL_TRANSACTION +
     "/" +
     cicsPlex +
     parms.regionName +
-    "?CRITERIA=(PROGRAM=" +
+    "?CRITERIA=(TRANID=" +
     parms.name +
     ")";
-
   return await CicsCmciRestClient.putExpectParsedXml(
     session,
     cmciResource,

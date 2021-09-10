@@ -19,36 +19,34 @@ import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 
-
-export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
+export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.enableProgram",
-    async (clickedNode) => {
-      if (clickedNode) {
+    "cics-extension-for-zowe.disableLocalFile",
+    async (node) => {
+      if (node) {
         try {
           let selectedNodes = treeview.selection;
           let parentRegions: CICSRegionTree[] = [];
 
           window.withProgress({
-            title: 'Enable',
+            title: 'Disable',
             location: ProgressLocation.Notification,
             cancellable: true
           }, async (progress, token) => {
             token.onCancellationRequested(() => {
-              console.log("Cancelling the Enable");
+              console.log("Cancelling the Disable");
             });
             for (const index in selectedNodes) {
               progress.report({
-                message: `Enabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
+                message: `Disabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
                 increment: (parseInt(index) / selectedNodes.length) * 100,
               });
               try {
                 const currentNode = selectedNodes[parseInt(index)];
-                
-                await enableProgram(
+                await disableLocalFile(
                   currentNode.parentRegion.parentSession.session,
                   {
-                    name: currentNode.program.program,
+                    name: currentNode.localFile.file,
                     regionName: currentNode.parentRegion.label,
                     cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                   }
@@ -62,7 +60,7 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
               }
             }
             for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
               await programTree.loadContents();
             }
             tree._onDidChangeTreeData.fire(undefined);
@@ -72,38 +70,49 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
           window.showErrorMessage(err);
         }
       } else {
-        window.showErrorMessage("No CICS program selected");
+        window.showErrorMessage("No CICS local file selected");
       }
     }
   );
 }
 
-async function enableProgram(
+async function disableLocalFile(
   session: AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {
     request: {
-      action: {
-        $: {
-          name: "ENABLE",
+        action: {
+            $: {
+                name: "DISABLE"
+            },
+            parameter: {
+              $: {
+                  name: "BUSY",
+                  value: "WAIT"
+              }
+          }
         },
-      },
-    },
+        
+    }
+  
   };
+
+  
 
   const cicsPlex = parms.cicsPlex === undefined ? "" : parms.cicsPlex + "/";
   const cmciResource =
     "/" +
     CicsCmciConstants.CICS_SYSTEM_MANAGEMENT +
     "/" +
-    CicsCmciConstants.CICS_PROGRAM_RESOURCE +
+    "CICSLocalFile" + //CicsCmciConstants.CICS_CMCI_EXTERNAL_RESOURCES[3]
     "/" +
     cicsPlex +
     parms.regionName +
-    "?CRITERIA=(PROGRAM=" +
+    "?CRITERIA=(FILE=" +
     parms.name +
-    ")";
+    ")" ;//+
+    //"&PARAMETER=('BUSY(WAIT).')";
 
   return await CicsCmciRestClient.putExpectParsedXml(
     session,

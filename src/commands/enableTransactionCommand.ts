@@ -20,9 +20,9 @@ import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 
 
-export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
+export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.enableProgram",
+    "cics-extension-for-zowe.enableTransaction",
     async (clickedNode) => {
       if (clickedNode) {
         try {
@@ -44,11 +44,11 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
               });
               try {
                 const currentNode = selectedNodes[parseInt(index)];
-                
-                await enableProgram(
+
+                await enableTransaction(
                   currentNode.parentRegion.parentSession.session,
                   {
-                    name: currentNode.program.program,
+                    name: currentNode.transaction.tranid,
                     regionName: currentNode.parentRegion.label,
                     cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                   }
@@ -62,7 +62,7 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
               }
             }
             for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
               await programTree.loadContents();
             }
             tree._onDidChangeTreeData.fire(undefined);
@@ -72,13 +72,13 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
           window.showErrorMessage(err);
         }
       } else {
-        window.showErrorMessage("No CICS program selected");
+        window.showErrorMessage("No CICS transaction selected");
       }
     }
   );
 }
 
-async function enableProgram(
+async function enableTransaction(
   session: AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
@@ -97,11 +97,11 @@ async function enableProgram(
     "/" +
     CicsCmciConstants.CICS_SYSTEM_MANAGEMENT +
     "/" +
-    CicsCmciConstants.CICS_PROGRAM_RESOURCE +
+    CicsCmciConstants.CICS_LOCAL_TRANSACTION +
     "/" +
     cicsPlex +
     parms.regionName +
-    "?CRITERIA=(PROGRAM=" +
+    "?CRITERIA=(TRANID=" +
     parms.name +
     ")";
 

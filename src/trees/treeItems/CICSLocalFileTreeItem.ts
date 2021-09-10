@@ -28,11 +28,11 @@ export class CICSLocalFileTreeItem extends TreeItem {
   ) {
 
     super(
-      `${localFile.file}`,
+      `${localFile.file} ${localFile.enablestatus.toLowerCase() === "disabled"  ? "(Disabled)" : ""}`,
       TreeItemCollapsibleState.None
     );
     this.localFile = localFile;
-    this.contextValue = `cicslocalfile.${localFile.file}`;
+    this.contextValue = `cicslocalfile.${localFile.enablestatus.toLowerCase()}.${localFile.file}`;
     this.parentRegion = parentRegion;
     this.localFileName = localFile.file;
   }

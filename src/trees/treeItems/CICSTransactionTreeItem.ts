@@ -28,11 +28,11 @@ export class CICSTransactionTreeItem extends TreeItem {
   ) {
 
     super(
-      `${transaction.tranid}`,
+      `${transaction.tranid} ${transaction.status.toLowerCase() === "disabled"  ? "(Disabled)" : ""}`,
       TreeItemCollapsibleState.None
     );
     this.transaction = transaction;
-    this.contextValue = `cicstransaction.TRANSACTION`;
+    this.contextValue = `cicstransaction.${transaction.status.toLowerCase()}.${transaction.tranid}`;
     this.parentRegion = parentRegion;
     this.transactionName = transaction.tranid;
   }

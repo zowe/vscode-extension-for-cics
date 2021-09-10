@@ -33,6 +33,10 @@ import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
 import { getRefreshCommand } from "./commands/refreshCommand";
 import { getUpdateSessionCommand } from "./commands/updateSessionCommand";
 import { getDeleteSessionCommand } from "./commands/deleteSessionCommand";
+import { getDisableTransactionCommand } from "./commands/disableTransactionCommand";
+import { getEnableTransactionCommand } from "./commands/enableTransactionCommand";
+import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
+import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -81,6 +85,10 @@ export async function activate(context: ExtensionContext) {
 
     getEnableProgramCommand(treeDataProv, treeview),
     getDisableProgramCommand(treeDataProv, treeview),
+    getEnableTransactionCommand(treeDataProv, treeview),
+    getDisableTransactionCommand(treeDataProv, treeview),
+    getEnableLocalFileCommand(treeDataProv, treeview),
+    getDisableLocalFileCommand(treeDataProv, treeview),
 
     getShowRegionAttributes(),
     getShowAttributesCommand(),
