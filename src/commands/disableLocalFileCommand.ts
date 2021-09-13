@@ -25,46 +25,53 @@ export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<an
     async (node) => {
       if (node) {
         try {
-          let selectedNodes = treeview.selection;
-          let parentRegions: CICSRegionTree[] = [];
+          let busyDecision = await window.showInformationMessage(
+            `Choose one of the following for the file busy condition`,
+            ...["Wait", "No Wait", "Force"]);
+          if (busyDecision){
+            busyDecision =  busyDecision.replace(" ","").toUpperCase();
+            let selectedNodes = treeview.selection;
+            let parentRegions: CICSRegionTree[] = [];
 
-          window.withProgress({
-            title: 'Disable',
-            location: ProgressLocation.Notification,
-            cancellable: true
-          }, async (progress, token) => {
-            token.onCancellationRequested(() => {
-              console.log("Cancelling the Disable");
-            });
-            for (const index in selectedNodes) {
-              progress.report({
-                message: `Disabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
-                increment: (parseInt(index) / selectedNodes.length) * 100,
+            window.withProgress({
+              title: 'Disable',
+              location: ProgressLocation.Notification,
+              cancellable: true
+            }, async (progress, token) => {
+              token.onCancellationRequested(() => {
+                console.log("Cancelling the Disable");
               });
-              try {
-                const currentNode = selectedNodes[parseInt(index)];
-                await disableLocalFile(
-                  currentNode.parentRegion.parentSession.session,
-                  {
-                    name: currentNode.localFile.file,
-                    regionName: currentNode.parentRegion.label,
-                    cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+              for (const index in selectedNodes) {
+                progress.report({
+                  message: `Disabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
+                  increment: (parseInt(index) / selectedNodes.length) * 100,
+                });
+                try {
+                  const currentNode = selectedNodes[parseInt(index)];
+                  await disableLocalFile(
+                    currentNode.parentRegion.parentSession.session,
+                    {
+                      name: currentNode.localFile.file,
+                      regionName: currentNode.parentRegion.label,
+                      cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                    },
+                    busyDecision!
+                  );
+                  if (!parentRegions.includes(currentNode.parentRegion)) {
+                    parentRegions.push(currentNode.parentRegion);
                   }
-                );
-                if (!parentRegions.includes(currentNode.parentRegion)) {
-                  parentRegions.push(currentNode.parentRegion);
+                } catch (err) {
+                  // @ts-ignore
+                  window.showErrorMessage(err);
                 }
-              } catch (err) {
-                // @ts-ignore
-                window.showErrorMessage(err);
               }
-            }
-            for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
-              await programTree.loadContents();
-            }
-            tree._onDidChangeTreeData.fire(undefined);
-          });
+              for (const parentRegion of parentRegions) {
+                const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+                await programTree.loadContents();
+              }
+              tree._onDidChangeTreeData.fire(undefined);
+            });
+          }
         } catch (err) {
           // @ts-ignore
           window.showErrorMessage(err);
@@ -78,7 +85,8 @@ export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<an
 
 async function disableLocalFile(
   session: AbstractSession,
-  parms: { name: string; regionName: string; cicsPlex: string; }
+  parms: { name: string; regionName: string; cicsPlex: string; },
+  busyDecision: string
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {
     request: {
@@ -89,7 +97,7 @@ async function disableLocalFile(
             parameter: {
               $: {
                   name: "BUSY",
-                  value: "WAIT"
+                  value: busyDecision
               }
           }
         },

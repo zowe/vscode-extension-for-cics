@@ -26,63 +26,70 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
     async (clickedNode) => {
       if (clickedNode) {
         try {
-          let selectedNodes = treeview.selection;
-          let parentRegions: CICSRegionTree[] = [];
+          let busyDecision = await window.showInformationMessage(
+            `Choose one of the following for the file busy condition`,
+            ...["Wait", "No Wait", "Force"]);
+          if (busyDecision){
+            busyDecision =  busyDecision.replace(" ","").toUpperCase();
+            let selectedNodes = treeview.selection;
+            let parentRegions: CICSRegionTree[] = [];
 
-          window.withProgress({
-            title: 'Close',
-            location: ProgressLocation.Notification,
-            cancellable: true
-          }, async (progress, token) => {
-            token.onCancellationRequested(() => {
-              console.log("Cancelling the Close");
-            });
-            for (const index in selectedNodes) {
-              progress.report({
-                message: `Closing ${parseInt(index) + 1} of ${selectedNodes.length}`,
-                increment: (parseInt(index) / selectedNodes.length) * 100,
+            window.withProgress({
+              title: 'Close',
+              location: ProgressLocation.Notification,
+              cancellable: true
+            }, async (progress, token) => {
+              token.onCancellationRequested(() => {
+                console.log("Cancelling the Close");
               });
-              try {
-                const currentNode = selectedNodes[parseInt(index)];
-                await closeLocalFile(
-                  currentNode.parentRegion.parentSession.session,
-                  {
-                    name: currentNode.localFile.file,
-                    regionName: currentNode.parentRegion.label,
-                    cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+              for (const index in selectedNodes) {
+                progress.report({
+                  message: `Closing ${parseInt(index) + 1} of ${selectedNodes.length}`,
+                  increment: (parseInt(index) / selectedNodes.length) * 100,
+                });
+                try {
+                  const currentNode = selectedNodes[parseInt(index)];
+                  await closeLocalFile(
+                    currentNode.parentRegion.parentSession.session,
+                    {
+                      name: currentNode.localFile.file,
+                      regionName: currentNode.parentRegion.label,
+                      cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                    },
+                    busyDecision!
+                  );
+                  if (!parentRegions.includes(currentNode.parentRegion)) {
+                    parentRegions.push(currentNode.parentRegion);
                   }
-                );
-                if (!parentRegions.includes(currentNode.parentRegion)) {
-                  parentRegions.push(currentNode.parentRegion);
-                }
-              } catch (err) {
-                // @ts-ignore
-                const mMessageArr = err.mMessage.replaceAll(' ', '').split("\n");
-                let resp;
-                let resp2;
-                let respAlt;
-                let eibfnAlt;
-                for (const val of mMessageArr) {
-                  const values = val.split(":");
-                  if (values[0] === "resp"){
-                    resp = values[1];
-                  } else if (values[0] === "resp2"){
-                    resp2 = values[1];
-                  } else if (values[0] === "resp_alt"){
-                    respAlt = values[1];
-                  } else if (values[0] === "eibfn_alt"){
-                    eibfnAlt = values[1];
+                } catch (err) {
+                  // @ts-ignore
+                  const mMessageArr = err.mMessage.replaceAll(' ', '').split("\n");
+                  let resp;
+                  let resp2;
+                  let respAlt;
+                  let eibfnAlt;
+                  for (const val of mMessageArr) {
+                    const values = val.split(":");
+                    if (values[0] === "resp"){
+                      resp = values[1];
+                    } else if (values[0] === "resp2"){
+                      resp2 = values[1];
+                    } else if (values[0] === "resp_alt"){
+                      respAlt = values[1];
+                    } else if (values[0] === "eibfn_alt"){
+                      eibfnAlt = values[1];
+                    }
                   }
+                  window.showErrorMessage(`Perform CLOSE on Local file "${selectedNodes[parseInt(index)].localFile.file}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
                 }
-                window.showErrorMessage(`Perform CLOSE on Local file "${selectedNodes[parseInt(index)].localFile.file}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
               }
-            }
-            for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
-              await programTree.loadContents();
-            }
-            tree._onDidChangeTreeData.fire(undefined);
-          });
+              for (const parentRegion of parentRegions) {
+                const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+                await programTree.loadContents();
+              }
+              tree._onDidChangeTreeData.fire(undefined);
+            });
+          }
         } catch (err) {
           // @ts-ignore
           window.showErrorMessage(err);
@@ -96,7 +103,8 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
 
 async function closeLocalFile(
   session: AbstractSession,
-  parms: { name: string; regionName: string; cicsPlex: string; }
+  parms: { name: string; regionName: string; cicsPlex: string; },
+  busyDecision: string
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {
     request: {
@@ -107,7 +115,7 @@ async function closeLocalFile(
             parameter: {
               $: {
                   name: "BUSY",
-                  value: "WAIT"
+                  value: busyDecision
               }
           }
         },
