@@ -37,6 +37,8 @@ import { getDisableTransactionCommand } from "./commands/disableTransactionComma
 import { getEnableTransactionCommand } from "./commands/enableTransactionCommand";
 import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
 import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
+import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
+import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -89,6 +91,9 @@ export async function activate(context: ExtensionContext) {
     getDisableTransactionCommand(treeDataProv, treeview),
     getEnableLocalFileCommand(treeDataProv, treeview),
     getDisableLocalFileCommand(treeDataProv, treeview),
+
+    getCloseLocalFileCommand(treeDataProv, treeview),
+    getOpenLocalFileCommand(treeDataProv, treeview),
 
     getShowRegionAttributes(),
     getShowAttributesCommand(),

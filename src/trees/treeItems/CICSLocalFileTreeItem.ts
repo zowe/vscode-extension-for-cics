@@ -28,11 +28,17 @@ export class CICSLocalFileTreeItem extends TreeItem {
   ) {
 
     super(
-      `${localFile.file} ${localFile.enablestatus.toLowerCase() === "disabled"  ? "(Disabled)" : ""}`,
+      `${localFile.file} ${
+        localFile.enablestatus.toLowerCase() === "disabled" && localFile.openstatus.toLowerCase() === "closed" ? "(Disabled) (Closed)" : 
+        localFile.enablestatus.toLowerCase() === "disabled" && localFile.openstatus.toLowerCase() !== "closed" ? "(Disabled)" :
+        localFile.enablestatus.toLowerCase() === "unenabled" && localFile.openstatus.toLowerCase() === "closed" ? "(Unenabled) (Closed)" : 
+        localFile.enablestatus.toLowerCase() === "unenabled" && localFile.openstatus.toLowerCase() !== "closed" ? "(Unenabled)" :
+        localFile.enablestatus.toLowerCase() === "enabled" && localFile.openstatus.toLowerCase() === "closed" ? "(Closed)" :
+        ""}`,
       TreeItemCollapsibleState.None
     );
     this.localFile = localFile;
-    this.contextValue = `cicslocalfile.${localFile.enablestatus.toLowerCase()}.${localFile.file}`;
+    this.contextValue = `cicslocalfile.${localFile.enablestatus.toLowerCase()}.${localFile.openstatus.toLowerCase()}.${localFile.file}`;
     this.parentRegion = parentRegion;
     this.localFileName = localFile.file;
   }

@@ -146,6 +146,14 @@
         "title": "Disable Local File"
       },
       {
+        "command": "cics-extension-for-zowe.closeLocalFile",
+        "title": "Close Local File"
+      },
+      {
+        "command": "cics-extension-for-zowe.openLocalFile",
+        "title": "Open Local File"
+      },
+      {
         "command": "cics-extension-for-zowe.phaseInCommand",
         "title": "Phase In",
         "icon": {
@@ -286,8 +294,23 @@
           "group": ""
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicslocalfile.unenabled.*/",
+          "command": "cics-extension-for-zowe.enableLocalFile",
+          "group": ""
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicslocalfile.enabled.*/",
           "command": "cics-extension-for-zowe.disableLocalFile",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /(?=^cicslocalfile)(?=.*open)/",
+          "command": "cics-extension-for-zowe.closeLocalFile",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /(?=^cicslocalfile)(?=.*closed)/",
+          "command": "cics-extension-for-zowe.openLocalFile",
           "group": ""
         },
         {
