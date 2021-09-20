@@ -52,6 +52,7 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
                   parentRegions.push(currentNode.parentRegion);
                 }
               } catch (err) {
+                // @ts-ignore
                 const mMessageArr = err.mMessage.replaceAll(' ', '').split("\n");
                 let resp;
                 let resp2;

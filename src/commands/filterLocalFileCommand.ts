@@ -13,6 +13,7 @@ import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
+import { isTheia } from "../utils/theiaCheck";
 
 export function getFilterLocalFilesCommand(tree: CICSTree) {
   return commands.registerCommand(
@@ -25,24 +26,41 @@ export function getFilterLocalFilesCommand(tree: CICSTree) {
         const items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
+        if (isTheia()) {
+          const choice = await window.showQuickPick([desc, ...items]);
+          if (!choice) {
+            window.showInformationMessage("No Selection Made");
+            return;
+          }
 
-        const quickpick = window.createQuickPick();
-        quickpick.items = [desc, ...items];
-        quickpick.placeholder = "Select past filter or create new...";
-        quickpick.ignoreFocusOut = true;
-        quickpick.show();
-        const choice = await resolveQuickPickHelper(quickpick);
-        quickpick.hide();
-        if (!choice) {
-          window.showInformationMessage("No Selection Made");
-          return;
-        }
-        if (choice instanceof FilterDescriptor) {
-          if (quickpick.value) {
-            pattern = quickpick.value.replace(/\s/g, '');
+          if (choice === desc) {
+            pattern = await window.showInputBox() || "";
+            if (!pattern) {
+              window.showInformationMessage( "You must enter a pattern.");
+              return;
+          }
+          } else {
+            pattern = choice.label;
           }
         } else {
-          pattern = choice.label.replace(/\s/g, '');
+          const quickpick = window.createQuickPick();
+          quickpick.items = [desc, ...items];
+          quickpick.placeholder = "Select past filter or create new...";
+          quickpick.ignoreFocusOut = true;
+          quickpick.show();
+          const choice = await resolveQuickPickHelper(quickpick);
+          quickpick.hide();
+          if (!choice) {
+            window.showInformationMessage("No Selection Made");
+            return;
+          }
+          if (choice instanceof FilterDescriptor) {
+            if (quickpick.value) {
+              pattern = quickpick.value.replace(/\s/g, '');
+            }
+          } else {
+            pattern = choice.label.replace(/\s/g, '');
+          }
         }
         await persistentStorage.addLocalFileSearchHistory(pattern!);
         node.setFilter(pattern!);
