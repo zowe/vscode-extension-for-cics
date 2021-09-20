@@ -56,7 +56,7 @@ export function getDisableTransactionCommand(tree: CICSTree, treeview: TreeView<
                 }
               } catch (err) {
                 // @ts-ignore
-                const mMessageArr = err.mMessage.replaceAll(' ', '').split("\n");
+                const mMessageArr = err.mMessage.split(" ").join("").split("\n");
                 let resp;
                 let resp2;
                 let respAlt;

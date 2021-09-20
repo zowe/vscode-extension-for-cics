@@ -90,7 +90,7 @@ export class CICSTransactionTree extends TreeItem {
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a transaction filter to narrow search`);
         // @ts-ignore
-      } else if (error!.mMessage!.replaceAll(' ', '').includes('recordcount:0')) {
+      } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No transactions found`);
       } else {
         window.showErrorMessage(`Something went wrong when fetching transaction`);

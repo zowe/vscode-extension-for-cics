@@ -53,7 +53,7 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
                 }
               } catch (err) {
                 // @ts-ignore
-                const mMessageArr = err.mMessage.replaceAll(' ', '').split("\n");
+                const mMessageArr = err.mMessage.split(" ").join("").split("\n");
                 let resp;
                 let resp2;
                 let respAlt;
