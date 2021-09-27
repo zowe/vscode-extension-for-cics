@@ -22,15 +22,16 @@ import { CICSTree } from "../trees/CICSTree";
 export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.disableLocalFile",
-    async (node) => {
-      if (node) {
+    async (clickedNode) => {
+      if (clickedNode) {
         try {
           let busyDecision = await window.showInformationMessage(
             `Choose one of the following for the file busy condition`,
             ...["Wait", "No Wait", "Force"]);
           if (busyDecision){
             busyDecision =  busyDecision.replace(" ","").toUpperCase();
-            let selectedNodes = treeview.selection;
+            const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== clickedNode);
+            const allSelectedNodes = [clickedNode, ...selectedNodes];
             let parentRegions: CICSRegionTree[] = [];
 
             window.withProgress({
@@ -41,13 +42,13 @@ export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<an
               token.onCancellationRequested(() => {
                 console.log("Cancelling the Disable");
               });
-              for (const index in selectedNodes) {
+              for (const index in allSelectedNodes) {
                 progress.report({
-                  message: `Disabling ${parseInt(index) + 1} of ${selectedNodes.length}`,
-                  increment: (parseInt(index) / selectedNodes.length) * 100,
+                  message: `Disabling ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+                  increment: (parseInt(index) / allSelectedNodes.length) * 100,
                 });
                 try {
-                  const currentNode = selectedNodes[parseInt(index)];
+                  const currentNode = allSelectedNodes[parseInt(index)];
                   await disableLocalFile(
                     currentNode.parentRegion.parentSession.session,
                     {

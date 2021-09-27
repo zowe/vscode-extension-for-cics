@@ -31,7 +31,8 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
             ...["Wait", "No Wait", "Force"]);
           if (busyDecision){
             busyDecision =  busyDecision.replace(" ","").toUpperCase();
-            let selectedNodes = treeview.selection;
+            const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== clickedNode);
+            const allSelectedNodes = [clickedNode, ...selectedNodes];
             let parentRegions: CICSRegionTree[] = [];
 
             window.withProgress({
@@ -42,13 +43,13 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
               token.onCancellationRequested(() => {
                 console.log("Cancelling the Close");
               });
-              for (const index in selectedNodes) {
+              for (const index in allSelectedNodes) {
                 progress.report({
-                  message: `Closing ${parseInt(index) + 1} of ${selectedNodes.length}`,
-                  increment: (parseInt(index) / selectedNodes.length) * 100,
+                  message: `Closing ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+                  increment: (parseInt(index) / allSelectedNodes.length) * 100,
                 });
                 try {
-                  const currentNode = selectedNodes[parseInt(index)];
+                  const currentNode = allSelectedNodes[parseInt(index)];
                   await closeLocalFile(
                     currentNode.parentRegion.parentSession.session,
                     {
@@ -80,7 +81,7 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
                       eibfnAlt = values[1];
                     }
                   }
-                  window.showErrorMessage(`Perform CLOSE on Local file "${selectedNodes[parseInt(index)].localFile.file}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
+                  window.showErrorMessage(`Perform CLOSE on Local file "${allSelectedNodes[parseInt(index)].localFile.file}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
                 }
               }
               for (const parentRegion of parentRegions) {
