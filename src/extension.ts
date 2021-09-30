@@ -43,12 +43,16 @@ import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 export async function activate(context: ExtensionContext) {
 
   if (ProfileManagement.apiDoesExist()) {
-    await ProfileManagement.registerCICSProfiles();
-    ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
-    await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
-    window.showInformationMessage(
-      "Zowe Explorer was modified for the CICS Extension"
-    );
+    try {
+      await ProfileManagement.registerCICSProfiles();
+      ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
+      await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+      window.showInformationMessage(
+        "Zowe Explorer was modified for the CICS Extension"
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const treeDataProv = new CICSTree();

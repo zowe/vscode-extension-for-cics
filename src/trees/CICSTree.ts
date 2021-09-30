@@ -84,44 +84,70 @@ export class CICSTree
 
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         await persistentStorage.addLoadedCICSProfile(profile.name!);
+        window.withProgress({
+            title: 'Load profile',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+              console.log(`Cancelling the loading of ${profile.name}`);
+            });
 
-        const plexInfo = await ProfileManagement.getPlexInfo(profile);
-        const newSessionTree = new CICSSessionTree(profile);
-        for (const item of plexInfo) {
-            if (item.plexname === null) {
+            progress.report({
+            message: `Loading ${profile.name}`
+            });
+            try {
+                const plexInfo = await ProfileManagement.getPlexInfo(profile);
+                const newSessionTree = new CICSSessionTree(profile);
+                for (const item of plexInfo) {
+                    if (item.plexname === null) {
 
-                const session = new Session({
-                    type: "basic",
-                    hostname: profile.profile!.host,
-                    port: Number(profile.profile!.port),
-                    user: profile.profile!.user,
-                    password: profile.profile!.password,
-                    rejectUnauthorized: profile.profile!.rejectUnauthorized,
-                    protocol: profile.profile!.protocol,
-                });
-
-                const regionsObtained = await getResource(session, {
-                    name: "CICSRegion",
-                    regionName: item.regions[0].applid
-                });
-                const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
-                newSessionTree.addRegion(newRegionTree);
-            } else {
-                const newPlexTree = new CICSPlexTree(item.plexname);
-                for (const regionInPlex of item.regions) {
-                    const newRegionTree = new CICSRegionTree(regionInPlex.cicsname, regionInPlex, newSessionTree, newPlexTree);
-                    newPlexTree.addRegion(newRegionTree);
+                        const session = new Session({
+                            type: "basic",
+                            hostname: profile.profile!.host,
+                            port: Number(profile.profile!.port),
+                            user: profile.profile!.user,
+                            password: profile.profile!.password,
+                            rejectUnauthorized: profile.profile!.rejectUnauthorized,
+                            protocol: profile.profile!.protocol,
+                        });
+                        try {
+                            const regionsObtained = await getResource(session, {
+                                name: "CICSRegion",
+                                regionName: item.regions[0].applid
+                            });
+                            const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
+                            newSessionTree.addRegion(newRegionTree);
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    } else {
+                        const newPlexTree = new CICSPlexTree(item.plexname);
+                        for (const regionInPlex of item.regions) {
+                            const newRegionTree = new CICSRegionTree(regionInPlex.cicsname, regionInPlex, newSessionTree, newPlexTree);
+                            newPlexTree.addRegion(newRegionTree);
+                        }
+                        newSessionTree.addPlex(newPlexTree);
+                    }
                 }
-                newSessionTree.addPlex(newPlexTree);
+                if (position || position === 0) {
+                    this.loadedProfiles.splice(position, 0, newSessionTree);
+                } else {
+                    this.loadedProfiles.push(newSessionTree);
+                }
+                this._onDidChangeTreeData.fire(undefined);
+            } catch (error) {
+                if (typeof(error) === 'object') {
+                    //@ts-ignore
+                    if (error.code === 'ETIMEDOUT') {
+                        //@ts-ignore
+                        window.showErrorMessage(`Error: connect ETIMEDOUT ${error.address}:${error.port} (${profile.name})`);
+                    }
+                }
+                console.log(error);
             }
-        }
-        if (position || position === 0) {
-            this.loadedProfiles.splice(position, 0, newSessionTree);
-        } else {
-            this.loadedProfiles.push(newSessionTree);
-        }
-        this._onDidChangeTreeData.fire(undefined);
-
+            }
+        );
     }
 
     async createNewProfile() {
