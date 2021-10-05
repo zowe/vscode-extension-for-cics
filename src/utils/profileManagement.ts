@@ -12,6 +12,7 @@
 import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile } from "@zowe/imperative";
 import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import axios from "axios";
+import { type } from "os";
 import { window } from "vscode";
 import { xml2json } from "xml-js";
 import cicsProfileMeta from "./profileDefinition";
@@ -213,19 +214,19 @@ export class ProfileManagement {
           }
         } catch (error) {
           // Not Plex - Could be error
-
-          const singleRegion = await axios.get(`${URL}/CICSRegion`, {
-            auth: {
-              username: profile!.profile!.user,
-              password: profile!.profile!.password,
-            }
-          });
-          const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
-          const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
-          infoLoaded.push({
-            plexname: null,
-            regions: [returnedRegion]
-          });
+          throw error;
+          // const singleRegion = await axios.get(`${URL}/CICSRegion`, {
+          //   auth: {
+          //     username: profile!.profile!.user,
+          //     password: profile!.profile!.password,
+          //   }
+          // });
+          // const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+          // const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
+          // infoLoaded.push({
+          //   plexname: null,
+          //   regions: [returnedRegion]
+          // });
 
         }
       }

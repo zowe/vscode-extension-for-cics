@@ -65,6 +65,7 @@ export async function activate(context: ExtensionContext) {
 
   treeview.onDidExpandElement(async (node) => {
     if (node.element.contextValue.includes("cicssession.")) {
+      await treeDataProv.loadProfile(node.element.getProfile(), treeDataProv.getLoadedProfiles().indexOf(node.element), node.element);
     } else if (node.element.contextValue.includes("cicsplex.")) {
     } else if (node.element.contextValue.includes("cicsregion.")) {
 
