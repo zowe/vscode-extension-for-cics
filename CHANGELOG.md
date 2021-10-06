@@ -1,6 +1,25 @@
 # Change Log
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
+## `1.0.2`
+
+- Added 'Enable' and 'Disable' functionality for Transactions [#88](https://github.com/zowe/vscode-extension-for-cics/issues/88).
+- Added 'Enable' and 'Disable' functionality for Local Files [#90](https://github.com/zowe/vscode-extension-for-cics/issues/90).
+- Added 'Open' and 'Close' functionality for Local Files [#91](https://github.com/zowe/vscode-extension-for-cics/issues/91).
+- Added error messages for failed commands such as phase-in and newcopy [#89](https://github.com/zowe/vscode-extension-for-cics/issues/89).
+- Fixed the issue where updating the topmost profile caused it to disappear [#93](https://github.com/zowe/vscode-extension-for-cics/issues/93).
+- Improved the filtering to allow multiple filters using a comma-separated input [#95](https://github.com/zowe/vscode-extension-for-cics/issues/95).
+- Added the option to choose how to proceed if the local file is busy when a disable command is executed [#97](https://github.com/zowe/vscode-extension-for-cics/issues/97).
+- Fixed the issue of error messages not appearing on theia [#98](https://github.com/zowe/vscode-extension-for-cics/issues/98).
+- Fixed the issue of not being able to execute a sequence of commands without collapsing and re-expanding the region tree [#102](https://github.com/zowe/vscode-extension-for-cics/issues/102).
+- Added a cancellable progress bar to indicate the loading of profiles [#104](https://github.com/zowe/vscode-extension-for-cics/issues/104).
+- Improved 'Show Attributes' webview by reducing the whitespace, adding a sticky search bar and renaming the title to be more beneficial for users.
+- Further improved compatibility with theia by making resource commands and filtering work.
+
+## `1.0.1`
+- Fixed the bug that prevented enable/disable status changing on the program label.
+- Updated documentation.
+- Updated graphics.
 
 ## `1.0.0`
 
