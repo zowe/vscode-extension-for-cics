@@ -86,6 +86,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} in plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
+          throw new Error("Region Not Found");
         }
 
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -114,6 +115,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
+          throw new Error("Plex Not Found");
         }
 
 
@@ -145,6 +147,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} for profile ${profile!.name}`);
+          throw new Error("Region Not Found");
         }
 
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
