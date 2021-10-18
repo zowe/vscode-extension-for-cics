@@ -30,7 +30,7 @@ export class CICSSessionTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "profile-dark.svg"
+        "profile-unverified-dark.svg"
       ),
       dark: join(
         __filename,

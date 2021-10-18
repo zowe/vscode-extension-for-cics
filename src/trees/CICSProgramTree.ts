@@ -14,7 +14,7 @@ import { join } from "path";
 import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
-
+import * as https from "https";
 export class CICSProgramTree extends TreeItem {
   children: CICSProgramTreeItem[] = [];
   parentRegion: CICSRegionTree;
@@ -74,18 +74,23 @@ export class CICSProgramTree extends TreeItem {
     }
     this.children = [];
     try {
+      if (this.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
+        https.globalAgent.options.rejectUnauthorized = false;
+      }
       const programResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSProgram",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
+      https.globalAgent.options.rejectUnauthorized = true;
       for (const program of Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram]) {
         const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
         //@ts-ignore
         this.addProgram(newProgramItem);
       }
     } catch (error) {
+      https.globalAgent.options.rejectUnauthorized = true;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);

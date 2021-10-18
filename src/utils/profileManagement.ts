@@ -16,7 +16,7 @@ import { type } from "os";
 import { window } from "vscode";
 import { xml2json } from "xml-js";
 import cicsProfileMeta from "./profileDefinition";
-
+import * as https from "https";
 export class ProfileManagement {
 
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('1.18.0');
@@ -58,9 +58,14 @@ export class ProfileManagement {
   }
 
   public static async getPlexInfo(profile: IProfileLoaded) {
-
     const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
     const infoLoaded: { plexname: string | null, regions: any[]; }[] = [];
+
+    if (profile!.profile!.rejectUnauthorized === false) {
+      https.globalAgent.options.rejectUnauthorized = false;
+    } else {
+      https.globalAgent.options.rejectUnauthorized = true;
+    }
 
     if (profile!.profile!.cicsPlex) {
       if (profile!.profile!.regionName) {
@@ -70,8 +75,9 @@ export class ProfileManagement {
         /**
          * Both Supplied, no searching required - Only load 1 region
          */
-
-        const singleRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, {
+        const singleRegionResponse = await axios.get(
+          `${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, 
+        {
           auth: {
             username: profile!.profile!.user,
             password: profile!.profile!.password,
@@ -86,6 +92,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} in plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
+          https.globalAgent.options.rejectUnauthorized = true;
           throw new Error("Region Not Found");
         }
 
@@ -115,6 +122,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
+          https.globalAgent.options.rejectUnauthorized = true;
           throw new Error("Plex Not Found");
         }
 
@@ -147,6 +155,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} for profile ${profile!.name}`);
+          https.globalAgent.options.rejectUnauthorized = true;
           throw new Error("Region Not Found");
         }
 
@@ -217,23 +226,28 @@ export class ProfileManagement {
           }
         } catch (error) {
           // Not Plex - Could be error
-          throw error;
-          // const singleRegion = await axios.get(`${URL}/CICSRegion`, {
-          //   auth: {
-          //     username: profile!.profile!.user,
-          //     password: profile!.profile!.password,
-          //   }
-          // });
-          // const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
-          // const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
-          // infoLoaded.push({
-          //   plexname: null,
-          //   regions: [returnedRegion]
-          // });
 
+          try {
+              const singleRegion = await axios.get(`${URL}/CICSRegion`, {
+              auth: {
+                username: profile!.profile!.user,
+                password: profile!.profile!.password,
+              }
+            });
+            const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+            const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
+            infoLoaded.push({
+              plexname: null,
+              regions: [returnedRegion]
+            });
+          } catch (error) {
+            https.globalAgent.options.rejectUnauthorized = true;
+            throw error;
+          }
         }
       }
     }
+    https.globalAgent.options.rejectUnauthorized = true;
     return infoLoaded;
   }
 }

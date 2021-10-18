@@ -14,6 +14,7 @@ import { join } from "path";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { CICSRegionTree } from "./CICSRegionTree";
+import * as https from "https";
 
 export class CICSLocalFileTree extends TreeItem {
   children: CICSLocalFileTreeItem[] = [];
@@ -74,18 +75,23 @@ export class CICSLocalFileTree extends TreeItem {
     }
     this.children = [];
     try {
+      if (this.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
+        https.globalAgent.options.rejectUnauthorized = false;
+      }
       const localFileResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalFile",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
+      https.globalAgent.options.rejectUnauthorized = true;
       for (const localFile of Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile]) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
         //@ts-ignore
         this.addLocalFile(newLocalFileItem);
       }
     } catch (error) {
+      https.globalAgent.options.rejectUnauthorized = true;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a local file filter to narrow search`);
