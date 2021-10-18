@@ -48,7 +48,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
         width: 90%;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: left;
 
         background-color: var(--vscode-editor-background);
       }
@@ -59,6 +59,16 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
         flex-wrap: wrap;
         width: 100%;
         padding: 1rem 0;
+      }
+      .three-input-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        width: 100%;
+        padding: 1rem 0;
+      }
+      .TLScontainer{
+        padding: 0 0 0 0;
       }
       .port-container {
         max-width: 20%;
@@ -78,61 +88,81 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
       .user-input {
         max-width: 46%;
       }
-  
-      h2 {
-        padding: 1rem 0;
-      }
 
-      h1, h2, p, label {
+      .float-child-left {
+        width: 35%;
+        float: left;
+        text-align: left;
+        width:fit-content;
+        padding: 0% 3% 0% 0%;
+      } 
+      .float-child-right {
+        width: 65%;
+        float: left;
+        text-align: left;
+        width:fit-content;
+      } 
+
+      h1, h2, h3, h4, p, label {
         color: var(--vscode-editor-foreground) !important;
       }
 
       p {
-        text-align: center;
+        text-align: left;
       }
     </style>
-    <body>
+    <body onload="initialize()">
       <div class="bx--content">
-        <h1>${message ? "Update" : "Create"} CICS Profile</h1>
-  
-        <div
-          class="
-            bx--form-item bx--text-input-wrapper
-            host-container
-            two-input-container
-          "
-        >
-          <label for="name-input" class="bx--label">Profile Name</label>
-          <div class="bx--text-input__field-wrapper">
-            <input
-              id="name-input"
-              type="text"
-              class="bx--text-input"
-              placeholder="This name is used to identify the profile"
-              ${message?.name ? `value =${message.name}` : undefined}
-              ${message ? `readonly` : ""}
-              
-            />
-          </div>
+        <div style="padding:0 0 1rem 0 ">
+
         </div>
+        <h3 style="text-align:left">Connection Details</h3>
   
-        <h2>Connection Details</h2>
-  
-        <div class="two-input-container">
-          <div class="bx--form-item bx--text-input-wrapper host-container">
-            <label for="host-input" class="bx--label">Host URL</label>
-            <div class="bx--text-input__field-wrapper">
-              <input
-                id="host-input"
-                type="text"
-                class="bx--text-input"
-                placeholder="example.cics.host.com"
-                ${message?.profile!.host ? `value =${message.profile.host}` : undefined}
-              />
-            </div>
+        <div class="three-input-container">
+          <div style="width: 20%; padding: 0% 2% 0% 0%">
+              <div class="bx--select">
+                <label for="protocol-select" class="bx--label">Protocol</label>
+                <div class="bx--select-input__wrapper">
+                  <select id="protocol-select" class="bx--select-input" onload="renderRU()" onchange="renderRU()">
+                    <option class="bx--select-option" value="http" ${message?.profile!.protocol === "http" ? `selected="selected"` : ""}>
+                      HTTP
+                    </option>
+                    <option class="bx--select-option" value="https" ${message?.profile!.protocol === "https" ? `selected="selected"` : ""}>
+                      HTTPS
+                    </option>
+                  </select>
+                  <svg
+                    focusable="false"
+                    preserveAspectRatio="xMidYMid meet"
+                    style="will-change: transform"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="bx--select__arrow"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 11L3 6 3.7 5.3 8 9.6 12.3 5.3 13 6z"></path>
+                  </svg>
+                </div>
+              </div>
+          </div>
+
+          <div style="width: 60%; padding: 0% 1% 0% 1%">
+              <label for="host-input" class="bx--label">Host URL</label>
+              <div class="bx--text-input__field-wrapper">
+                <input
+                  id="host-input"
+                  type="text"
+                  class="bx--text-input"
+                  placeholder="example.cics.host.com"
+                  oninput="handleHostInputName()"
+                  ${message?.profile!.host ? `value =${message.profile.host}` : undefined}
+                />
+              </div>
           </div>
   
-          <div class="bx--form-item bx--text-input-wrapper port-container">
+          <div style="width: 20%; padding: 0% 0% 0% 2%">
             <label for="port-input" class="bx--label">Port</label>
             <div class="bx--text-input__field-wrapper">
               <input
@@ -146,70 +176,57 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
           </div>
         </div>
   
-        <div class="two-input-container">
-          <div class="bx--form-item select-container">
-            <div class="bx--select">
-              <label for="protocol-select" class="bx--label">Protocol</label>
-              <div class="bx--select-input__wrapper">
-                <select id="protocol-select" class="bx--select-input">
-                  <option class="bx--select-option" value="https" ${message?.profile!.protocol === "https" ? `selected="selected"` : ""}>
-                    HTTPS
-                  </option>
-                  <option class="bx--select-option" value="http" ${message?.profile!.protocol === "http" ? `selected="selected"` : ""}>
-                    HTTP
-                  </option>
-                </select>
-                <svg
-                  focusable="false"
-                  preserveAspectRatio="xMidYMid meet"
-                  style="will-change: transform"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="bx--select__arrow"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  aria-hidden="true"
-                >
-                  <path d="M8 11L3 6 3.7 5.3 8 9.6 12.3 5.3 13 6z"></path>
-                </svg>
+
+
+          <div class="TLScontainer" id="ru-selection-container" width:100%">
+
+              <div class="float-child-left">
+                <label style="font-size:16px">Only accept trusted TLS certificates</label>
               </div>
+              <div class="float-child-right">
+                <div class="bx--radio-button-group ">
+                  <div class="bx--radio-button-wrapper">
+                    <input id="radio-button-true" class="bx--radio-button" type="radio" value="true" name="radio-button" tabindex="0" ${message?.profile!.rejectUnauthorized ? `checked="checked"` : ""}>
+                    <label for="radio-button-true" class="bx--radio-button__label">
+                      <span class="bx--radio-button__appearance" style="background-color:white"></span>
+                      <span class="bx--radio-button__label-text">True</span>
+                    </label>
+                  </div>
+
+                  <div class="bx--radio-button-wrapper">
+                    <input id="radio-button-false" class="bx--radio-button" type="radio" value="false" name="radio-button" tabindex="0" ${!message?.profile!.rejectUnauthorized ? `checked="checked""` : ""}>
+                    <label for="radio-button-false" class="bx--radio-button__label">
+                      <span class="bx--radio-button__appearance" style="background-color:white"></span>
+                      <span class="bx--radio-button__label-text">False</span>
+                    </label>
+                  </div>
+
+                </div>
+              </div>
+
+
+          </div>
+
+          <div class="two-input-container">
+            <label for="name-input" class="bx--label">Profile Name</label>
+            <div class="bx--text-input__field-wrapper">
+              <input
+                id="name-input"
+                type="text"
+                class="bx--text-input"
+                placeholder="This name is used to identify the profile"
+                onchange=(function(){inputFieldChanged=true;})()
+                ${message?.name ? `value =${message.name}` : undefined}
+                ${message ? `readonly` : ""}
+                
+              />
             </div>
           </div>
   
-          <div class="bx--form-item select-container">
-            <div class="bx--select">
-              <label for="ruSelect" class="bx--label">Reject Unauthorized</label>
-              <div class="bx--select-input__wrapper">
-                <select id="ruSelect" class="bx--select-input">
-                  <option class="bx--select-option" value="true" ${message?.profile!.rejectUnauthorized ? `selected="selected"` : ""}>
-                    True
-                  </option>
-                  <option class="bx--select-option" value="false" ${!message?.profile!.rejectUnauthorized ? `selected="selected"` : ""}>
-                    False
-                  </option>
-                </select>
-                <svg
-                  focusable="false"
-                  preserveAspectRatio="xMidYMid meet"
-                  style="will-change: transform"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="bx--select__arrow"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  aria-hidden="true"
-                >
-                  <path d="M8 11L3 6 3.7 5.3 8 9.6 12.3 5.3 13 6z"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <h2>User Details</h2>
+        <h3>User Details</h3>
   
         <div class="two-input-container">
-          <div class="bx--form-item bx--text-input-wrapper user-input">
+          <div style="width:50%; padding: 0 1.5% 0 0">
             <label for="user-input" class="bx--label">User ID</label>
             <div class="bx--text-input__field-wrapper">
               <input
@@ -222,7 +239,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
             </div>
           </div>
   
-          <div class="bx--form-item bx--text-input-wrapper user-input">
+          <div style="width:50%; padding: 0 0 0 1.5%">
             <label for="password-input" class="bx--label">Password</label>
             <div class="bx--text-input__field-wrapper">
               <input
@@ -235,12 +252,12 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
             </div>
           </div>
         </div>
-        <h2>CICS Details</h2>
+        <h3>CICS Details <span style="font-size:20px"><em>(Optional)</em></span></h3>
   
-        <p>Plex(es) and Region(s) are retrieved and shown automatically if not specified. You can reduce the number of items returned by narrowing down the search with a plex and/or region name.</p>
+        <p>Narrow down the search by specifying a plex, or a plex AND a region for profiles that contain plexes. Otherwise specify a region.</p>
   
         <div class="two-input-container">
-          <div class="bx--form-item bx--text-input-wrapper user-input">
+          <div style="width:50%; padding: 0 1.5% 0 0">
             <label for="region-input" class="bx--label">Region Name</label>
             <div class="bx--text-input__field-wrapper">
               <input
@@ -253,7 +270,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
             </div>
           </div>
   
-          <div class="bx--form-item bx--text-input-wrapper user-input">
+          <div style="width:50%; padding: 0 0 0 1.5%">
             <label for="plex-input" class="bx--label">Plex Name</label>
             <div class="bx--text-input__field-wrapper">
               <input
@@ -269,10 +286,14 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
         <button
           onclick="createSession()"
           class="bx--btn bx--btn--primary"
+          style="width:30%"
           type="button">${message ? "Update" : "Create"} Profile</button>
       </div>
   
       <script>
+
+        let inputFieldChanged = false;
+
         function createSession() {
           let data = {
             profile: {
@@ -282,7 +303,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
               user: document.getElementById("user-input").value,
               password: document.getElementById("password-input").value,
               rejectUnauthorized:
-                document.getElementById("ruSelect").value === "true" ? true : false,
+                checkRadioButtons() === "true" ? true : false,
               protocol: document.getElementById("protocol-select").value,
               cicsPlex: document.getElementById("plex-input").value.toString().trim().length === 0 ? undefined : document.getElementById("plex-input").value.toString().trim(),
               regionName: document.getElementById("region-input").value.toString().trim().length === 0 ? undefined : document.getElementById("region-input").value.toString().trim(),
@@ -294,6 +315,65 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
 
           const vscode = acquireVsCodeApi();
           vscode.postMessage(data);
+        };
+
+        function checkRadioButtons() {
+          const radios = document.getElementsByName("radio-button");
+          for (var i = 0, length = radios.length; i < length; i++) {
+            if (radios[i].checked) {
+              return radios[i].value;
+            }
+          }
+        }
+
+        function onLoadRenderRU() {
+          if (${message?.profile!.protocol === "https"}) {
+            setContentsEnabled("ru-selection-container");
+          } else if (${message?.profile!.protocol === "http"}) {
+            setContentsDisabled("ru-selection-container");
+          }
+        }
+
+        function renderRU() {
+          if (document.getElementById("protocol-select").value === "https") {
+            setContentsEnabled("ru-selection-container");
+          } else if (document.getElementById("protocol-select").value === "http") {
+            setContentsDisabled("ru-selection-container");
+          }
+        }
+
+        function setContentsDisabled(id) {
+          const nodes = document.getElementById(id).getElementsByTagName('*');
+          for(let i = 0; i < nodes.length; i++){
+               nodes[i].disabled = true;
+          }
+        }
+
+        function setContentsEnabled(id) {
+          const nodes = document.getElementById(id).getElementsByTagName('*');
+          for(let i = 0; i < nodes.length; i++){
+               nodes[i].disabled = false;
+          }
+        }
+
+        function setFocusToInputBox(){
+          document.getElementById("host-input").focus();
+        }
+
+        function initialize(){
+          setFocusToInputBox();
+          renderRU();
+        }
+
+        function handleHostInputName(){
+          if (${!message}){
+            if(document.getElementById("name-input").value===""){
+              inputFieldChanged=false;
+            }
+            if(!inputFieldChanged){
+              document.getElementById("name-input").value = document.getElementById("host-input").value.split(".")[0];
+            }
+          }
         }
 
       </script>
