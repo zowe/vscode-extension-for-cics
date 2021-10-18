@@ -65,8 +65,4 @@ export class CICSSessionTree extends TreeItem {
   public addPlex(plex: CICSPlexTree) {
     this.children.push(plex);
   }
-
-  public getProfile(){
-    return this.profile;
-  }
 }
