@@ -11,6 +11,7 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
+import { join } from "path";
 import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
@@ -19,25 +20,29 @@ import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
+import * as https from "https";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
 
     loadedProfiles: CICSSessionTree[] = [];
     constructor() {
-        this.loadStoredProfiles();
+        this.loadStoredProfileNames();
+    }
+    public getLoadedProfiles() {
+        return this.loadedProfiles;
     }
 
-    public async loadStoredProfiles() {
+    public async loadStoredProfileNames() {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         for (const profilename of persistentStorage.getLoadedCICSProfile()) {
             const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
-            await this.loadProfile(profileToLoad);
+            const newSessionTree = new CICSSessionTree(profileToLoad);
+            this.loadedProfiles.push(newSessionTree);
         }
     }
 
     async addProfile() {
-
         const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
         if (allCICSProfileNames.length > 0) {
             const profileNameToLoad = await window.showQuickPick(
@@ -65,7 +70,11 @@ export class CICSTree
 
                 } else {
                     const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
-                    this.loadProfile(profileToLoad);
+                    const newSessionTree = new CICSSessionTree(profileToLoad);
+                    this.loadedProfiles.push(newSessionTree);
+                    const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+                    await persistentStorage.addLoadedCICSProfile(profileNameToLoad.label);
+                    this._onDidChangeTreeData.fire(undefined);
                 }
             }
         } else {
@@ -80,10 +89,10 @@ export class CICSTree
 
     }
 
-    async loadProfile(profile: IProfileLoaded, position?: number) {
-
+    async loadProfile(profile: IProfileLoaded, position?: number | undefined, sessionTree?: CICSSessionTree) {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         await persistentStorage.addLoadedCICSProfile(profile.name!);
+        let newSessionTree : CICSSessionTree;
         window.withProgress({
             title: 'Load profile',
             location: ProgressLocation.Notification,
@@ -98,7 +107,28 @@ export class CICSTree
             });
             try {
                 const plexInfo = await ProfileManagement.getPlexInfo(profile);
-                const newSessionTree = new CICSSessionTree(profile);
+                
+                newSessionTree = new CICSSessionTree(profile, {
+                    light: join(
+                      __filename,
+                      "..",
+                      "..",
+                      "..",
+                      "resources",
+                      "imgs",
+                      "profile-dark.svg"
+                    ),
+                    dark: join(
+                      __filename,
+                      "..",
+                      "..",
+                      "..",
+                      "resources",
+                      "imgs",
+                      "profile-light.svg"
+                    ),
+                  });
+
                 for (const item of plexInfo) {
                     if (item.plexname === null) {
 
@@ -112,13 +142,18 @@ export class CICSTree
                             protocol: profile.profile!.protocol,
                         });
                         try {
+                            if (profile!.profile!.rejectUnauthorized === false) {
+                                https.globalAgent.options.rejectUnauthorized = false;
+                            }
                             const regionsObtained = await getResource(session, {
                                 name: "CICSRegion",
                                 regionName: item.regions[0].applid
                             });
+                            https.globalAgent.options.rejectUnauthorized = true;
                             const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
                             newSessionTree.addRegion(newRegionTree);
                         } catch (error) {
+                            https.globalAgent.options.rejectUnauthorized = true;
                             console.log(error);
                         }
                     } else {
@@ -130,21 +165,106 @@ export class CICSTree
                         newSessionTree.addPlex(newPlexTree);
                     }
                 }
-                if (position || position === 0) {
+                if (sessionTree) {
+                    // expand profile
+                    this.loadedProfiles.splice(position!, 1, newSessionTree);
+                }
+                else if (position || position === 0) {
+                    // Update profile
                     this.loadedProfiles.splice(position, 0, newSessionTree);
                 } else {
                     this.loadedProfiles.push(newSessionTree);
                 }
                 this._onDidChangeTreeData.fire(undefined);
             } catch (error) {
+                https.globalAgent.options.rejectUnauthorized = true;
+                newSessionTree = new CICSSessionTree(profile, {
+                    light: join(
+                      __filename,
+                      "..",
+                      "..",
+                      "..",
+                      "resources",
+                      "imgs",
+                      "profile-disconnected-dark.svg"
+                    ),
+                    dark: join(
+                      __filename,
+                      "..",
+                      "..",
+                      "..",
+                      "resources",
+                      "imgs",
+                      "profile-disconnected-light.svg"
+                    ),
+                  });
+                if (sessionTree) {
+                    this.loadedProfiles.splice(position!, 1, newSessionTree);
+                }
+                else if (position || position === 0) {
+                    this.loadedProfiles.splice(position, 0, newSessionTree);
+                } else {
+                    this.loadedProfiles.push(newSessionTree);
+                }
+                this._onDidChangeTreeData.fire(undefined);
+
                 if (typeof(error) === 'object') {
-                    //@ts-ignore
-                    if (error.code === 'ETIMEDOUT') {
+                    if ("code" in error!){
                         //@ts-ignore
-                        window.showErrorMessage(`Error: connect ETIMEDOUT ${error.address}:${error.port} (${profile.name})`);
+                        switch(error.code) {
+                            case 'ETIMEDOUT':
+                                window.showErrorMessage(`Error: connect ETIMEDOUT ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                break;
+                            case "ENOTFOUND":
+                                window.showErrorMessage(`Error: getaddrinfo ENOTFOUND ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                break;
+                            case "ECONNRESET":
+                                window.showErrorMessage(`Error: socket hang up ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                break;
+                            case "EPROTO":
+                                window.showErrorMessage(`Error: write EPROTO ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                break;
+                            case "DEPTH_ZERO_SELF_SIGNED_CERT":
+                            case "SELF_SIGNED_CERT_IN_CHAIN":
+                            case "ERR_TLS_CERT_ALTNAME_INVALID":
+                            case "CERT_HAS_EXPIRED":
+                                if (sessionTree){
+                                        // If expanding a profile
+                                    const busyDecision = await window.showInformationMessage(
+                                        //@ts-ignore
+                                        `Warning: Your connection is not private (${error.code}) - would you still like to proceed to ${profile!.profile!.host} (unsafe)?`,
+                                        ...["Yes", "No"]);
+                                    if (busyDecision) {
+                                        if (busyDecision === "Yes") {
+                                            const message = {
+                                                name: profile.name,
+                                                profile: {
+                                                    ...profile.profile, 
+                                                    rejectUnauthorized: false
+                                                }
+                                            };
+                                            const newProfile = await ProfileManagement.updateProfile(message);
+                                            const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.name!, 'cics');
+                                            await this.removeSession(sessionTree, updatedProfile, position);
+                                        }
+                                        
+                                    }
+                                }
+                                break;
+                            default:
+                                window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                        }
+
+                    } else if ("response" in error!) {
+                        //@ts-ignore
+                        if (error.response !== 'undefined' && error.response.status === 404){
+                            window.showErrorMessage(`Error: 404 - Profile '${profile.name}' not found`);
+                        }
                     }
                 }
                 console.log(error);
+
+                
             }
             }
         );
@@ -273,6 +393,7 @@ export class CICSTree
                     await ProfileManagement.createNewProfile(message);
                     await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
                 } catch (error) {
+                    console.log(error);
                     // @ts-ignore
                     window.showErrorMessage(error);
                 }
@@ -286,8 +407,7 @@ export class CICSTree
     async removeSession(session: CICSSessionTree, profile?: IProfileLoaded, position?: number) {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
-
-        this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== session);
+        this.loadedProfiles = this.loadedProfiles.filter(profile => profile.profile.name !== session.label?.toString());
         if (profile && position !== undefined) {
             await this.loadProfile(profile!, position);
         }

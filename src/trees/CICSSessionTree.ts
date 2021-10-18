@@ -18,6 +18,7 @@ import { Session } from "@zowe/imperative";
 export class CICSSessionTree extends TreeItem {
   children: (CICSPlexTree | CICSRegionTree)[];
   session: Session;
+  profile: any;
 
   constructor(
     profile: any,
@@ -29,7 +30,7 @@ export class CICSSessionTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "profile-dark.svg"
+        "profile-unverified-dark.svg"
       ),
       dark: join(
         __filename,
@@ -38,7 +39,7 @@ export class CICSSessionTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "profile-light.svg"
+        "profile-unverified-light.svg"
       ),
     }
   ) {
@@ -54,6 +55,7 @@ export class CICSSessionTree extends TreeItem {
       rejectUnauthorized: profile.profile!.rejectUnauthorized,
       protocol: profile.profile!.protocol,
     });
+    this.profile = profile;
   }
 
   public addRegion(region: CICSRegionTree) {

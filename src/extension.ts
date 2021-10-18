@@ -65,6 +65,13 @@ export async function activate(context: ExtensionContext) {
 
   treeview.onDidExpandElement(async (node) => {
     if (node.element.contextValue.includes("cicssession.")) {
+      let profile : any;
+      try {
+        profile = await ProfileManagement.getProfilesCache().loadNamedProfile(node.element.label?.toString()!, 'cics');
+        await treeDataProv.loadProfile(profile, treeDataProv.getLoadedProfiles().indexOf(node.element), node.element);
+      } catch (error) {
+        console.log(error);
+      }
     } else if (node.element.contextValue.includes("cicsplex.")) {
     } else if (node.element.contextValue.includes("cicsregion.")) {
 

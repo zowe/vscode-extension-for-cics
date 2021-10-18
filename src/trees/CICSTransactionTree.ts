@@ -14,6 +14,7 @@ import { join } from "path";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
+import * as https from "https";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];
@@ -74,18 +75,23 @@ export class CICSTransactionTree extends TreeItem {
     }
     this.children = [];
     try {
+      if(this.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
+        https.globalAgent.options.rejectUnauthorized = false;
+      }
       const transactionResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalTransaction",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
+      https.globalAgent.options.rejectUnauthorized = true;
       for (const transaction of Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction]) {
         const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
         //@ts-ignore
         this.addTransaction(newTransactionItem);
       }
     } catch (error) {
+      https.globalAgent.options.rejectUnauthorized = true;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a transaction filter to narrow search`);
