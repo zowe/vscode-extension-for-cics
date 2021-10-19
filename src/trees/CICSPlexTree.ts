@@ -62,6 +62,7 @@ export class CICSPlexTree extends TreeItem {
   public async filterRegions(pattern: string, tree: CICSTree) {
     this.children = [];
     const regex = new RegExp(`^${pattern.replace("*","(.*)")}`);
+    this.label = pattern === "*" ? `${this.plexName}` : `${this.plexName} (${pattern})`;
     const plexInfo = await ProfileManagement.getPlexInfo(this.profile);
     for (const item of plexInfo) {
       for (const regionInPlex of item.regions) {
