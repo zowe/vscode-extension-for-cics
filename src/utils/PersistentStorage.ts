@@ -16,12 +16,14 @@ export class PersistentStorage {
     private static readonly programSearchHistory: string = "programSearchHistory";
     private static readonly transactionSearchHistory: string = "transactionSearchHistory";
     private static readonly localFileSearchHistory: string = "localFileSearchHistory";
+    private static readonly regionSearchHistory: string = "regionSearchHistory";
     private static readonly loadedCICSProfile: string = "loadedCICSProfile";
 
 
     private mProgramSearchHistory: string[] = [];
     private mTransactionSearchHistory: string[] = [];
     private mLocalFileSearchHistory: string[] = [];
+    private mRegionSearchHistory: string[] = [];
     private mLoadedCICSProfile: string[] = [];
 
     constructor(
@@ -35,12 +37,14 @@ export class PersistentStorage {
         let programSearchHistoryLines: string[] | undefined;
         let transactionSearchHistoryLines: string[] | undefined;
         let localFileSearchHistoryLines: string[] | undefined;
+        let regionSearchHistoryLines: string[] | undefined;
         let loadedCICSProfileLines: string[] | undefined;
 
         if (workspace.getConfiguration(this.schema)) {
             programSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.programSearchHistory);
             transactionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.transactionSearchHistory);
             localFileSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.localFileSearchHistory);
+            regionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.regionSearchHistory);
             loadedCICSProfileLines = workspace.getConfiguration(this.schema).get(PersistentStorage.loadedCICSProfile);
         }
         if (programSearchHistoryLines) {
@@ -57,6 +61,11 @@ export class PersistentStorage {
             this.mLocalFileSearchHistory = localFileSearchHistoryLines;
         } else {
             await this.resetLocalFileSearchHistory();
+        }
+        if (regionSearchHistoryLines) {
+            this.mRegionSearchHistory = regionSearchHistoryLines;
+        } else {
+            await this.resetRegionSearchHistory();
         }
         if (loadedCICSProfileLines) {
             this.mLoadedCICSProfile = loadedCICSProfileLines;
@@ -76,6 +85,9 @@ export class PersistentStorage {
     public getLocalFileSearchHistory(): string[] {
         return this.mLocalFileSearchHistory;
     }
+    public getRegionSearchHistory(): string[] {
+        return this.mRegionSearchHistory;
+    }
     public getLoadedCICSProfile(): string[] {
         return this.mLoadedCICSProfile;
     }
@@ -93,6 +105,10 @@ export class PersistentStorage {
     public async resetLocalFileSearchHistory() {
         this.mLocalFileSearchHistory = [];
         await this.updateLocalFileSearchHistory();
+    }
+    public async resetRegionSearchHistory() {
+        this.mRegionSearchHistory = [];
+        await this.updateRegionSearchHistory();
     }
     public async resetLoadedCICSProfile(){
         this.mLoadedCICSProfile = [];
@@ -119,6 +135,13 @@ export class PersistentStorage {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
             settings[PersistentStorage.localFileSearchHistory] = this.mLocalFileSearchHistory;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+    private async updateRegionSearchHistory() {
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if (settings.persistence) {
+            settings[PersistentStorage.regionSearchHistory] = this.mRegionSearchHistory;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
@@ -172,6 +195,20 @@ export class PersistentStorage {
                 this.mLocalFileSearchHistory.pop();
             }
             await this.updateLocalFileSearchHistory();
+        }
+    }
+    public async addRegionSearchHistory(criteria: string) {
+        if (criteria) {
+            this.mRegionSearchHistory = this.mRegionSearchHistory.filter((element) => {
+                return element.trim() !== criteria.trim();
+            });
+
+            this.mRegionSearchHistory.unshift(criteria);
+
+            if (this.mRegionSearchHistory.length > 10) {
+                this.mRegionSearchHistory.pop();
+            }
+            await this.updateRegionSearchHistory();
         }
     }
 

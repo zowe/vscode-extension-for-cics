@@ -21,7 +21,7 @@ export function getFilterPlexResources(tree: CICSTree) {
     async (node) => {
       if (node) {
 
-        const resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
+        const resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
         const filterDescriptorText = `\uFF0B Create New ${resourceToFilter} Filter (use a comma to separate multiple patterns e.g. LG*,I*)`;
 
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
@@ -40,6 +40,10 @@ export function getFilterPlexResources(tree: CICSTree) {
         } else if (resourceToFilter === "Local Files"){
             items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
                 return { label: loadedFilter };
+            });
+        } else if (resourceToFilter === "Regions") {
+            items = persistentStorage.getRegionSearchHistory().map(loadedFilter => {
+              return { label: loadedFilter };
             });
         } else {
             window.showInformationMessage("No Selection Made");
@@ -89,27 +93,32 @@ export function getFilterPlexResources(tree: CICSTree) {
             await persistentStorage.addTransactionSearchHistory(pattern!);
         } else if (resourceToFilter === "Local Files"){
             await persistentStorage.addLocalFileSearchHistory(pattern!);
-        }
+        } else if (resourceToFilter === "Regions"){
+            await persistentStorage.addRegionSearchHistory(pattern!);
+      }
 
         node.collapsibleState = TreeItemCollapsibleState.Expanded;
-    
-        for (const region of node.children){
-          if(region.getIsActive()){
-            let treeToFilter;
-            if (resourceToFilter === "Programs"){
-                treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
-            } else if (resourceToFilter === "Local Transactions"){
-                treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
-            } else if (resourceToFilter === "Local Files"){
-                treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+
+        if (resourceToFilter === "Regions"){
+          node.filterRegions(pattern!, tree);
+        } else {
+          for (const region of node.children){
+            if(region.getIsActive()){
+              let treeToFilter;
+              if (resourceToFilter === "Programs"){
+                  treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+              } else if (resourceToFilter === "Local Transactions"){
+                  treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
+              } else if (resourceToFilter === "Local Files"){
+                  treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+              }
+              treeToFilter.setFilter(pattern!);
+              await treeToFilter.loadContents();
+              treeToFilter.collapsibleState = TreeItemCollapsibleState.Expanded;
+              region.collapsibleState = TreeItemCollapsibleState.Expanded;
             }
-            treeToFilter.setFilter(pattern!);
-            await treeToFilter.loadContents();
-            treeToFilter.collapsibleState = TreeItemCollapsibleState.Expanded;
-            region.collapsibleState = TreeItemCollapsibleState.Expanded;
           }
         }
-        
         tree._onDidChangeTreeData.fire(undefined);
       }
     }

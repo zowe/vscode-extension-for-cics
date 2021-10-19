@@ -157,7 +157,7 @@ export class CICSTree
                             console.log(error);
                         }
                     } else {
-                        const newPlexTree = new CICSPlexTree(item.plexname);
+                        const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree);
                         for (const regionInPlex of item.regions) {
                             const newRegionTree = new CICSRegionTree(regionInPlex.cicsname, regionInPlex, newSessionTree, newPlexTree);
                             newPlexTree.addRegion(newRegionTree);
