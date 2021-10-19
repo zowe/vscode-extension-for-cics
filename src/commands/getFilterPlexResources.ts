@@ -101,9 +101,6 @@ export function getFilterPlexResources(tree: CICSTree) {
 
         if (resourceToFilter === "Regions"){
           node.filterRegions(pattern!, tree);
-          if (!node.children.length){
-            window.showInformationMessage(`No regions found for ${node.plexName}`);
-          }
         } else {
           for (const region of node.children){
             if(region.getIsActive()){

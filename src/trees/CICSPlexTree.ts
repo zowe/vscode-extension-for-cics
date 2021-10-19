@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { join } from "path";
 import { ProfileManagement } from "../utils/profileManagement";
@@ -63,19 +63,32 @@ export class CICSPlexTree extends TreeItem {
     this.children = [];
     const regex = new RegExp(`^${pattern.replace("*","(.*)")}`);
     this.label = pattern === "*" ? `${this.plexName}` : `${this.plexName} (${pattern})`;
-    const plexInfo = await ProfileManagement.getPlexInfo(this.profile);
-    for (const item of plexInfo) {
-      for (const regionInPlex of item.regions) {
-          if (regionInPlex.cicsname.match(regex)){
-            const newRegionTree = new CICSRegionTree(
-              regionInPlex.cicsname, 
-              regionInPlex, 
-              this.parent, 
-              this);
-            this.addRegion(newRegionTree);
-            tree._onDidChangeTreeData.fire(undefined);
-          }
+
+    window.withProgress({
+      title: 'Filtering regions',
+      location: ProgressLocation.Notification,
+      cancellable: true
+    }, async (_, token) => {
+      token.onCancellationRequested(() => {
+        console.log("Cancelling the filter");
+      });
+      const plexInfo = await ProfileManagement.getPlexInfo(this.profile);
+      for (const item of plexInfo) {
+        for (const regionInPlex of item.regions) {
+            if (regionInPlex.cicsname.match(regex)){
+              const newRegionTree = new CICSRegionTree(
+                regionInPlex.cicsname, 
+                regionInPlex, 
+                this.parent, 
+                this);
+              this.addRegion(newRegionTree);
+              tree._onDidChangeTreeData.fire(undefined);
+            }
+        }
       }
+    });
+    if (!this.children.length){
+      window.showInformationMessage(`No regions found for ${this.plexName}`);
     }
     
   }
