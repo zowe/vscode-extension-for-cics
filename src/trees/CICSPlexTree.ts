@@ -61,7 +61,15 @@ export class CICSPlexTree extends TreeItem {
 
   public async filterRegions(pattern: string, tree: CICSTree) {
     this.children = [];
-    const regex = new RegExp(`^${pattern.replace("*","(.*)")}`);
+    const patternList = pattern.split(",");
+    let patternString = "";
+    for (const index in patternList) {
+      patternString += `(^${patternList[index].replace("*","(.*)")})`;
+      if (parseInt(index) !== patternList.length-1) {
+        patternString += "|";
+      }
+    }
+    const regex = new RegExp(patternString);
     this.label = pattern === "*" ? `${this.plexName}` : `${this.plexName} (${pattern})`;
 
     window.withProgress({
