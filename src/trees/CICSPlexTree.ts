@@ -94,10 +94,11 @@ export class CICSPlexTree extends TreeItem {
             }
         }
       }
+      if (!this.children.length){
+        window.showInformationMessage(`No regions found for ${this.plexName}`);
+      }
     });
-    if (!this.children.length){
-      window.showInformationMessage(`No regions found for ${this.plexName}`);
-    }
+    
     
   }
 
