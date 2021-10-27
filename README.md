@@ -8,13 +8,32 @@
 
 This CICS Extension for Zowe Explorer adds additional functionality to the popular VSCode extension, [Zowe Explorer](https://github.com/zowe/vscode-extension-for-zowe). This extension allows interactions with CICS regions and programs, and the ability to run commands against them.
 
+## Contents
+- [Features](#features)
+- [Getting Started](#getting-started)
+    - [Create Profile](#create-profile)
+    - [Update Profile](#update-profile)
+    - [Hiding Profiles](#hiding-profiles)
+    - [Deleting Profiles](#deleting-profiles)
+    - [Show and Filter Resources in a Region](#show-and-filter-resources-in-a-region)
+    - [Show and Filter Resources in a Plex](#show-and-filter-resources-in-a-plex)
+    - [Show Attributes](#show-attributes)
+    - [Enable and Disable](#enable-and-disable)
+    - [New Copy and Phase In](#new-copy-and-phase-in)
+    - [Open and Close Local Files](#open-and-close-local-files)
+    - [Handling Untrusted TLS Certificates](#handling-untrusted-tls-certificates)
+- [Usage Tips](#usage-tips)
+
 ## Features
 
 - Load profiles directly from Zowe instance locally installed.
 - Create new Zowe CICS profiles and connect to them.
-- View multiple regions and programs within a plex in a comprehensible tree-like format .
-- Perform actions such as `New Copy` and `Phase In` directly from the UI
-- View attributes about the programs and regions by right-clicking
+- Work with multiple regions containing programs, local transactions and local files within a plex in a comprehensible tree-like format.
+- Perform actions such as `Enable`, `Disable`, `New Copy` and `Phase In` directly from the UI.
+- Perform additional actions on local files including `Open` and `Close` directly from the UI.
+- View and search attributes of resources and regions by right-clicking and using the dynamic filtering feature.
+- Create new CICS profiles, update session details, and delete profiles using the user-friendly interface.
+- Apply multiple filters to regions, programs, local transactions and/or local files.
 
 To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md)
 
@@ -34,32 +53,104 @@ To show more than one CICS profile in the tree, select the + button and choose f
 
 Expand a CICS profile to see the region name, and expand the region to view its programs.  If the CICS profile is connected to a CMAS region that is part of a CICSPlex, the tree will show all of the regions managed by the CICSPlex.  If the CICS profile is for an SMSS region then just one region will be shown.  
 
-### Show and filter resources
+### Update Profile
+
+Right-click against a profile to open up the profile menu actions and select the `Update Profile` command to update the session details. This will open a panel with fields containing the details used to create the connection. All fields apart from the 'Profile Name' can be modified.
+
+Once the details have been updated, click the `Update Profile` button to apply the changes to the profile.
+
+<p align="center">
+<img src="./docs/images/update-profile.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+</p>
+
+### Hiding Profiles
+
+Open the menu actions for a profile by right-clicking a profile and select `Hide Profile` to hide it from the CICS view. To add the profile back, click the + button and select the profile from the quick pick list.
+
+<p align="center">
+<img src="./docs/images/hide-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+</p>
+
+### Deleting Profiles
+
+Right-click a chosen profile, select `Delete Profile` and click the `Yes` button when prompted to confirm the action of permanently deleting the profile. The functionality deletes the CICS profile from your `.zowe` folder.
+
+<p align="center">
+<img src="./docs/images/delete-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+</p>
+
+### Show and Filter Resources in a Region
 
 Expand a CICS region to show folders for the resource types `Programs` <img src="./docs/images/resource-type-programs.png" width="16px"/>  , `Transactions` <img src="./docs/images/resource-type-transactions.png" width="16px"/> and `Local Files` <img src="./docs/images/resource-type-local-files.png" width="16px"/>.  Expand each type to show the resources.
 
-The list of resources are pre-filtered to exclude many of the IBM supplied ones to narrow the contents to just include user programs.  Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  against a resource type to apply a filter.  This can be an exact resource name or else you can use wildcards.  The search history is saved so you can recall previous searches.  To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the resource type.  If you wish to see all resources in a region (including IBM supplied ones) you can use "*" as a filter.
+The list of resources are pre-filtered to exclude many of the IBM supplied ones to narrow the contents to just include user programs.  Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  against a resource type to apply a filter.  This can be an exact resource name or else you can use wildcards.  The search history is saved so you can recall previous searches.  
+
+To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the resource type.  If you wish to see all resources in a region (including IBM supplied ones) you can use "*" as a filter.
 
 <p align="center">
-<img src="./docs/images/filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/region-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
 </p>
 
+**Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching. 
+
+### Show and Filter Resources in a Plex
+
+Similar to filtering resources in a region, it is also possible to apply a filter on a plex. Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  inline with the plex and then select either ‘Regions’,  ‘Programs’, ‘Local Transactions’ or ‘Local Files’ from the drop-down menu to specify which resource type the filter should be applied to for all regions in the plex. 
+
+To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the plex. This will open a drop-down menu which gives the option to clear the filter for all the ‘Regions’, ‘Programs’, ‘Local Transactions’ or ‘Local Files’ in the plex, and an option to otherwise clear ‘All’ filters within the plex.
+
+<p align="center">
+<img src="./docs/images/plex-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+</p>
+
+**Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching. 
 ### Show Attributes
 
-Use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.  
-
-The menu for Program in addition has the actions `Disable Program`, `NewCopy` and `PhaseIn` .  When a program is already disabled the first option becomes `Enable Program` to allow its enabement state to be toggled.  
-
-Use `New Copy` <img src="./docs/images/program-newcopy-action.png" width="16px"/> and `Phase In` <img src="./docs/images/program-phasein-action.png" width="16px"/> actions to get the CICS region to load a fresh of the selected program into memory. This could be after you've edited a COBOL program source and successfully compiled it into a load library and now want to test your change.  Both actions can be performed on more than one program using multi-select.  
+Right-click and use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region, `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.  
 
 <p align="center">
-<img src="./docs/images/program-newcopy.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/show-attributes.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
 </p>
 
-Following a `New Copy` or `Phase In` the updated value of the `newcopycnt` attribute is retrieved after the action and shown as a pop-up informational message.  The `newcopycnt` for a program which is greater than zero is shown next to the program item in the CICS resource tree.
+### Enable and Disable
 
-## Release Notes
+Right-click against a program, local transaction or local file to open up the pop-up menu and click `Disable [CICS resource]` to disable the resource. When a resource is already disabled the first option becomes `Enable [CICS resource]` to allow its enablement state to be toggled. A disabled resource is identified by a `(Disabled)` text next to its name.
 
-<!-- Major refactor from initial release. New UI features like icons and an updated tree view. Increased functionality with new and improved commands.  Local Files and Local Transactions added to the resource tree. -->
+<p align="center">
+<img src="./docs/images/disable-enable.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+</p>
 
----
+### New Copy and Phase In
+
+Use `New Copy` <img src="./docs/images/program-newcopy-action.png" width="16px"/> and `Phase In` <img src="./docs/images/program-phasein-action.png" width="16px"/> actions against a CICS program to get the CICS region to load a fresh of the selected program into memory. This could be after you've edited a COBOL program source and successfully compiled it into a load library and now want to test your change.
+
+The `newcopycnt` for a program which is greater than zero is shown next to the program item in the CICS resource tree.
+
+<p align="center">
+<img src="./docs/images/new-copy.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+</p>
+
+### Open and Close Local Files
+
+Right-click against a closed local file and perform the `Open Local File` menu action to toggle the `openstatus` attribute to 'OPEN'. 
+
+To close a local file, right-click against an open local file and perform the `Close Local File` menu action. This will bring up a prompt on the bottom right corner requesting to choose one of `Wait`, `No Wait` or `Force` for the file busy condition. Once an option has been selected, the local file name will be appended with a `(Closed)` label upon success.
+
+<p align="center">
+<img src="./docs/images/open-close.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+</p>
+
+### Handling Untrusted TLS Certificates
+
+To make a connection to a location with an untrusted certificate (potentially unsafe), either set the `Only accept trusted TLS certificates` field on the form when creating/updating the profile to `False`, or simply expand the profile icon and select the `Yes` button when the confirmation box to proceed with the connection appears. 
+
+<p align="center">
+<img src="./docs/images/untrusted-cert.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+</p>
+
+## Usage tips
+
+- All menu action commands available via right-clicking a profile/resource (excluding `Show Attributes`) can be applied on multiple items by multi-selecting nodes of the same type before right-clicking and selecting the command.
+    - To multi-select, either hold `Ctrl`/`Cmd` key while clicking resources, or select the first item in a list of nodes then hold `Shift` and click both the last item to select a consecutive list of nodes.
+
+- Click the refresh icon <img src="./docs/images/refresh-icon.png" width="16px"/> at the top of the CICS view to reload the resources in every region.
