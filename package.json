@@ -36,6 +36,7 @@
       {
         "command": "cics-extension-for-zowe.addSession",
         "title": "Create a CICS Profile",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/plus-dark.svg",
           "dark": "resources/imgs/plus-light.svg"
@@ -44,6 +45,7 @@
       {
         "command": "cics-extension-for-zowe.newCopyProgram",
         "title": "New Copy",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/newcopy-dark.svg",
           "dark": "resources/imgs/newcopy-light.svg"
@@ -52,6 +54,7 @@
       {
         "command": "cics-extension-for-zowe.refreshTree",
         "title": "Refresh",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/refresh-dark.svg",
           "dark": "resources/imgs/refresh-light.svg"
@@ -60,6 +63,7 @@
       {
         "command": "cics-extension-for-zowe.filterPrograms",
         "title": "Filter Programs",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/filter-dark.svg",
           "dark": "resources/imgs/filter-light.svg"
@@ -68,6 +72,7 @@
       {
         "command": "cics-extension-for-zowe.filterTransactions",
         "title": "Filter Transactions",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/filter-dark.svg",
           "dark": "resources/imgs/filter-light.svg"
@@ -76,6 +81,7 @@
       {
         "command": "cics-extension-for-zowe.filterLocalFiles",
         "title": "Filter Local Files",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/filter-dark.svg",
           "dark": "resources/imgs/filter-light.svg"
@@ -84,6 +90,7 @@
       {
         "command": "cics-extension-for-zowe.filterPlexResources",
         "title": "Filter Plex Resources",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/filter-dark.svg",
           "dark": "resources/imgs/filter-light.svg"
@@ -92,6 +99,7 @@
       {
         "command": "cics-extension-for-zowe.clearFilter",
         "title": "Clear Filter",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/clear-filter-dark.svg",
           "dark": "resources/imgs/clear-filter-light.svg"
@@ -100,6 +108,7 @@
       {
         "command": "cics-extension-for-zowe.clearPlexFilter",
         "title": "Clear Plex Filter",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/clear-filter-dark.svg",
           "dark": "resources/imgs/clear-filter-light.svg"
@@ -107,55 +116,68 @@
       },
       {
         "command": "cics-extension-for-zowe.showProgramAttributes",
-        "title": "Show Attributes"
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.showTransactionAttributes",
-        "title": "Show Attributes"
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.showLocalFileAttributes",
-        "title": "Show Attributes"
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.showRegionAttributes",
-        "title": "Show Attributes"
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.enableProgram",
-        "title": "Enable Program"
+        "title": "Enable Program",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.disableProgram",
-        "title": "Disable Program"
+        "title": "Disable Program",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.enableTransaction",
-        "title": "Enable Transaction"
+        "title": "Enable Transaction",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.disableTransaction",
-        "title": "Disable Transaction"
+        "title": "Disable Transaction",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.enableLocalFile",
-        "title": "Enable Local File"
+        "title": "Enable Local File",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.disableLocalFile",
-        "title": "Disable Local File"
+        "title": "Disable Local File",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.closeLocalFile",
-        "title": "Close Local File"
+        "title": "Close Local File",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.openLocalFile",
-        "title": "Open Local File"
+        "title": "Open Local File",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.phaseInCommand",
         "title": "Phase In",
+        "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/phasein-dark.svg",
           "dark": "resources/imgs/phasein-light.svg"
@@ -163,15 +185,18 @@
       },
       {
         "command": "cics-extension-for-zowe.removeSession",
-        "title": "Hide Profile"
+        "title": "Hide Profile",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.updateSession",
-        "title": "Update Profile"
+        "title": "Update Profile",
+        "category": "Zowe Explorer for IBM CICS"
       },
       {
         "command": "cics-extension-for-zowe.deleteSession",
-        "title": "Delete Profile"
+        "title": "Delete Profile",
+        "category": "Zowe Explorer for IBM CICS"
       }
     ],
     "menus": {
