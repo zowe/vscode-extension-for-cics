@@ -14,6 +14,7 @@ import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
+import * as https from "https";
 
 export function getPhaseInCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -40,6 +41,9 @@ export function getPhaseInCommand(tree: CICSTree, treeview: TreeView<any>) {
             });
             try {
               const currentNode = allSelectedNodes[parseInt(index)];
+              if (currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
+                https.globalAgent.options.rejectUnauthorized = false;
+              }
               await performPhaseIn(
                 currentNode.parentRegion.parentSession.session,
                 {
@@ -48,6 +52,7 @@ export function getPhaseInCommand(tree: CICSTree, treeview: TreeView<any>) {
                   cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                 }
               );
+              https.globalAgent.options.rejectUnauthorized = true;
 
               if(!parentRegions.includes(currentNode.parentRegion)){
                 parentRegions.push(currentNode.parentRegion);

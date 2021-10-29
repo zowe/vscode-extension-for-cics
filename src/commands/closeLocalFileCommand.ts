@@ -18,7 +18,7 @@ import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
-
+import * as https from "https";
 
 export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -50,6 +50,9 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
                 });
                 try {
                   const currentNode = allSelectedNodes[parseInt(index)];
+                  if (currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
+                    https.globalAgent.options.rejectUnauthorized = false;
+                  }
                   await closeLocalFile(
                     currentNode.parentRegion.parentSession.session,
                     {
@@ -59,6 +62,7 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
                     },
                     busyDecision!
                   );
+                  https.globalAgent.options.rejectUnauthorized = true;
                   if (!parentRegions.includes(currentNode.parentRegion)) {
                     parentRegions.push(currentNode.parentRegion);
                   }
