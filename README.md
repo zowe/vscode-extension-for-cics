@@ -15,13 +15,14 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
     - [Update Profile](#update-profile)
     - [Hiding Profiles](#hiding-profiles)
     - [Deleting Profiles](#deleting-profiles)
+- [CICS Resources](#cics-resources)
     - [Show and Filter Resources in a Region](#show-and-filter-resources-in-a-region)
     - [Show and Filter Resources in a Plex](#show-and-filter-resources-in-a-plex)
     - [Show Attributes](#show-attributes)
     - [Enable and Disable](#enable-and-disable)
     - [New Copy and Phase In](#new-copy-and-phase-in)
     - [Open and Close Local Files](#open-and-close-local-files)
-    - [Handling Untrusted TLS Certificates](#handling-untrusted-tls-certificates)
+- [Untrusted TLS Certificates](#untrusted-tls-certificates)
 - [Usage Tips](#usage-tips)
 
 ## Features
@@ -41,17 +42,18 @@ To Install CICS Extension for Zowe Explorer see [Installation](./docs/installati
 
 ### Create Profile
 
-If you already have a Zowe CICS CLI profile the CICS tree will load this on startup.  
+If you already have a Zowe CICS CLI profile the CICS tree will load the default profile on startup.  
 
-If you don't have an existing CICS profile add one by selecting the + button in the CICS tree and choosing the option `Create New Session ...` to open a panel allowing connection details to be defined.  The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number.  The region can be a WUI server in a CICSPlex, or else a stand-alone Single Management Application Programming (SMSS) region. 
+If you don't have an existing CICS profile add one by selecting the + button in the CICS tree and choosing the option `Create New Session ...` to open a panel allowing connection details to be defined.  The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number.  The region can be a WUI server in a CICSPlex, or else a stand-alone Single Management Application Programming (SMSS) region.  
 
-To show more than one CICS profile in the tree, select the + button and choose from the list of profiles.  Only profiles not already included in the CICS tree will be shown.  To view all Zowe CICS CLI profiles use the command `zowe profiles list cics` from a terminal. 
+Configuring a CICS region to have a connection is a system programmer task and more details can be found in [Setting up CMCI with CICSPlex SM](https://www.ibm.com/docs/en/cics-ts/5.3?topic=explorer-setting-up-cmci-cicsplex-sm) or 
+[Setting up CMCI in a stand-alone CICS region](https://www.ibm.com/docs/en/cics-ts/5.3?topic=suace-setting-up-cmci-in-stand-alone-cics-region).  If your CMCI connection is configured to use a self-signed certificate that your PC's trust store doesn't recognize, see [Untrusted TLS certificates](#untrusted-tls-certificates)
+
+To show more than one CICS profile in the tree, select the + button and choose from the list of profiles.  Only profiles not already included in the CICS tree will be shown.  To view all Zowe CICS CLI profiles use the command `zowe profiles list cics` from a terminal.  
 
 <p align="center">
 <img src="./docs/images/create-profile.gif" alt="Zowe CICS Explorer profiles" width="700px"/> 
 </p>
-
-Expand a CICS profile to see the region name, and expand the region to view its programs.  If the CICS profile is connected to a CMAS region that is part of a CICSPlex, the tree will show all of the regions managed by the CICSPlex.  If the CICS profile is for an SMSS region then just one region will be shown.  
 
 ### Update Profile
 
@@ -73,11 +75,15 @@ Open the menu actions for a profile by right-clicking a profile and select `Hide
 
 ### Deleting Profiles
 
-Right-click a chosen profile, select `Delete Profile` and click the `Yes` button when prompted to confirm the action of permanently deleting the profile. The functionality deletes the CICS profile from your `.zowe` folder.
+Right-click a chosen profile, select `Delete Profile` and click the `Yes` button when prompted to confirm the action of permanently deleting the profile. The functionality deletes the CICS profile from the persistant storage directory `~/.zowe/profiles/cics`.
 
 <p align="center">
 <img src="./docs/images/delete-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
 </p>
+
+## CICS Resources
+
+Expand a CICS profile to see the region name, and expand the region to view its resources.  If the CICS profile is connected to a CMAS region that is part of a CICSPlex, the tree will show all of the regions managed by the CICSPlex.  If the CICS profile is for an SMSS region then just one region will be shown. Inactive regions in a plex are shown with an empty icon.
 
 ### Show and Filter Resources in a Region
 
@@ -95,15 +101,16 @@ To reset the filter to its initial criteria use the clear filter icon <img src="
 
 ### Show and Filter Resources in a Plex
 
-Similar to filtering resources in a region, it is also possible to apply a filter on a plex. Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  inline with the plex and then select either ‘Regions’,  ‘Programs’, ‘Local Transactions’ or ‘Local Files’ from the drop-down menu to specify which resource type the filter should be applied to for all regions in the plex. 
+Similar to filtering resources in a region, it is also possible to apply a filter on a plex. Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  inline with the plex and then select either `Regions`,  `Programs`, `Local Transactions` or `Local Files` from the drop-down menu to specify which resource type the filter should be applied to for all regions in the plex. 
 
-To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the plex. This will open a drop-down menu which gives the option to clear the filter for all the ‘Regions’, ‘Programs’, ‘Local Transactions’ or ‘Local Files’ in the plex, and an option to otherwise clear ‘All’ filters within the plex.
+To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the plex. This will open a drop-down menu which gives the option to clear the filter for all the `Regions`, `Programs`, `Local Transactions` or `Local Files` in the plex, and an option to otherwise clear `All` filters within the plex.
 
 <p align="center">
 <img src="./docs/images/plex-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
 </p>
 
 **Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching. 
+
 ### Show Attributes
 
 Right-click and use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region, `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.  
@@ -140,9 +147,11 @@ To close a local file, right-click against an open local file and perform the `C
 <img src="./docs/images/open-close.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
 </p>
 
-### Handling Untrusted TLS Certificates
+## Untrusted TLS Certificates
 
-To make a connection to a location with an untrusted certificate (potentially unsafe), either set the `Only accept trusted TLS certificates` field on the form when creating/updating the profile to `False`, or simply expand the profile icon and select the `Yes` button when the confirmation box to proceed with the connection appears. 
+If the CMCI connection is using a TLS certificate that your PC doesn't have in its trust store, then by default the connection will be rejected as potentially this could be from an unsafe site.  To override this behavior,  either set the `Only accept trusted TLS certificates` field on the form when creating/updating the profile to `False`.  This is the same as setting `rejectUnauthorized=false` on the Zowe CICS CLI profile.
+
+If you define a profile as only accepting trusted TLS certificates when the Zowe Explorer first connects it will detect the mismatch and allow you to override the setting and proceed.  This is done through a pop-up message with a `Yes` button to accept the untrusted certificate authority, which changes the profile's setting.  
 
 <p align="center">
 <img src="./docs/images/untrusted-cert.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
