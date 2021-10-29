@@ -1,6 +1,18 @@
 # Change Log
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
+
+## `1.1.0`
+
+- Added new icons for unverified, connected and disconnected profiles.
+- Redesigned all profiles to load onto screen and retrieve content only when expanded.
+- Redesigned the 'Create CICS Profile' and 'Update CICS Profile' webview forms.
+- Removed the need for the 'Reject Unauthorized' field if the protocol selected is 'HTTPS'.
+- Added the ability to autofill the 'Profile Name' section of the 'Create CICS Profile' form whn typing into the autofocused 'Host URL' field.
+- Added the option to allow users to accept untrusted certificates for connections [#103](https://github.com/zowe/vscode-extension-for-cics/issues/103).
+- Added the option to filter regions in a plex, similar to how resources can be filtered [#111](https://github.com/zowe/vscode-extension-for-cics/issues/111).
+- Added error messages for invalid profiles that would not load[#99](https://github.com/zowe/vscode-extension-for-cics/issues/99).
+
 ## `1.0.2`
 
 - Added 'Enable' and 'Disable' functionality for Transactions [#88](https://github.com/zowe/vscode-extension-for-cics/issues/88).
