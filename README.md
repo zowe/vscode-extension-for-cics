@@ -163,3 +163,9 @@ If you define a profile as only accepting trusted TLS certificates when the Zowe
     - To multi-select, either hold `Ctrl`/`Cmd` key while clicking resources, or select the first item in a list of nodes then hold `Shift` and click both the last item to select a consecutive list of nodes.
 
 - Click the refresh icon <img src="./docs/images/refresh-icon.png" width="16px"/> at the top of the CICS view to reload the resources in every region.
+
+- Check if an error is arising from the Zowe Explorer for IBM CICS extension and not the Zowe Explorer extension by expanding the error message and checking if the `Source` is `Zowe Explorer for IBM CICS (Extension)`.
+
+## Providing feedback or help contributing
+
+To file issues, use the [Zowe Explorer for IBM CICS issue list](https://github.com/zowe/vscode-extension-for-cics/issues), or chat with use on [Slack](https://openmainframeproject.slack.com/archives/CUVE37Z5F) by indicating the message is for the Zowe Explorer for IBM CICS extension.
