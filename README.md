@@ -24,6 +24,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
     - [Open and Close Local Files](#open-and-close-local-files)
 - [Untrusted TLS Certificates](#untrusted-tls-certificates)
 - [Usage Tips](#usage-tips)
+- [Providing feedback or help contributing](#providing-feedback-or-help-contributing)
 
 ## Features
 
