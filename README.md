@@ -25,6 +25,8 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 - [Untrusted TLS Certificates](#untrusted-tls-certificates)
 - [Usage Tips](#usage-tips)
 - [Providing feedback or help contributing](#providing-feedback-or-help-contributing)
+    - [Checking the source of an error](#checking-the-source-of-an-error)
+    - [Filing an issue](#filing-an-issue)
 
 ## Features
 
@@ -165,8 +167,14 @@ If you define a profile as only accepting trusted TLS certificates when the Zowe
 
 - Click the refresh icon <img src="./docs/images/refresh-icon.png" width="16px"/> at the top of the CICS view to reload the resources in every region.
 
-- Check if an error is arising from the Zowe Explorer for IBM CICS extension and not the Zowe Explorer extension by expanding the error message and checking if the `Source` is `Zowe Explorer for IBM CICS (Extension)`.
-
 ## Providing feedback or help contributing
+### Checking the source of an error
+Before filing an issue, check if an error is arising from the Zowe Explorer for IBM CICS extension and not the Zowe Explorer extension by expanding the error message and checking if the `Source` is `Zowe Explorer for IBM CICS (Extension)`. 
+<p align="center">
+<img src="./docs/images/expand-error-cics.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+</p>
 
+Error messages arising from the Zowe Explorer extension will have the `Source` as `Zowe Explorer(Extension)`.
+
+### Filing an issue
 To file issues, use the [Zowe Explorer for IBM CICS issue list](https://github.com/zowe/vscode-extension-for-cics/issues), or chat with use on [Slack](https://openmainframeproject.slack.com/archives/CUVE37Z5F) by indicating the message is for the Zowe Explorer for IBM CICS extension.
