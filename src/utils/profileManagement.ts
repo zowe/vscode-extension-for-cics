@@ -61,11 +61,7 @@ export class ProfileManagement {
     const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
     const infoLoaded: { plexname: string | null, regions: any[]; }[] = [];
 
-    if (profile!.profile!.rejectUnauthorized === false) {
-      https.globalAgent.options.rejectUnauthorized = false;
-    } else {
-      https.globalAgent.options.rejectUnauthorized = true;
-    }
+    https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
 
     if (profile!.profile!.cicsPlex) {
       if (profile!.profile!.regionName) {
@@ -92,7 +88,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} in plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
-          https.globalAgent.options.rejectUnauthorized = true;
+          https.globalAgent.options.rejectUnauthorized = undefined;
           throw new Error("Region Not Found");
         }
 
@@ -122,7 +118,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
-          https.globalAgent.options.rejectUnauthorized = true;
+          https.globalAgent.options.rejectUnauthorized = undefined;
           throw new Error("Plex Not Found");
         }
 
@@ -155,7 +151,7 @@ export class ProfileManagement {
           });
         } else {
           window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} for profile ${profile!.name}`);
-          https.globalAgent.options.rejectUnauthorized = true;
+          https.globalAgent.options.rejectUnauthorized = undefined;
           throw new Error("Region Not Found");
         }
 
@@ -241,13 +237,13 @@ export class ProfileManagement {
               regions: [returnedRegion]
             });
           } catch (error) {
-            https.globalAgent.options.rejectUnauthorized = true;
+            https.globalAgent.options.rejectUnauthorized = undefined;
             throw error;
           }
         }
       }
     }
-    https.globalAgent.options.rejectUnauthorized = true;
+    https.globalAgent.options.rejectUnauthorized = undefined;
     return infoLoaded;
   }
 }

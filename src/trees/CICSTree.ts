@@ -142,18 +142,18 @@ export class CICSTree
                             protocol: profile.profile!.protocol,
                         });
                         try {
-                            if (profile!.profile!.rejectUnauthorized === false) {
-                                https.globalAgent.options.rejectUnauthorized = false;
-                            }
+                            // if (profile!.profile!.rejectUnauthorized === false) {
+                            //     https.globalAgent.options.rejectUnauthorized = false;
+                            // }
                             const regionsObtained = await getResource(session, {
                                 name: "CICSRegion",
                                 regionName: item.regions[0].applid
                             });
-                            https.globalAgent.options.rejectUnauthorized = true;
+                            // https.globalAgent.options.rejectUnauthorized = true;
                             const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
                             newSessionTree.addRegion(newRegionTree);
                         } catch (error) {
-                            https.globalAgent.options.rejectUnauthorized = true;
+                            // https.globalAgent.options.rejectUnauthorized = true;
                             console.log(error);
                         }
                     } else {
@@ -177,7 +177,7 @@ export class CICSTree
                 }
                 this._onDidChangeTreeData.fire(undefined);
             } catch (error) {
-                https.globalAgent.options.rejectUnauthorized = true;
+                https.globalAgent.options.rejectUnauthorized = undefined;
                 newSessionTree = new CICSSessionTree(profile, {
                     light: join(
                       __filename,
