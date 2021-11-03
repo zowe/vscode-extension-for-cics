@@ -2,6 +2,10 @@
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
+## `1.1.1`
+- Fixed the bug that cause z/OSMF profiles with untrusted CA to be invalidated [#116](https://github.com/zowe/vscode-extension-for-cics/issues/116).
+- Added 'Zowe Explorer for IBM CICS' in `category` section of the `contributes.commands` section in `package.json` for Zowe Explorer conformance.
+- Updated README.md file with 'Providing feedback or help contributing' chapter for Zowe Explorer conformance.
 ## `1.1.0`
 
 - Added new icons for unverified, connected and disconnected profiles.
