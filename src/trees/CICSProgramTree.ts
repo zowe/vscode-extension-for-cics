@@ -74,23 +74,23 @@ export class CICSProgramTree extends TreeItem {
     }
     this.children = [];
     try {
-      if (this.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
-        https.globalAgent.options.rejectUnauthorized = false;
-      }
+
+      https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+
       const programResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSProgram",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
-      https.globalAgent.options.rejectUnauthorized = true;
+      https.globalAgent.options.rejectUnauthorized = undefined;
       for (const program of Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram]) {
         const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
         //@ts-ignore
         this.addProgram(newProgramItem);
       }
     } catch (error) {
-      https.globalAgent.options.rejectUnauthorized = true;
+      https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);

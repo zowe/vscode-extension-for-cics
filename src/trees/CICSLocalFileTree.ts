@@ -75,23 +75,23 @@ export class CICSLocalFileTree extends TreeItem {
     }
     this.children = [];
     try {
-      if (this.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
-        https.globalAgent.options.rejectUnauthorized = false;
-      }
+
+      https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+      
       const localFileResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalFile",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
-      https.globalAgent.options.rejectUnauthorized = true;
+      https.globalAgent.options.rejectUnauthorized = undefined;
       for (const localFile of Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile]) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
         //@ts-ignore
         this.addLocalFile(newLocalFileItem);
       }
     } catch (error) {
-      https.globalAgent.options.rejectUnauthorized = true;
+      https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a local file filter to narrow search`);

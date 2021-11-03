@@ -75,23 +75,23 @@ export class CICSTransactionTree extends TreeItem {
     }
     this.children = [];
     try {
-      if(this.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
-        https.globalAgent.options.rejectUnauthorized = false;
-      }
+
+      https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+
       const transactionResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalTransaction",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
-      https.globalAgent.options.rejectUnauthorized = true;
+      https.globalAgent.options.rejectUnauthorized = undefined;
       for (const transaction of Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction]) {
         const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
         //@ts-ignore
         this.addTransaction(newTransactionItem);
       }
     } catch (error) {
-      https.globalAgent.options.rejectUnauthorized = true;
+      https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a transaction filter to narrow search`);

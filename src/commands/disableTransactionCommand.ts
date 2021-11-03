@@ -45,9 +45,9 @@ export function getDisableTransactionCommand(tree: CICSTree, treeview: TreeView<
               });
               try {
                 const currentNode = allSelectedNodes[parseInt(index)];
-                if (currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized === false) {
-                  https.globalAgent.options.rejectUnauthorized = false;
-                }
+
+                https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+
                 await disableTransaction(
                   currentNode.parentRegion.parentSession.session,
                   {
@@ -56,11 +56,12 @@ export function getDisableTransactionCommand(tree: CICSTree, treeview: TreeView<
                     cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
                   }
                 );
-                https.globalAgent.options.rejectUnauthorized = true;
+                https.globalAgent.options.rejectUnauthorized = undefined;
                 if (!parentRegions.includes(currentNode.parentRegion)) {
                   parentRegions.push(currentNode.parentRegion);
                 }
               } catch (err) {
+                https.globalAgent.options.rejectUnauthorized = undefined;
                 // @ts-ignore
                 const mMessageArr = err.mMessage.split(" ").join("").split("\n");
                 let resp;
