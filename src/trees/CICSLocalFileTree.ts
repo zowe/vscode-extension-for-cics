@@ -85,7 +85,9 @@ export class CICSLocalFileTree extends TreeItem {
         criteria: criteria
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      for (const localFile of Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile]) {
+      const localFileArray = Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile];
+      this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[${localFileArray.length}]`;
+      for (const localFile of localFileArray) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
         //@ts-ignore
         this.addLocalFile(newLocalFileItem);
@@ -107,14 +109,12 @@ export class CICSLocalFileTree extends TreeItem {
   public clearFilter() {
     this.activeFilter = undefined;
     this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
-    this.label = `Local Files`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
     this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
-    this.label = `Local Files (${this.activeFilter})`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 

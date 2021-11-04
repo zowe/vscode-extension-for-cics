@@ -84,7 +84,9 @@ export class CICSProgramTree extends TreeItem {
         criteria: criteria
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      for (const program of Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram]) {
+      const programsArray = Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram];
+      this.label = `Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[${programsArray.length}]`;
+      for (const program of programsArray) {
         const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
         //@ts-ignore
         this.addProgram(newProgramItem);
@@ -106,14 +108,12 @@ export class CICSProgramTree extends TreeItem {
   public clearFilter() {
     this.activeFilter = undefined;
     this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
-    this.label = `Programs`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
     this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
-    this.label = `Programs (${this.activeFilter})`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 }

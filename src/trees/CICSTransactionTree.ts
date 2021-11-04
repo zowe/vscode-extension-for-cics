@@ -85,7 +85,9 @@ export class CICSTransactionTree extends TreeItem {
         criteria: criteria
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      for (const transaction of Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction]) {
+      const transactionArray = Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction];
+      this.label = `Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[${transactionArray.length}]`;
+      for (const transaction of transactionArray) {
         const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
         //@ts-ignore
         this.addTransaction(newTransactionItem);
@@ -107,14 +109,12 @@ export class CICSTransactionTree extends TreeItem {
   public clearFilter() {
     this.activeFilter = undefined;
     this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
-    this.label = `Transactions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
     this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
-    this.label = `Transactions (${this.activeFilter})`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 }
