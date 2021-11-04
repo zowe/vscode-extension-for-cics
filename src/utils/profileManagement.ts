@@ -178,9 +178,14 @@ export class ProfileManagement {
             const jsonFromXml = JSON.parse(xml2json(testIfPlexResponse.data, { compact: true, spaces: 4 }));
             if (jsonFromXml.response.records && jsonFromXml.response.records.cicscicsplex) {
               const returnedPlexes = jsonFromXml.response.records.cicscicsplex.map((item: { _attributes: any; }) => item._attributes);
+              
+              const uniqueReturnedPlexes = returnedPlexes.filter((plex:any, index:number) =>
+                index === returnedPlexes.findIndex((found:any) => (
+                  found.plexname === plex.plexname
+                ))
+              );
 
-
-              for (const plex of returnedPlexes) {
+              for (const plex of uniqueReturnedPlexes) {
                 try {
                   const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.plexname}`, {
                     auth: {
