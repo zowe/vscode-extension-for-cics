@@ -58,7 +58,7 @@ export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<an
                     {
                       name: currentNode.localFile.file,
                       regionName: currentNode.parentRegion.label,
-                      cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                      cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
                     },
                     busyDecision!
                   );

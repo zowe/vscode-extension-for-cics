@@ -157,7 +157,8 @@ export class CICSTree
                             console.log(error);
                         }
                     } else {
-                        const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree);
+                        const numActiveRegions = item.regions.filter((region) => region.cicsstate === 'ACTIVE').length;
+                        const newPlexTree = new CICSPlexTree(`${item.plexname} [${numActiveRegions}/${item.regions.length}]`, profile, newSessionTree);
                         for (const regionInPlex of item.regions) {
                             const newRegionTree = new CICSRegionTree(regionInPlex.cicsname, regionInPlex, newSessionTree, newPlexTree);
                             newPlexTree.addRegion(newRegionTree);

@@ -58,7 +58,7 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
                     {
                       name: currentNode.localFile.file,
                       regionName: currentNode.parentRegion.label,
-                      cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.plexName : undefined,
+                      cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
                     },
                     busyDecision!
                   );

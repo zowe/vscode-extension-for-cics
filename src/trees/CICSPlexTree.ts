@@ -70,7 +70,7 @@ export class CICSPlexTree extends TreeItem {
       }
     }
     const regex = new RegExp(patternString);
-    this.label = pattern === "*" ? `${this.plexName}` : `${this.plexName} (${pattern})`;
+    this.label = pattern === "*" ? `${this.plexName}` : `${this.plexName.split(' ')[0]} (${pattern}) ${this.plexName.split(' ')[1]}`;
 
     window.withProgress({
       title: 'Filtering regions',
@@ -95,7 +95,7 @@ export class CICSPlexTree extends TreeItem {
         }
       }
       if (!this.children.length){
-        window.showInformationMessage(`No regions found for ${this.plexName}`);
+        window.showInformationMessage(`No regions found for ${this.getPlexName()}`);
       }
     });
     
@@ -103,6 +103,6 @@ export class CICSPlexTree extends TreeItem {
   }
 
   public getPlexName() {
-    return this.plexName;
+    return this.plexName.split(' ')[0];
   }
 }
