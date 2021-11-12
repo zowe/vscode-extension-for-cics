@@ -14,7 +14,7 @@ import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
-import { ExtensionContext, window } from "vscode";
+import { ExtensionContext, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowAttributesCommand,
@@ -39,6 +39,11 @@ import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
 import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
 import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
+import { CICSRegionTree } from "./trees/CICSRegionTree";
+import { CICSSessionTree } from "./trees/CICSSessionTree";
+import { join } from "path";
+import { getResource } from "@zowe/cics-for-zowe-cli";
+import * as https from "https";
 
 export async function activate(context: ExtensionContext) {
 
@@ -73,13 +78,77 @@ export async function activate(context: ExtensionContext) {
         console.log(error);
       }
     } else if (node.element.contextValue.includes("cicsplex.")) {
-    } else if (node.element.contextValue.includes("cicsregion.")) {
-
-      for (const child of node.element.children) {
-        await child.loadContents();
+      try {
+        const plexProfile = node.element.getProfile();
+        if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
+          https.globalAgent.options.rejectUnauthorized = plexProfile.profile.rejectUnauthorized;
+          const session = node.element.getParent().getSession();
+          const regionsObtained = await getResource(session, {
+              name: "CICSRegion",
+              cicsPlex: plexProfile.profile.cicsPlex,
+              regionName: plexProfile.profile.regionName
+          });
+          https.globalAgent.options.rejectUnauthorized = undefined;
+          const newRegionTree = new CICSRegionTree(plexProfile.profile.regionName, regionsObtained.response.records.cicsregion, node.element.getParent(), node.element);
+          node.element.clearChildren(); 
+          node.element.addRegion(newRegionTree);
+          
+        } else {
+          const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
+          if (regionInfo) {    
+            node.element.clearChildren();  
+            let activeCount = 0;
+            let totalCount = 0;
+            for (const region of regionInfo) {
+              const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
+              node.element.addRegion(newRegionTree);
+              totalCount += 1;
+              if (region.cicsstate === 'ACTIVE') {
+                activeCount += 1;
+              }
+            }
+            node.element.setLabel(`${node.element.getPlexName()} [${activeCount}/${totalCount}]`);
+            // Keep plex open after label change
+            node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+          }
+        }
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      } catch (error) {
+        console.log(error);
+        const newSessionTree = new CICSSessionTree(node.element.getParent().profile, {
+          light: join(
+            __filename,
+            "..",
+            "..",
+            "resources",
+            "imgs",
+            "profile-disconnected-dark.svg"
+          ),
+          dark: join(
+            __filename,
+            "..",
+            "..",
+            "resources",
+            "imgs",
+            "profile-disconnected-light.svg"
+          ),
+        });
+        treeDataProv.loadedProfiles.splice(treeDataProv.getLoadedProfiles().indexOf(node.element.getParent()), 1, newSessionTree);
+        treeDataProv._onDidChangeTreeData.fire(undefined);
       }
+    } else if (node.element.contextValue.includes("cicsregion.")) {
+    } else if (node.element.contextValue.includes("cicstreeprogram.")) {
+      await node.element.loadContents();
       treeDataProv._onDidChangeTreeData.fire(undefined);
-
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicstreetransaction.")) {
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicsprogram.")) {
     }
   });

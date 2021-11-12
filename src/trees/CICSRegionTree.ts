@@ -67,7 +67,7 @@ export class CICSRegionTree extends TreeItem {
       this.parentPlex = parentPlex;
     }
 
-    if (this.parentPlex) {
+    if (region.cicsstate) {
       this.isActive = region.cicsstate === "ACTIVE" ? true : false;
     } else {
       this.isActive = region.cicsstatus === "ACTIVE" ? true : false;

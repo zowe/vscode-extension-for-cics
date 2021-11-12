@@ -20,8 +20,13 @@ export function getFilterPlexResources(tree: CICSTree) {
     "cics-extension-for-zowe.filterPlexResources",
     async (node) => {
       if (node) {
-
-        const resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
+        const plexProfile = node.getProfile();
+        let resourceToFilter;
+        if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
+          resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
+        } else {
+          resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
+        }
         const filterDescriptorText = `\uFF0B Create New ${resourceToFilter} Filter (use a comma to separate multiple patterns e.g. LG*,I*)`;
 
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");

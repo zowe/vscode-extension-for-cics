@@ -65,4 +65,8 @@ export class CICSSessionTree extends TreeItem {
   public addPlex(plex: CICSPlexTree) {
     this.children.push(plex);
   }
+
+  public getSession() {
+    return this.session;
+  }
 }
