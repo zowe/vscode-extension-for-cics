@@ -137,16 +137,17 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       }
     } else if (node.element.contextValue.includes("cicsregion.")) {
-
-      for (const child of node.element.children) {
-        await child.loadContents();
-      }
-      treeDataProv._onDidChangeTreeData.fire(undefined);
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicsprogram.")) {
     }
