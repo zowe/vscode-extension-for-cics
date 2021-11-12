@@ -157,12 +157,7 @@ export class CICSTree
                             console.log(error);
                         }
                     } else {
-                        const numActiveRegions = item.regions.filter((region) => region.cicsstate === 'ACTIVE').length;
-                        const newPlexTree = new CICSPlexTree(`${item.plexname} [${numActiveRegions}/${item.regions.length}]`, profile, newSessionTree);
-                        for (const regionInPlex of item.regions) {
-                            const newRegionTree = new CICSRegionTree(regionInPlex.cicsname, regionInPlex, newSessionTree, newPlexTree);
-                            newPlexTree.addRegion(newRegionTree);
-                        }
+                        const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree);
                         newSessionTree.addPlex(newPlexTree);
                     }
                 }
@@ -253,7 +248,7 @@ export class CICSTree
                                 }
                                 break;
                             default:
-                                window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
                         }
 
                     } else if ("response" in error!) {

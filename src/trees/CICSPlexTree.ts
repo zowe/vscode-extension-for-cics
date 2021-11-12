@@ -70,8 +70,7 @@ export class CICSPlexTree extends TreeItem {
       }
     }
     const regex = new RegExp(patternString);
-    this.label = pattern === "*" ? `${this.plexName}` : `${this.plexName.split(' ')[0]} (${pattern}) ${this.plexName.split(' ')[1]}`;
-
+    this.setLabel(pattern === "*" ? `${this.plexName}` : `${this.plexName.split(' ')[0]} (${pattern})`);
     window.withProgress({
       title: 'Filtering regions',
       location: ProgressLocation.Notification,
@@ -80,20 +79,26 @@ export class CICSPlexTree extends TreeItem {
       token.onCancellationRequested(() => {
         console.log("Cancelling the filter");
       });
-      const plexInfo = await ProfileManagement.getPlexInfo(this.profile);
-      for (const item of plexInfo) {
-        for (const regionInPlex of item.regions) {
-            if (regionInPlex.cicsname.match(regex)){
-              const newRegionTree = new CICSRegionTree(
-                regionInPlex.cicsname, 
-                regionInPlex, 
-                this.parent, 
-                this);
-              this.addRegion(newRegionTree);
-              tree._onDidChangeTreeData.fire(undefined);
+      const regionInfo = await ProfileManagement.getRegionInfoInPlex(this);
+      let totalCount = 0;
+      let activeCount = 0;
+      for (const region of regionInfo) {
+        if (region.cicsname.match(regex)){
+          const newRegionTree = new CICSRegionTree(
+            region.cicsname, 
+            region, 
+            this.parent, 
+            this);
+          this.addRegion(newRegionTree);
+          totalCount += 1;
+            if (region.cicsstate === 'ACTIVE') {
+              activeCount += 1;
             }
         }
       }
+      const newLabel = pattern === "*" ? `${this.getPlexName()} [${activeCount}/${totalCount}]` : `${this.getPlexName()} (${pattern}) [${activeCount}/${totalCount}]`;
+      this.setLabel(newLabel);
+      tree._onDidChangeTreeData.fire(undefined);
       if (!this.children.length){
         window.showInformationMessage(`No regions found for ${this.getPlexName()}`);
       }
@@ -104,5 +109,22 @@ export class CICSPlexTree extends TreeItem {
 
   public getPlexName() {
     return this.plexName.split(' ')[0];
+  }
+
+  public getProfile() {
+    return this.profile;
+  }
+
+  public getParent() {
+    return this.parent;
+  }
+
+  public clearChildren() {
+    this.children = [];
+  }
+
+  public setLabel(label: string) {
+    this.label = label;
+    this.plexName = label;
   }
 }

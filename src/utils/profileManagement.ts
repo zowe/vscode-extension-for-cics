@@ -17,6 +17,7 @@ import { window } from "vscode";
 import { xml2json } from "xml-js";
 import cicsProfileMeta from "./profileDefinition";
 import * as https from "https";
+import { CICSPlexTree } from "../trees/CICSPlexTree";
 export class ProfileManagement {
 
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('1.18.0');
@@ -187,24 +188,12 @@ export class ProfileManagement {
 
               for (const plex of uniqueReturnedPlexes) {
                 try {
-                  const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.plexname}`, {
-                    auth: {
-                      username: profile!.profile!.user,
-                      password: profile!.profile!.password,
-                    }
+                  infoLoaded.push({
+                    plexname: plex.plexname,
+                    regions: []
                   });
-                  if (regionResponse.status === 200) {
-                    const jsonFromXml = JSON.parse(xml2json(regionResponse.data, { compact: true, spaces: 4 }));
-                    if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
-                      const returnedRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
-                      infoLoaded.push({
-                        plexname: plex.plexname,
-                        regions: returnedRegions
-                      });
-                    }
-                  }
                 } catch (error) {
-                  // console.log(error);
+                   console.log(error);
                 }
               }
             }
@@ -250,5 +239,30 @@ export class ProfileManagement {
     }
     https.globalAgent.options.rejectUnauthorized = undefined;
     return infoLoaded;
+  }
+
+  public static async getRegionInfoInPlex(plex: CICSPlexTree) {
+    try {
+      const profile = plex.getProfile();
+      const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+      const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.getPlexName()}`, {
+        auth: {
+          username: profile!.profile!.user,
+          password: profile!.profile!.password,
+        }
+      });
+      if (regionResponse.status === 200) {
+        const jsonFromXml = JSON.parse(xml2json(regionResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
+          const returnedRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
+          return returnedRegions;
+        }
+      }
+      
+    } catch (error) {
+        console.log(error);
+        window.showErrorMessage(`Cannot find plex ${plex.getPlexName()} for profile ${plex.getParent().label}`);
+        throw new Error("Plex Not Found");
+    }
   }
 }
