@@ -81,18 +81,7 @@ export async function activate(context: ExtensionContext) {
       try {
         const plexProfile = node.element.getProfile();
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          https.globalAgent.options.rejectUnauthorized = plexProfile.profile.rejectUnauthorized;
-          const session = node.element.getParent().getSession();
-          const regionsObtained = await getResource(session, {
-              name: "CICSRegion",
-              cicsPlex: plexProfile.profile.cicsPlex,
-              regionName: plexProfile.profile.regionName
-          });
-          https.globalAgent.options.rejectUnauthorized = undefined;
-          const newRegionTree = new CICSRegionTree(plexProfile.profile.regionName, regionsObtained.response.records.cicsregion, node.element.getParent(), node.element);
-          node.element.clearChildren(); 
-          node.element.addRegion(newRegionTree);
-          
+          await node.element.loadOnlyRegion();
         } else {
           const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
           if (regionInfo) {    

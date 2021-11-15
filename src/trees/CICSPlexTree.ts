@@ -16,6 +16,8 @@ import { ProfileManagement } from "../utils/profileManagement";
 import { IProfileLoaded } from "@zowe/imperative";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSTree } from "./CICSTree";
+import { getResource } from "@zowe/cics-for-zowe-cli";
+import * as https from "https";
 
 export class CICSPlexTree extends TreeItem {
   children: CICSRegionTree[] = [];
@@ -103,8 +105,22 @@ export class CICSPlexTree extends TreeItem {
         window.showInformationMessage(`No regions found for ${this.getPlexName()}`);
       }
     });
-    
-    
+  
+  }
+
+  public async loadOnlyRegion() {
+    const plexProfile = this.getProfile();
+    https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;
+    const session = this.getParent().getSession();
+    const regionsObtained = await getResource(session, {
+        name: "CICSRegion",
+        cicsPlex: plexProfile.profile!.cicsPlex,
+        regionName: plexProfile.profile!.regionName
+    });
+    https.globalAgent.options.rejectUnauthorized = undefined;
+    const newRegionTree = new CICSRegionTree(plexProfile.profile!.regionName, regionsObtained.response.records.cicsregion, this.getParent(), this);
+    this.clearChildren(); 
+    this.addRegion(newRegionTree);
   }
 
   public getPlexName() {

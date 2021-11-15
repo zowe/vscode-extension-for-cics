@@ -17,10 +17,14 @@ export function getClearPlexFilterCommand(tree: CICSTree) {
     "cics-extension-for-zowe.clearPlexFilter",
     async (node) => {
       if (node) {
-
-        const resourceToClear = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files", "All"]);
-
-        if (resourceToClear === "Regions" || resourceToClear === "All"){
+        const plexProfile = node.getProfile();
+        let resourceToClear;
+        if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
+          resourceToClear = await window.showQuickPick(["Programs", "Local Transactions", "Local Files", "All"]);
+        } else {
+          resourceToClear = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files", "All"]);
+        }
+        if ((resourceToClear === "Regions" || resourceToClear === "All") && !(plexProfile.profile.regionName && plexProfile.profile.cicsPlex)){
           node.filterRegions("*", tree);
         } 
         if (resourceToClear !== "Regions") {
