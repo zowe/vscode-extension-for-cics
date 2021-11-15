@@ -23,10 +23,10 @@
   "main": "./out/extension.js",
   "icon": "resources/zowe_cics_logo.png",
   "keywords": [
-    "mainframe",
-    "dataset",
     "Zowe",
     "explorer",
+    "mainframe",
+    "dataset",
     "z/OS",
     "COBOL",
     "CICS",
