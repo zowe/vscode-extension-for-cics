@@ -22,6 +22,16 @@
   ],
   "main": "./out/extension.js",
   "icon": "resources/zowe_cics_logo.png",
+  "keywords": [
+    "mainframe",
+    "dataset",
+    "Zowe",
+    "explorer",
+    "z/OS",
+    "COBOL",
+    "CICS",
+    "CMCI"
+  ],
   "contributes": {
     "viewsWelcome": [],
     "views": {
