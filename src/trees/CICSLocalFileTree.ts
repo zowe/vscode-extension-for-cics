@@ -118,4 +118,8 @@ export class CICSLocalFileTree extends TreeItem {
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
+  public getFilter() {
+    return this.activeFilter;
+  }
+
 }

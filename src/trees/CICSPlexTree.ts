@@ -24,6 +24,7 @@ export class CICSPlexTree extends TreeItem {
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
+  resourceFilters: any;
 
   constructor(
     plexName: string,
@@ -55,6 +56,7 @@ export class CICSPlexTree extends TreeItem {
     this.profile = profile;
     this.parent = sessionTree;
     this.contextValue = `cicsplex.${plexName}`;
+    this.resourceFilters = {};
   }
 
   public addRegion(region: CICSRegionTree) {
@@ -121,6 +123,39 @@ export class CICSPlexTree extends TreeItem {
     const newRegionTree = new CICSRegionTree(plexProfile.profile!.regionName, regionsObtained.response.records.cicsregion, this.getParent(), this);
     this.clearChildren(); 
     this.addRegion(newRegionTree);
+  }
+
+  // Store all filters on children resources
+  public findResourceFilters() {
+    for (const region of this.children) {
+      if (region.children) {
+        for (const resourceTree of region.children) {
+          const filter = resourceTree.getFilter();
+          if (filter) {
+            this.resourceFilters[region.getRegionName()] = {[resourceTree.label!.toString().split(' ')[0]]: filter};
+          }
+        }
+      }
+    }
+  }
+
+  public async reapplyFilter() {
+    for (const region of this.children) {
+      const resourceFilters = this.getResourceFilter(region.getRegionName());
+      if (resourceFilters) {
+        for (const resourceTree of region.children!) {
+          if (resourceFilters[resourceTree.label!.toString().split(' ')[0]]) {
+            resourceTree.setFilter(resourceFilters[resourceTree.label!.toString()]);
+            await resourceTree.loadContents();
+            resourceTree.collapsibleState = TreeItemCollapsibleState.Expanded;
+          }
+        }
+      }
+    }
+  }
+
+  public getResourceFilter(regionName: string) {
+    return this.resourceFilters[regionName];
   }
 
   public getPlexName() {

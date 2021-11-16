@@ -81,10 +81,14 @@ export async function activate(context: ExtensionContext) {
       try {
         const plexProfile = node.element.getProfile();
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
+          // Store applied filters
+          node.element.findResourceFilters();
           await node.element.loadOnlyRegion();
+          await node.element.reapplyFilter();
         } else {
           const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
-          if (regionInfo) {    
+          if (regionInfo) {   
+            node.element.findResourceFilters();
             node.element.clearChildren();  
             let activeCount = 0;
             let totalCount = 0;
@@ -97,6 +101,7 @@ export async function activate(context: ExtensionContext) {
               }
             }
             node.element.setLabel(`${node.element.getPlexName()} [${activeCount}/${totalCount}]`);
+            await node.element.reapplyFilter();
             // Keep plex open after label change
             node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
           }
