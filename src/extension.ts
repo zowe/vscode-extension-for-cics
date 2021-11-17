@@ -92,12 +92,15 @@ export async function activate(context: ExtensionContext) {
             node.element.clearChildren();  
             let activeCount = 0;
             let totalCount = 0;
+            const regionFilterRegex = node.element.getActiveFilter() ? RegExp(node.element.getActiveFilter()) : undefined;
             for (const region of regionInfo) {
-              const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
-              node.element.addRegion(newRegionTree);
-              totalCount += 1;
-              if (region.cicsstate === 'ACTIVE') {
-                activeCount += 1;
+              if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
+                const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
+                node.element.addRegion(newRegionTree);
+                totalCount += 1;
+                if (region.cicsstate === 'ACTIVE') {
+                  activeCount += 1;
+                }
               }
             }
             node.element.setLabel(`${node.element.getPlexName()} [${activeCount}/${totalCount}]`);

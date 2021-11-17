@@ -25,6 +25,7 @@ export class CICSPlexTree extends TreeItem {
   profile: IProfileLoaded;
   parent: CICSSessionTree;
   resourceFilters: any;
+  activeFilter: string | undefined;
 
   constructor(
     plexName: string,
@@ -57,6 +58,7 @@ export class CICSPlexTree extends TreeItem {
     this.parent = sessionTree;
     this.contextValue = `cicsplex.${plexName}`;
     this.resourceFilters = {};
+    this.activeFilter = undefined;
   }
 
   public addRegion(region: CICSRegionTree) {
@@ -73,6 +75,7 @@ export class CICSPlexTree extends TreeItem {
         patternString += "|";
       }
     }
+    this.activeFilter = pattern === "*" ? undefined : patternString;
     const regex = new RegExp(patternString);
     this.setLabel(pattern === "*" ? `${this.plexName}` : `${this.plexName.split(' ')[0]} (${pattern})`);
     window.withProgress({
@@ -177,5 +180,9 @@ export class CICSPlexTree extends TreeItem {
   public setLabel(label: string) {
     this.label = label;
     this.plexName = label;
+  }
+
+  public getActiveFilter() {
+    return this.activeFilter;
   }
 }
