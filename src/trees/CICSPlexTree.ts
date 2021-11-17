@@ -24,6 +24,8 @@ export class CICSPlexTree extends TreeItem {
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
+  resourceFilters: any;
+  activeFilter: string | undefined;
 
   constructor(
     plexName: string,
@@ -55,6 +57,8 @@ export class CICSPlexTree extends TreeItem {
     this.profile = profile;
     this.parent = sessionTree;
     this.contextValue = `cicsplex.${plexName}`;
+    this.resourceFilters = {};
+    this.activeFilter = undefined;
   }
 
   public addRegion(region: CICSRegionTree) {
@@ -71,6 +75,7 @@ export class CICSPlexTree extends TreeItem {
         patternString += "|";
       }
     }
+    this.activeFilter = pattern === "*" ? undefined : patternString;
     const regex = new RegExp(patternString);
     this.setLabel(pattern === "*" ? `${this.plexName}` : `${this.plexName.split(' ')[0]} (${pattern})`);
     window.withProgress({
@@ -123,6 +128,39 @@ export class CICSPlexTree extends TreeItem {
     this.addRegion(newRegionTree);
   }
 
+  // Store all filters on children resources
+  public findResourceFilters() {
+    for (const region of this.children) {
+      if (region.children) {
+        for (const resourceTree of region.children) {
+          const filter = resourceTree.getFilter();
+          if (filter) {
+            this.resourceFilters[region.getRegionName()] = {[resourceTree.label!.toString().split(' ')[0]]: filter};
+          }
+        }
+      }
+    }
+  }
+
+  public async reapplyFilter() {
+    for (const region of this.children) {
+      const resourceFilters = this.getResourceFilter(region.getRegionName());
+      if (resourceFilters) {
+        for (const resourceTree of region.children!) {
+          if (resourceFilters[resourceTree.label!.toString().split(' ')[0]]) {
+            resourceTree.setFilter(resourceFilters[resourceTree.label!.toString()]);
+            await resourceTree.loadContents();
+            resourceTree.collapsibleState = TreeItemCollapsibleState.Expanded;
+          }
+        }
+      }
+    }
+  }
+
+  public getResourceFilter(regionName: string) {
+    return this.resourceFilters[regionName];
+  }
+
   public getPlexName() {
     return this.plexName.split(' ')[0];
   }
@@ -142,5 +180,9 @@ export class CICSPlexTree extends TreeItem {
   public setLabel(label: string) {
     this.label = label;
     this.plexName = label;
+  }
+
+  public getActiveFilter() {
+    return this.activeFilter;
   }
 }

@@ -117,4 +117,8 @@ export class CICSTransactionTree extends TreeItem {
     this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
+
+  public getFilter() {
+    return this.activeFilter;
+  }
 }

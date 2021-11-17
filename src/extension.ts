@@ -81,22 +81,30 @@ export async function activate(context: ExtensionContext) {
       try {
         const plexProfile = node.element.getProfile();
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
+          // Store applied filters
+          node.element.findResourceFilters();
           await node.element.loadOnlyRegion();
+          await node.element.reapplyFilter();
         } else {
           const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
-          if (regionInfo) {    
+          if (regionInfo) {   
+            node.element.findResourceFilters();
             node.element.clearChildren();  
             let activeCount = 0;
             let totalCount = 0;
+            const regionFilterRegex = node.element.getActiveFilter() ? RegExp(node.element.getActiveFilter()) : undefined;
             for (const region of regionInfo) {
-              const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
-              node.element.addRegion(newRegionTree);
-              totalCount += 1;
-              if (region.cicsstate === 'ACTIVE') {
-                activeCount += 1;
+              if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
+                const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
+                node.element.addRegion(newRegionTree);
+                totalCount += 1;
+                if (region.cicsstate === 'ACTIVE') {
+                  activeCount += 1;
+                }
               }
             }
             node.element.setLabel(`${node.element.getPlexName()} [${activeCount}/${totalCount}]`);
+            await node.element.reapplyFilter();
             // Keep plex open after label change
             node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
           }

@@ -116,4 +116,8 @@ export class CICSProgramTree extends TreeItem {
     this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
+
+  public getFilter() {
+    return this.activeFilter;
+  }
 }
