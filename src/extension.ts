@@ -14,7 +14,7 @@ import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
-import { ExtensionContext, TreeItemCollapsibleState, window } from "vscode";
+import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowAttributesCommand,
@@ -83,32 +83,53 @@ export async function activate(context: ExtensionContext) {
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
           // Store applied filters
           node.element.findResourceFilters();
-          await node.element.loadOnlyRegion();
+          window.withProgress({
+            title: 'Loading region',
+            location: ProgressLocation.Notification,
+            cancellable: false
+          }, async (_, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the loading of the region");
+            });
+            await node.element.loadOnlyRegion();
+            treeDataProv._onDidChangeTreeData.fire(undefined);
+          });
           await node.element.reapplyFilter();
         } else {
-          const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
-          if (regionInfo) {   
-            node.element.findResourceFilters();
-            node.element.clearChildren();  
-            let activeCount = 0;
-            let totalCount = 0;
-            const regionFilterRegex = node.element.getActiveFilter() ? RegExp(node.element.getActiveFilter()) : undefined;
-            for (const region of regionInfo) {
-              if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
-                const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
-                node.element.addRegion(newRegionTree);
-                totalCount += 1;
-                if (region.cicsstate === 'ACTIVE') {
-                  activeCount += 1;
+          window.withProgress({
+            title: 'Loading regions',
+            location: ProgressLocation.Notification,
+            cancellable: false
+          }, async (_, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the loading of regions");
+            });
+            const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
+            if (regionInfo) {   
+              node.element.findResourceFilters();
+              node.element.clearChildren();  
+              let activeCount = 0;
+              let totalCount = 0;
+              const regionFilterRegex = node.element.getActiveFilter() ? RegExp(node.element.getActiveFilter()) : undefined;
+              for (const region of regionInfo) {
+                // If region filter exists then match it
+                if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
+                  const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
+                  node.element.addRegion(newRegionTree);
+                  totalCount += 1;
+                  if (region.cicsstate === 'ACTIVE') {
+                    activeCount += 1;
+                  }
                 }
               }
+              node.element.setLabel(`${node.element.getPlexName()} [${activeCount}/${totalCount}]`);
+              await node.element.reapplyFilter();
+              // Keep plex open after label change
+              node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
             }
-            node.element.setLabel(`${node.element.getPlexName()} [${activeCount}/${totalCount}]`);
-            await node.element.reapplyFilter();
-            // Keep plex open after label change
-            node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+            treeDataProv._onDidChangeTreeData.fire(undefined);
+            });
           }
-        }
         treeDataProv._onDidChangeTreeData.fire(undefined);
       } catch (error) {
         console.log(error);
@@ -135,16 +156,43 @@ export async function activate(context: ExtensionContext) {
       }
     } else if (node.element.contextValue.includes("cicsregion.")) {
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
+      window.withProgress({
+        title: 'Loading Programs',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of programs");
+        });
       await node.element.loadContents();
       treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
+      window.withProgress({
+        title: 'Loading Transactions',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of transactions");
+        });
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
+      window.withProgress({
+        title: 'Loading Local Files',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of local files");
+        });
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicsprogram.")) {
     }
