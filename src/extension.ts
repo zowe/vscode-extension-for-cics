@@ -122,7 +122,12 @@ export async function activate(context: ExtensionContext) {
                   }
                 }
               }
-              node.element.setLabel(`${node.element.getPlexName()} [${activeCount}/${totalCount}]`);
+              // if label contains the filter, then keep the filter label
+              node.element.setLabel(`${
+                node.element.label.split(' ').length > 2 ?
+                node.element.label.split(' ').slice(0,2).join(" ") :
+                node.element.getPlexName()} [${activeCount}/${totalCount}]`);
+
               await node.element.reapplyFilter();
               // Keep plex open after label change
               node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
