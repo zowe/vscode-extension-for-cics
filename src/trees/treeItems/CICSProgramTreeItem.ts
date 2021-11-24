@@ -41,4 +41,8 @@ export class CICSProgramTreeItem extends TreeItem {
     this.contextValue = `cicsprogram.${program.status.toLowerCase()}.${program.program
       }`;
   }
+
+  public setLabel(newLabel: string) {
+    this.label = newLabel;
+  }
 }

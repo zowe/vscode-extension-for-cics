@@ -42,8 +42,7 @@ import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 import { CICSRegionTree } from "./trees/CICSRegionTree";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { join } from "path";
-import { getResource } from "@zowe/cics-for-zowe-cli";
-import * as https from "https";
+import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
 
 export async function activate(context: ExtensionContext) {
 
@@ -80,6 +79,7 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicsplex.")) {
       try {
         const plexProfile = node.element.getProfile();
+        const combinedProgramTree = new CICSCombinedProgramTree(node.element);
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
           // Store applied filters
           node.element.findResourceFilters();
@@ -92,6 +92,7 @@ export async function activate(context: ExtensionContext) {
               console.log("Cancelling the loading of the region");
             });
             await node.element.loadOnlyRegion();
+            node.element.addCombinedProgramTree(combinedProgramTree);
             treeDataProv._onDidChangeTreeData.fire(undefined);
           });
           await node.element.reapplyFilter();
@@ -122,6 +123,7 @@ export async function activate(context: ExtensionContext) {
                   }
                 }
               }
+              node.element.addCombinedProgramTree(combinedProgramTree);
               // if label contains the filter, then keep the filter label
               node.element.setLabel(`${
                 node.element.label.split(' ').length > 2 ?
@@ -199,11 +201,12 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    } else if (node.element.contextValue.includes("cicsprogram.")) {
+    } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
+      node.element.loadContents(treeDataProv);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   });
-
-
+  
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv, treeview),
