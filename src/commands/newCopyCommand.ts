@@ -80,7 +80,12 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
             }
             for (const parentRegion of parentRegions) {
               const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+              const allProgramsTree = parentRegion.parentPlex!.children!.filter((child: any) => child.contextValue.includes("cicscombinedprogramtree."))[0];
               await programTree.loadContents();
+              if (allProgramsTree.collapsibleState === 2) {
+                //@ts-ignore
+                await allProgramsTree.loadContents(tree);
+              }
             }
             tree._onDidChangeTreeData.fire(undefined);
           });
