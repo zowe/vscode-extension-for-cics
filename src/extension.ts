@@ -207,6 +207,8 @@ export async function activate(context: ExtensionContext) {
     }
   });
   
+  treeview.onDidCollapseElement(async (node) => node.element.collapsibleState = TreeItemCollapsibleState.Collapsed);
+
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv, treeview),
