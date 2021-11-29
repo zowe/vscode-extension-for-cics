@@ -282,8 +282,53 @@ export class ProfileManagement {
       https.globalAgent.options.rejectUnauthorized = undefined;
       if (allProgramsResponse.status === 200) {
         const jsonFromXml = JSON.parse(xml2json(allProgramsResponse.data, { compact: true, spaces: 4 }));
-        console.log(jsonFromXml.response.records);
-        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsprogram) {
+        if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records.cicsprogram) {
+          const returnedPrograms = jsonFromXml.response.records.cicsprogram.map((item: { _attributes: any; }) => item._attributes);
+          return returnedPrograms;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public static async generateCacheToken(profile: IProfileLoaded, plexName: string, criteria: string) {
+    try {
+      const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+      https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
+      const allProgramsResponse = await axios.get(`${URL}/CICSProgram/${plexName}?NODISCARD&SUMMONLY&CRITERIA=${criteria}`, {
+        auth: {
+          username: profile!.profile!.user,
+          password: profile!.profile!.password,
+        }
+      });
+      https.globalAgent.options.rejectUnauthorized = undefined;
+      if (allProgramsResponse.status === 200) {
+        const jsonFromXml = JSON.parse(xml2json(allProgramsResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response && jsonFromXml.response.resultsummary) {
+          const resultsSummary = jsonFromXml.response.resultsummary._attributes;
+          return { 'cacheToken': resultsSummary.cachetoken, 'recordCount': resultsSummary.recordcount};
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public static async getCachedPrograms(profile: IProfileLoaded, cacheToken: string) {
+    try {
+      const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+      https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
+      const allProgramsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/1/1000?NODISCARD`, {
+        auth: {
+          username: profile!.profile!.user,
+          password: profile!.profile!.password,
+        }
+      });
+      https.globalAgent.options.rejectUnauthorized = undefined;
+      if (allProgramsResponse.status === 200) {
+        const jsonFromXml = JSON.parse(xml2json(allProgramsResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records.cicsprogram) {
           const returnedPrograms = jsonFromXml.response.records.cicsprogram.map((item: { _attributes: any; }) => item._attributes);
           return returnedPrograms;
         }
