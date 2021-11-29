@@ -124,7 +124,9 @@ export async function activate(context: ExtensionContext) {
                   }
                 }
               }
-              node.element.addCombinedProgramTree(combinedProgramTree);
+              if (node.element.getParent().getChildren().length > 1) {
+                node.element.addCombinedProgramTree(combinedProgramTree);
+              }
               // if label contains the filter, then keep the filter label
               node.element.setLabel(`${
                 node.element.label.split(' ').length > 2 ?

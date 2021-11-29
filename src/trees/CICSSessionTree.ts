@@ -69,4 +69,8 @@ export class CICSSessionTree extends TreeItem {
   public getSession() {
     return this.session;
   }
+
+  public getChildren() {
+    return this.children;
+  }
 }
