@@ -14,7 +14,7 @@ import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
-import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
+import { commands, ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowAttributesCommand,
@@ -43,6 +43,7 @@ import { CICSRegionTree } from "./trees/CICSRegionTree";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { join } from "path";
 import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
+import { viewMoreCommand } from "./commands/viewMoreAllPrograms";
 
 export async function activate(context: ExtensionContext) {
 
@@ -92,7 +93,7 @@ export async function activate(context: ExtensionContext) {
               console.log("Cancelling the loading of the region");
             });
             await node.element.loadOnlyRegion();
-            node.element.addCombinedProgramTree(combinedProgramTree);
+            //node.element.addCombinedProgramTree(combinedProgramTree);
             treeDataProv._onDidChangeTreeData.fire(undefined);
           });
           await node.element.reapplyFilter();
@@ -204,9 +205,9 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       node.element.loadContents(treeDataProv);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    }
+    } 
   });
-  
+
   treeview.onDidCollapseElement(async (node) => node.element.collapsibleState = TreeItemCollapsibleState.Collapsed);
 
   context.subscriptions.push(
@@ -242,7 +243,9 @@ export async function activate(context: ExtensionContext) {
     getFilterPlexResources(treeDataProv),
 
     getClearProgramFilterCommand(treeDataProv),
-    getClearPlexFilterCommand(treeDataProv)
+    getClearPlexFilterCommand(treeDataProv),
+
+    viewMoreCommand(treeDataProv)
   );
 }
 
