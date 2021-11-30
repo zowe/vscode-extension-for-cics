@@ -110,7 +110,7 @@ export class CICSCombinedProgramTree extends TreeItem {
       }
       this.currentCount = newChildren.length;
       this.label = `All Programs [${this.currentCount} of ${count}]`;
-      newChildren.push(new ViewMore(this));
+      newChildren.push(new ViewMore(this, Math.min(this.incrementCount, count-this.currentCount)));
       this.children = newChildren;
     }
 

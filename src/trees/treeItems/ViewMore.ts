@@ -16,9 +16,10 @@ export class ViewMore extends TreeItem {
 
   constructor(
     parent: any,
+    numberLeft: number
   ) {
     super(
-      `View x more ...`,
+      `View ${numberLeft} more ...`,
       TreeItemCollapsibleState.None
     );
     this.parent = parent;
