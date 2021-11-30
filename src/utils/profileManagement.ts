@@ -315,11 +315,11 @@ export class ProfileManagement {
     }
   }
 
-  public static async getCachedPrograms(profile: IProfileLoaded, cacheToken: string) {
+  public static async getCachedPrograms(profile: IProfileLoaded, cacheToken: string, start=1, increment=800) {
     try {
       const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allProgramsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/1/1000?NODISCARD`, {
+      const allProgramsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/${start}/${increment}?NODISCARD`, {
         auth: {
           username: profile!.profile!.user,
           password: profile!.profile!.password,

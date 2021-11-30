@@ -93,7 +93,6 @@ export async function activate(context: ExtensionContext) {
               console.log("Cancelling the loading of the region");
             });
             await node.element.loadOnlyRegion();
-            //node.element.addCombinedProgramTree(combinedProgramTree);
             treeDataProv._onDidChangeTreeData.fire(undefined);
           });
           await node.element.reapplyFilter();
@@ -247,7 +246,7 @@ export async function activate(context: ExtensionContext) {
     getClearProgramFilterCommand(treeDataProv),
     getClearPlexFilterCommand(treeDataProv),
 
-    viewMoreCommand(treeDataProv)
+    viewMoreCommand(treeDataProv, treeview)
   );
 }
 

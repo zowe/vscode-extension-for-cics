@@ -9,14 +9,17 @@
 *
 */
 
-import { commands, window } from "vscode";
+import { commands, TreeView, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
+import { ViewMore } from "../trees/treeItems/viewMore";
 
-export function viewMoreCommand(tree: CICSTree) {
+export function viewMoreCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.viewMore",
-    async (node) => {
-      console.log(node);
+    () => {
+      const selectedNode = treeview.selection.filter((item) => item instanceof ViewMore)[0];
+      selectedNode.parent.addMoreCachedPrograms(tree);
+      tree._onDidChangeTreeData.fire(undefined);
     }
   );
 }

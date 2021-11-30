@@ -12,16 +12,16 @@
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 
 export class ViewMore extends TreeItem {
-  parentPlex: any;
+  parent: any;
 
   constructor(
-    parentPlex: any,
+    parent: any,
   ) {
     super(
       `View x more ...`,
       TreeItemCollapsibleState.None
     );
-    this.parentPlex = parentPlex;
+    this.parent = parent;
     this.contextValue = 'viewmore.';
     this.command = {
       title: 'View more',

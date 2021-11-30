@@ -15,6 +15,7 @@ import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
+import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 export class CICSProgramTree extends TreeItem {
   children: CICSProgramTreeItem[] = [];
   parentRegion: CICSRegionTree;
@@ -53,11 +54,7 @@ export class CICSProgramTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.Program.Filter')}`;
-    if (!defaultCriteria || defaultCriteria.length === 0) {
-      await workspace.getConfiguration().update('Zowe.CICS.Program.Filter', 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)');
-      defaultCriteria = 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)';
-    }
+    let defaultCriteria = await getDefaultProgramFilter();
     let criteria;
     if (this.activeFilter) {
       const splitActiveFilter = this.activeFilter.split(",");
