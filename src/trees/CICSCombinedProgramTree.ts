@@ -115,22 +115,28 @@ export class CICSCombinedProgramTree extends TreeItem {
     }
 
     public async addMoreCachedPrograms(tree: CICSTree) {
-      const defaultCriteria = await getDefaultProgramFilter();
-      const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),defaultCriteria);
-        if (cacheTokenInfo) {
-          // record count may have updated
-          const recordsCount = cacheTokenInfo.recordCount;
-          const count = parseInt(recordsCount);
-          const allPrograms = await ProfileManagement.getCachedPrograms(
-            this.parentPlex.getProfile(),cacheTokenInfo.cacheToken,
-            this.currentCount+1,
-            this.incrementCount
-            );
-          if (allPrograms) {
-            this.addProgramsUtil(this.children ? this.children?.filter((child)=> child instanceof CICSProgramTreeItem):[], allPrograms, count);
-            tree._onDidChangeTreeData.fire(undefined);
+      window.withProgress({
+        title: 'Loading more programs',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async () => {
+        const defaultCriteria = await getDefaultProgramFilter();
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),defaultCriteria);
+          if (cacheTokenInfo) {
+            // record count may have updated
+            const recordsCount = cacheTokenInfo.recordCount;
+            const count = parseInt(recordsCount);
+            const allPrograms = await ProfileManagement.getCachedPrograms(
+              this.parentPlex.getProfile(),cacheTokenInfo.cacheToken,
+              this.currentCount+1,
+              this.incrementCount
+              );
+            if (allPrograms) {
+              this.addProgramsUtil(this.children ? this.children?.filter((child)=> child instanceof CICSProgramTreeItem):[], allPrograms, count);
+              tree._onDidChangeTreeData.fire(undefined);
+            }
           }
-        }
+        });
     }
 
     public clearFilter() {
