@@ -16,7 +16,7 @@ import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
-import { ViewMore } from "./treeItems/viewMore";
+import { ViewMore } from "./treeItems/utils/ViewMore";
 import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 
 export class CICSCombinedProgramTree extends TreeItem {
