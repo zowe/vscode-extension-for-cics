@@ -11,7 +11,7 @@
 
 import { commands, TreeView, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
-import { ViewMore } from "../trees/treeItems/viewMore";
+import { ViewMore } from "../trees/treeItems/utils/ViewMore";
 
 export function viewMoreCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
