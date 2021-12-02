@@ -19,9 +19,11 @@ import { CICSTree } from "./CICSTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
+import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
+import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 
 export class CICSPlexTree extends TreeItem {
-  children: (CICSRegionTree | CICSCombinedProgramTree) [] = [];
+  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree) [] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
@@ -104,7 +106,7 @@ export class CICSPlexTree extends TreeItem {
             }
         }
       }
-      this.addCombinedProgramTree(new CICSCombinedProgramTree(this));
+      this.addCombinedTree(new CICSCombinedProgramTree(this));
       const newLabel = pattern === "*" ? `${this.getPlexName()} [${activeCount}/${totalCount}]` : `${this.getPlexName()} (${pattern}) [${activeCount}/${totalCount}]`;
       this.setLabel(newLabel);
       tree._onDidChangeTreeData.fire(undefined);
@@ -192,7 +194,7 @@ export class CICSPlexTree extends TreeItem {
     return this.activeFilter;
   }
 
-  public addCombinedProgramTree(combinedProgramTree: CICSCombinedProgramTree) {
-    this.children.push(combinedProgramTree);
+  public addCombinedTree(combinedTree: (CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree)) {
+    this.children.push(combinedTree);
   }
 }

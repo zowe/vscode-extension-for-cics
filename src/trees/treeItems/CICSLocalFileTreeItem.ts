@@ -42,4 +42,9 @@ export class CICSLocalFileTreeItem extends TreeItem {
     this.parentRegion = parentRegion;
     this.localFileName = localFile.file;
   }
+
+  public setLabel(newLabel: string) {
+    this.label = newLabel;
+  }
+  
 }

@@ -18,7 +18,7 @@ export function viewMoreCommand(tree: CICSTree, treeview: TreeView<any>) {
     "cics-extension-for-zowe.viewMore",
     () => {
       const selectedNode = treeview.selection.filter((item) => item instanceof ViewMore)[0];
-      selectedNode.parent.addMoreCachedPrograms(tree);
+      selectedNode.parent.addMoreCachedResources(tree);
       tree._onDidChangeTreeData.fire(undefined);
     }
   );

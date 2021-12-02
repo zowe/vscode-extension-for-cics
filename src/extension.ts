@@ -44,6 +44,8 @@ import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { join } from "path";
 import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
 import { viewMoreCommand } from "./commands/viewMoreAllPrograms";
+import { CICSCombinedTransactionsTree } from "./trees/CICSCombinedTransactionTree";
+import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
 
 export async function activate(context: ExtensionContext) {
 
@@ -81,6 +83,8 @@ export async function activate(context: ExtensionContext) {
       try {
         const plexProfile = node.element.getProfile();
         const combinedProgramTree = new CICSCombinedProgramTree(node.element);
+        const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
+        const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
           // Store applied filters
           node.element.findResourceFilters();
@@ -124,7 +128,9 @@ export async function activate(context: ExtensionContext) {
                 }
               }
               if (node.element.getParent().getChildren().length > 1) {
-                node.element.addCombinedProgramTree(combinedProgramTree);
+                node.element.addCombinedTree(combinedProgramTree);
+                node.element.addCombinedTree(combinedTransactionTree);
+                node.element.addCombinedTree(combinedLocalFileTree);
               }
               // if label contains the filter, then keep the filter label
               node.element.setLabel(`${
@@ -206,7 +212,13 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       node.element.loadContents(treeDataProv);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    } 
+    } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
+      node.element.loadContents(treeDataProv);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
+      node.element.loadContents(treeDataProv);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
   });
 
   treeview.onDidCollapseElement(async (node) => node.element.collapsibleState = TreeItemCollapsibleState.Collapsed);

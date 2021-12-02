@@ -9,19 +9,18 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
 import { join } from "path";
 import { CICSPlexTree } from "./CICSPlexTree";
-import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
-import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
+import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 
-export class CICSCombinedProgramTree extends TreeItem {
-  children: (CICSProgramTreeItem | ViewMore) [] | null;
+export class CICSCombinedTransactionsTree extends TreeItem {
+  children: (CICSTransactionTreeItem | ViewMore) [] | null;
   parentPlex: CICSPlexTree;
   activeFilter: string | undefined;
   currentCount: number;
@@ -51,68 +50,65 @@ export class CICSCombinedProgramTree extends TreeItem {
       ),
     }
   ) {
-    super("All Programs", TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicscombinedprogramtree.`;
+    super("All Local Transactions", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicscombinedtransactiontree.`;
     this.parentPlex = parentPlex;
     this.children = [];
     this.activeFilter = undefined;
     this.currentCount = 0;
     this.incrementCount = 2;
-    this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
+    this.constant = CicsCmciConstants.CICS_LOCAL_TRANSACTION;
     }
 
     public async loadContents(tree : CICSTree){
       window.withProgress({
-        title: 'Loading Programs',
+        title: 'Loading Local Transactions',
         location: ProgressLocation.Notification,
         cancellable: true
       }, async (_, token) => {
         token.onCancellationRequested(() => {
           console.log("Cancelling the load");
         });
-        let defaultCriteria = await getDefaultProgramFilter();
-        const regionFilters = this.parentPlex.findResourceFilters();
-        let criteria;
         let count;
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,defaultCriteria);
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant);
         if (cacheTokenInfo) {
           const recordsCount = cacheTokenInfo.recordCount;
-          let allPrograms;
+          let allLocalTransactions;
           // need to change number
           if (recordsCount <= 3000) {
-            allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, defaultCriteria);
+            allLocalTransactions = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant);
           } else {
-            allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+            allLocalTransactions = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
             count = parseInt(recordsCount);
           }
-          if (allPrograms) {
-            this.addProgramsUtil([], allPrograms, count);
+          if (allLocalTransactions) {
+            this.addLocalTransactionsUtil([], allLocalTransactions, count);
             tree._onDidChangeTreeData.fire(undefined);
           } else {
-            window.showErrorMessage('Something went wrong when fetching all programs');
+            window.showErrorMessage('Something went wrong when fetching all local transactions');
           }
         }
         }
       );
     }
 
-    public addProgramsUtil(newChildren:(CICSProgramTreeItem | ViewMore) [], allPrograms:any, count:number|undefined){
-      for (const program of allPrograms) {
+    public addLocalTransactionsUtil(newChildren:(CICSTransactionTreeItem | ViewMore) [], allLocalTransactions:any, count:number|undefined){
+      for (const transaction of allLocalTransactions) {
         const parentRegion = this.parentPlex.children.filter(child => {
           if (child instanceof CICSRegionTree) {
-            return child.getRegionName() === program.eyu_cicsname;
+            return child.getRegionName() === transaction.eyu_cicsname;
           }
         })[0];
         //@ts-ignore
-        const progamTree = new CICSProgramTreeItem(program,parentRegion);
-        progamTree.setLabel(progamTree.label!.toString().replace(program.program, `${program.program} (${program.eyu_cicsname})`));
-        newChildren.push(progamTree);
+        const transactionTree = new CICSTransactionTreeItem(transaction,parentRegion);
+        transactionTree.setLabel(transactionTree.label!.toString().replace(transaction.tranid, `${transaction.tranid} (${transaction.eyu_cicsname})`));
+        newChildren.push(transactionTree);
       }
       if (!count) {
         count = newChildren.length;
       }
       this.currentCount = newChildren.length;
-      this.label = `All Programs [${this.currentCount} of ${count}]`;
+      this.label = `All Local Transactions [${this.currentCount} of ${count}]`;
       if (count !== this.currentCount) {
         newChildren.push(new ViewMore(this, Math.min(this.incrementCount, count-this.currentCount)));
       }
@@ -121,25 +117,24 @@ export class CICSCombinedProgramTree extends TreeItem {
 
     public async addMoreCachedResources(tree: CICSTree) {
       window.withProgress({
-        title: 'Loading more programs',
+        title: 'Loading more local transactions',
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {
-        const defaultCriteria = await getDefaultProgramFilter();
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,defaultCriteria);
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant);
           if (cacheTokenInfo) {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
             const count = parseInt(recordsCount);
-            const allPrograms = await ProfileManagement.getCachedResources(
+            const allLocalTransactions = await ProfileManagement.getCachedResources(
               this.parentPlex.getProfile(),
               cacheTokenInfo.cacheToken,
               this.constant,
               this.currentCount+1,
               this.incrementCount
               );
-            if (allPrograms) {
-              this.addProgramsUtil(this.children ? this.children?.filter((child)=> child instanceof CICSProgramTreeItem):[], allPrograms, count);
+            if (allLocalTransactions) {
+              this.addLocalTransactionsUtil(this.children ? this.children?.filter((child)=> child instanceof CICSTransactionTreeItem):[], allLocalTransactions, count);
               tree._onDidChangeTreeData.fire(undefined);
             }
           }
@@ -149,14 +144,14 @@ export class CICSCombinedProgramTree extends TreeItem {
     public clearFilter() {
       this.activeFilter = undefined;
       // this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
-      this.label = `All Programs`;
+      this.label = `All Local Transactions`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
       // this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
-      this.label = `All Programs (${this.activeFilter})`;
+      this.label = `All Local Transactions (${this.activeFilter})`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 }

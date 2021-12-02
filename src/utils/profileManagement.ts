@@ -268,23 +268,23 @@ export class ProfileManagement {
     }
   }
 
-  public static async getAllProgramsInPlex(plex: CICSPlexTree, criteria: string) {
+  public static async getAllResourcesInPlex(plex: CICSPlexTree, resourceName:string, criteria?: string) {
     try {
       const profile = plex.getProfile();
       const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allProgramsResponse = await axios.get(`${URL}/CICSProgram/${plex.getPlexName()}?OVERRIDEWARNINGCOUNT=YES&CRITERIA=${criteria}`, {
+      const allItemsResponse = await axios.get(`${URL}/${resourceName}/${plex.getPlexName()}?OVERRIDEWARNINGCOUNT=YES${criteria?`&CRITERIA=${criteria}`:''}`, {
         auth: {
           username: profile!.profile!.user,
           password: profile!.profile!.password,
         }
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if (allProgramsResponse.status === 200) {
-        const jsonFromXml = JSON.parse(xml2json(allProgramsResponse.data, { compact: true, spaces: 4 }));
-        if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records.cicsprogram) {
-          const returnedPrograms = jsonFromXml.response.records.cicsprogram.map((item: { _attributes: any; }) => item._attributes);
-          return returnedPrograms;
+      if (allItemsResponse.status === 200) {
+        const jsonFromXml = JSON.parse(xml2json(allItemsResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records[resourceName.toLowerCase()]) {
+          const returnedResources = jsonFromXml.response.records[resourceName.toLowerCase()].map((item: { _attributes: any; }) => item._attributes);
+          return returnedResources;
         }
       }
     } catch (error) {
@@ -292,11 +292,11 @@ export class ProfileManagement {
     }
   }
 
-  public static async generateCacheToken(profile: IProfileLoaded, plexName: string, criteria: string) {
+  public static async generateCacheToken(profile: IProfileLoaded, plexName: string, resourceName:string, criteria?: string) {
     try {
       const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allProgramsResponse = await axios.get(`${URL}/CICSProgram/${plexName}?NODISCARD&SUMMONLY&CRITERIA=${criteria}`, {
+      const allProgramsResponse = await axios.get(`${URL}/${resourceName}/${plexName}?NODISCARD&SUMMONLY${criteria?`${criteria?`&CRITERIA=${criteria}`:''}`:''}`, {
         auth: {
           username: profile!.profile!.user,
           password: profile!.profile!.password,
@@ -315,22 +315,22 @@ export class ProfileManagement {
     }
   }
 
-  public static async getCachedPrograms(profile: IProfileLoaded, cacheToken: string, start=1, increment=800) {
+  public static async getCachedResources(profile: IProfileLoaded, cacheToken: string, resourceName:string, start=1, increment=800) {
     try {
       const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allProgramsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/${start}/${increment}?NODISCARD`, {
+      const allItemsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/${start}/${increment}?NODISCARD`, {
         auth: {
           username: profile!.profile!.user,
           password: profile!.profile!.password,
         }
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if (allProgramsResponse.status === 200) {
-        const jsonFromXml = JSON.parse(xml2json(allProgramsResponse.data, { compact: true, spaces: 4 }));
-        if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records.cicsprogram) {
-          const returnedPrograms = jsonFromXml.response.records.cicsprogram.map((item: { _attributes: any; }) => item._attributes);
-          return returnedPrograms;
+      if (allItemsResponse.status === 200) {
+        const jsonFromXml = JSON.parse(xml2json(allItemsResponse.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records[resourceName.toLowerCase()]) {
+          const returnedResources = jsonFromXml.response.records[resourceName.toLowerCase()].map((item: { _attributes: any; }) => item._attributes);
+          return returnedResources;
         }
       }
     } catch (error) {
