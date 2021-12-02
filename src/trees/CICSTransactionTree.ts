@@ -15,6 +15,7 @@ import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
+import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];
@@ -54,11 +55,7 @@ export class CICSTransactionTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.Transaction.Filter')}`;
-    if (!defaultCriteria || defaultCriteria.length === 0) {
-      await workspace.getConfiguration().update('Zowe.CICS.Transaction.Filter', 'NOT (program=DFH* OR program=EYU*)');
-      defaultCriteria = 'NOT (program=DFH* OR program=EYU*)';
-    }
+    let defaultCriteria = await getDefaultTransactionFilter();
     let criteria;
     if (this.activeFilter) {
       const splitActiveFilter = this.activeFilter.split(",");

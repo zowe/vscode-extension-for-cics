@@ -18,6 +18,7 @@ import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
+import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
 
 export class CICSCombinedTransactionsTree extends TreeItem {
   children: (CICSTransactionTreeItem | ViewMore) [] | null;
@@ -69,14 +70,15 @@ export class CICSCombinedTransactionsTree extends TreeItem {
         token.onCancellationRequested(() => {
           console.log("Cancelling the load");
         });
+        let defaultCriteria = await getDefaultTransactionFilter();
         let count;
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant);
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,defaultCriteria);
         if (cacheTokenInfo) {
           const recordsCount = cacheTokenInfo.recordCount;
           let allLocalTransactions;
           // need to change number
           if (recordsCount <= 3000) {
-            allLocalTransactions = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant);
+            allLocalTransactions = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, defaultCriteria);
           } else {
             allLocalTransactions = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
             count = parseInt(recordsCount);
