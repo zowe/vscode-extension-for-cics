@@ -19,6 +19,7 @@ import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
+import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 
 export class CICSCombinedProgramTree extends TreeItem {
   children: (CICSProgramTreeItem | ViewMore) [] | null;
@@ -73,14 +74,19 @@ export class CICSCombinedProgramTree extends TreeItem {
         let defaultCriteria = await getDefaultProgramFilter();
         const regionFilters = this.parentPlex.findResourceFilters();
         let criteria;
+        if (this.activeFilter) {
+          criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
+        } else {
+          criteria = defaultCriteria;
+        }
         let count;
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,defaultCriteria);
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
         if (cacheTokenInfo) {
           const recordsCount = cacheTokenInfo.recordCount;
           let allPrograms;
           // need to change number
           if (recordsCount <= 3000) {
-            allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, defaultCriteria);
+            allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
           } else {
             allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
             count = parseInt(recordsCount);
@@ -112,7 +118,7 @@ export class CICSCombinedProgramTree extends TreeItem {
         count = newChildren.length;
       }
       this.currentCount = newChildren.length;
-      this.label = `All Programs [${this.currentCount} of ${count}]`;
+      this.label = `All Programs ${this.activeFilter?`(${this.activeFilter}) `: " "}[${this.currentCount} of ${count}]`;
       if (count !== this.currentCount) {
         newChildren.push(new ViewMore(this, Math.min(this.incrementCount, count-this.currentCount)));
       }
@@ -148,14 +154,12 @@ export class CICSCombinedProgramTree extends TreeItem {
 
     public clearFilter() {
       this.activeFilter = undefined;
-      // this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
       this.label = `All Programs`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
-      // this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
       this.label = `All Programs (${this.activeFilter})`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }

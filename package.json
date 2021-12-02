@@ -105,6 +105,14 @@
           "light": "resources/imgs/filter-dark.svg",
           "dark": "resources/imgs/filter-light.svg"
         }
+      },{
+        "command": "cics-extension-for-zowe.filterAllPrograms",
+        "title": "Filter All Programs",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
       },
       {
         "command": "cics-extension-for-zowe.clearFilter",
@@ -281,6 +289,11 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
           "command": "cics-extension-for-zowe.filterPlexResources",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicscombinedprogramtree.*/",
+          "command": "cics-extension-for-zowe.filterAllPrograms",
           "group": "inline"
         },
         {
