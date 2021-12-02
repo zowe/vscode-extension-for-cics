@@ -16,6 +16,7 @@ import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
+import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];
@@ -58,15 +59,7 @@ export class CICSTransactionTree extends TreeItem {
     let defaultCriteria = await getDefaultTransactionFilter();
     let criteria;
     if (this.activeFilter) {
-      const splitActiveFilter = this.activeFilter.split(",");
-      criteria = "(";
-      for(const index in splitActiveFilter!){
-        criteria += `tranid=${splitActiveFilter[parseInt(index)]}`;
-        if (parseInt(index) !== splitActiveFilter.length-1){
-          criteria += " OR ";
-        }
-      }
-      criteria += ")";
+      criteria = toEscapedCriteriaString(this.activeFilter, 'tranid');
     } else {
       criteria = defaultCriteria;
     }
