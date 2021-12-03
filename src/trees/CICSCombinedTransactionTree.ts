@@ -38,7 +38,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "programs-dark.svg"
+        "transactions-dark.svg"
       ),
       dark: join(
         __filename,
@@ -47,7 +47,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "programs-light.svg"
+        "transactions-light.svg"
       ),
     }
   ) {

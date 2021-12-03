@@ -37,7 +37,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "programs-dark.svg"
+        "bars-dark.svg"
       ),
       dark: join(
         __filename,
@@ -46,7 +46,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
         "..",
         "resources",
         "imgs",
-        "programs-light.svg"
+        "bars-light.svg"
       ),
     }
   ) {
