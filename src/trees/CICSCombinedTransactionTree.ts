@@ -153,12 +153,14 @@ export class CICSCombinedTransactionsTree extends TreeItem {
     public clearFilter() {
       this.activeFilter = undefined;
       this.label = `All Local Transactions`;
+      this.contextValue = `cicscombinedtransactiontree.unfiltered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
       this.label = `All Local Transactions (${this.activeFilter})`;
+      this.contextValue = `cicscombinedtransactiontree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 }

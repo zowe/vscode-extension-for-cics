@@ -148,12 +148,14 @@ export class CICSCombinedLocalFileTree extends TreeItem {
     public clearFilter() {
       this.activeFilter = undefined;
       this.label = `All Local Files`;
+      this.contextValue = `cicscombinedlocalfiletree.unfiltered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
       this.label = `All Local Files (${this.activeFilter})`;
+      this.contextValue = `cicscombinedlocalfiletree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 }

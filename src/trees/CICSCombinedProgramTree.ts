@@ -155,12 +155,14 @@ export class CICSCombinedProgramTree extends TreeItem {
     public clearFilter() {
       this.activeFilter = undefined;
       this.label = `All Programs`;
+      this.contextValue = `cicscombinedprogramtree.unfiltered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
       this.label = `All Programs (${this.activeFilter})`;
+      this.contextValue = `cicscombinedprogramtree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 }
