@@ -128,7 +128,7 @@ export async function activate(context: ExtensionContext) {
                   }
                 }
               }
-              if (node.element.getParent().getChildren().length > 1) {
+              if (node.element.getChildren().length > 1) {
                 node.element.addCombinedTree(combinedProgramTree);
                 node.element.addCombinedTree(combinedTransactionTree);
                 node.element.addCombinedTree(combinedLocalFileTree);

@@ -181,6 +181,10 @@ export class CICSPlexTree extends TreeItem {
     return this.parent;
   }
 
+  public getChildren() {
+    return this.children;
+  }
+
   public clearChildren() {
     this.children = [];
   }
