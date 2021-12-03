@@ -84,8 +84,15 @@ export function getOpenLocalFileCommand(tree: CICSTree, treeview: TreeView<any>)
               }
             }
             for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
-              await programTree.loadContents();
+              const localfileTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+              await localfileTree.loadContents();
+              if (parentRegion.parentPlex) {
+                const allLocalFileTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0];
+                if (allLocalFileTreeTree.collapsibleState === 2) {
+                  //@ts-ignore
+                  await allLocalFileTreeTree.loadContents(tree);
+                }
+              }
             }
             tree._onDidChangeTreeData.fire(undefined);
           });
