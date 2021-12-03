@@ -67,8 +67,15 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
               }
             }
             for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
-              await programTree.loadContents();
+              const transactionTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
+              await transactionTree.loadContents();
+              if (parentRegion.parentPlex) {
+                const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0];
+                if (allTransactionTree.collapsibleState === 2) {
+                  //@ts-ignore
+                  await allTransactionTree.loadContents(tree);
+                }
+              }
             }
             tree._onDidChangeTreeData.fire(undefined);
           });
