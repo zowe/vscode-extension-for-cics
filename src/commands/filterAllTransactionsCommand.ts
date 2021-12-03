@@ -15,15 +15,15 @@ import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { isTheia } from "../utils/theiaCheck";
 
-export function getFilterAllProgramsCommand(tree: CICSTree) {
+export function getFilterAllTransactionsCommand(tree: CICSTree) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.filterAllPrograms",
+    "cics-extension-for-zowe.filterAllTransactions",
     async (node) => {
       if (node) {
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
         let pattern: string;
-        const desc = new FilterDescriptor("\uFF0B Create New Program Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
-        const items = persistentStorage.getProgramSearchHistory().map(loadedFilter => {
+        const desc = new FilterDescriptor("\uFF0B Create New Transaction Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
+        const items = persistentStorage.getTransactionSearchHistory().map(loadedFilter => {
           return { label: loadedFilter };
         });
 
@@ -63,7 +63,7 @@ export function getFilterAllProgramsCommand(tree: CICSTree) {
             pattern = choice.label.replace(/\s/g, '');
           }
         }
-        await persistentStorage.addProgramSearchHistory(pattern!);
+        await persistentStorage.addTransactionSearchHistory(pattern!);
         node.setFilter(pattern!);
         await node.loadContents(tree);
         tree._onDidChangeTreeData.fire(undefined);
