@@ -68,7 +68,10 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
             }
             for (const parentRegion of parentRegions) {
               const transactionTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
-              await transactionTree.loadContents();
+              // Only load contents if the tree is expanded
+              if (transactionTree.collapsibleState === 2) {
+                await transactionTree.loadContents();
+              }
               if (parentRegion.parentPlex) {
                 const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0];
                 if (allTransactionTree.collapsibleState === 2) {
