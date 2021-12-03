@@ -48,6 +48,7 @@ import { CICSCombinedTransactionsTree } from "./trees/CICSCombinedTransactionTre
 import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
+import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -256,7 +257,8 @@ export async function activate(context: ExtensionContext) {
     getFilterLocalFilesCommand(treeDataProv),
     getFilterAllProgramsCommand(treeDataProv),
     getFilterAllTransactionsCommand(treeDataProv),
-
+    getFilterAllLocalFilesCommand(treeDataProv),
+    
     getFilterPlexResources(treeDataProv),
 
     getClearProgramFilterCommand(treeDataProv),

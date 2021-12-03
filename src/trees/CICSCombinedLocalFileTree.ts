@@ -16,8 +16,8 @@ import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
-import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
+import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 
 export class CICSCombinedLocalFileTree extends TreeItem {
   children: (CICSLocalFileTreeItem | ViewMore) [] | null;
@@ -69,14 +69,18 @@ export class CICSCombinedLocalFileTree extends TreeItem {
         token.onCancellationRequested(() => {
           console.log("Cancelling the load");
         });
+        let criteria;
+        if (this.activeFilter) {
+          criteria = toEscapedCriteriaString(this.activeFilter, 'file');
+        }
         let count;
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant);
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant, criteria);
         if (cacheTokenInfo) {
           const recordsCount = cacheTokenInfo.recordCount;
           let allLocalFiles;
           // need to change number
           if (recordsCount <= 3000) {
-            allLocalFiles = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant);
+            allLocalFiles = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
           } else {
             allLocalFiles = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
             count = parseInt(recordsCount);
@@ -108,7 +112,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
         count = newChildren.length;
       }
       this.currentCount = newChildren.length;
-      this.label = `All Local Files [${this.currentCount} of ${count}]`;
+      this.label = `All Local Files ${this.activeFilter?`(${this.activeFilter}) `: " "}[${this.currentCount} of ${count}]`;
       if (count !== this.currentCount) {
         newChildren.push(new ViewMore(this, Math.min(this.incrementCount, count-this.currentCount)));
       }
@@ -143,14 +147,12 @@ export class CICSCombinedLocalFileTree extends TreeItem {
 
     public clearFilter() {
       this.activeFilter = undefined;
-      // this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
       this.label = `All Local Files`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
-      // this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
       this.label = `All Local Files (${this.activeFilter})`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
