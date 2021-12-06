@@ -107,6 +107,8 @@ export class CICSPlexTree extends TreeItem {
         }
       }
       this.addCombinedTree(new CICSCombinedProgramTree(this));
+      this.addCombinedTree(new CICSCombinedTransactionsTree(this));
+      this.addCombinedTree(new CICSCombinedLocalFileTree(this));
       const newLabel = pattern === "*" ? `${this.getPlexName()} [${activeCount}/${totalCount}]` : `${this.getPlexName()} (${pattern}) [${activeCount}/${totalCount}]`;
       this.setLabel(newLabel);
       tree._onDidChangeTreeData.fire(undefined);
