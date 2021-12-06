@@ -319,7 +319,7 @@ export class ProfileManagement {
     try {
       const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allItemsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/${start}/${increment}?NODISCARD`, {
+      const allItemsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/${start}/${increment}`, {
         auth: {
           username: profile!.profile!.user,
           password: profile!.profile!.password,
