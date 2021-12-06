@@ -74,23 +74,29 @@ export class CICSCombinedLocalFileTree extends TreeItem {
           criteria = toEscapedCriteriaString(this.activeFilter, 'file');
         }
         let count;
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant, criteria);
-        if (cacheTokenInfo) {
-          const recordsCount = cacheTokenInfo.recordCount;
-          let allLocalFiles;
-          // need to change number
-          if (recordsCount <= 3000) {
-            allLocalFiles = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
-          } else {
-            allLocalFiles = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
-            count = parseInt(recordsCount);
+        try {
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant, criteria);
+          if (cacheTokenInfo) {
+            const recordsCount = cacheTokenInfo.recordCount;
+            if (parseInt(recordsCount, 10)) {
+              let allLocalFiles;
+              // need to change number
+              if (recordsCount <= 3000) {
+                allLocalFiles = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+              } else {
+                allLocalFiles = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+                count = parseInt(recordsCount);
+              }
+                this.addLocalFilesUtil([], allLocalFiles, count);
+                tree._onDidChangeTreeData.fire(undefined);
+            } else {
+              this.children = [];
+              tree._onDidChangeTreeData.fire(undefined);
+              window.showInformationMessage(`No local files found`);
+            }
           }
-          if (allLocalFiles) {
-            this.addLocalFilesUtil([], allLocalFiles, count);
-            tree._onDidChangeTreeData.fire(undefined);
-          } else {
-            window.showErrorMessage('Something went wrong when fetching all local local files');
-          }
+        } catch (error) {
+          window.showErrorMessage(`Something went wrong when fetching local files - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
         }
         }
       );

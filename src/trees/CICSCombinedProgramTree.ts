@@ -71,32 +71,37 @@ export class CICSCombinedProgramTree extends TreeItem {
         token.onCancellationRequested(() => {
           console.log("Cancelling the load");
         });
-        let defaultCriteria = await getDefaultProgramFilter();
-        const regionFilters = this.parentPlex.findResourceFilters();
-        let criteria;
-        if (this.activeFilter) {
-          criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
-        } else {
-          criteria = defaultCriteria;
-        }
-        let count;
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
-        if (cacheTokenInfo) {
-          const recordsCount = cacheTokenInfo.recordCount;
-          let allPrograms;
-          // need to change number
-          if (recordsCount <= 3000) {
-            allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+        try {
+          let defaultCriteria = await getDefaultProgramFilter();
+          let criteria;
+          if (this.activeFilter) {
+            criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
           } else {
-            allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
-            count = parseInt(recordsCount);
+            criteria = defaultCriteria;
           }
-          if (allPrograms) {
-            this.addProgramsUtil([], allPrograms, count);
-            tree._onDidChangeTreeData.fire(undefined);
-          } else {
-            window.showErrorMessage('Something went wrong when fetching all programs');
+          let count;
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
+          if (cacheTokenInfo) {
+            const recordsCount = cacheTokenInfo.recordCount;
+            if (parseInt(recordsCount, 10)) {
+              let allPrograms;
+              // need to change number
+              if (recordsCount <= 3000) {
+                allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+              } else {
+                allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+                count = parseInt(recordsCount);
+              }
+              this.addProgramsUtil([], allPrograms, count);
+              tree._onDidChangeTreeData.fire(undefined);
+            } else {
+              this.children = [];
+              tree._onDidChangeTreeData.fire(undefined);
+              window.showInformationMessage(`No programs found`);
+            }
           }
+        } catch (error) {
+          window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
         }
         }
       );

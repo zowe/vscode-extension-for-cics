@@ -71,31 +71,37 @@ export class CICSCombinedTransactionsTree extends TreeItem {
         token.onCancellationRequested(() => {
           console.log("Cancelling the load");
         });
-        let defaultCriteria = await getDefaultTransactionFilter();
-        let criteria;
-        if (this.activeFilter) {
-          criteria = toEscapedCriteriaString(this.activeFilter, 'tranid');
-        } else {
-          criteria = defaultCriteria;
-        }
-        let count;
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
-        if (cacheTokenInfo) {
-          const recordsCount = cacheTokenInfo.recordCount;
-          let allLocalTransactions;
-          // need to change number
-          if (recordsCount <= 3000) {
-            allLocalTransactions = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+        try {
+          let defaultCriteria = await getDefaultTransactionFilter();
+          let criteria;
+          if (this.activeFilter) {
+            criteria = toEscapedCriteriaString(this.activeFilter, 'tranid');
           } else {
-            allLocalTransactions = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
-            count = parseInt(recordsCount);
+            criteria = defaultCriteria;
           }
-          if (allLocalTransactions) {
-            this.addLocalTransactionsUtil([], allLocalTransactions, count);
-            tree._onDidChangeTreeData.fire(undefined);
-          } else {
-            window.showErrorMessage('Something went wrong when fetching all local transactions');
+          let count;
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
+          if (cacheTokenInfo) {
+            const recordsCount = cacheTokenInfo.recordCount;
+            if (parseInt(recordsCount, 10)) {
+              let allLocalTransactions;
+              // need to change number
+              if (recordsCount <= 3000) {
+                allLocalTransactions = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+              } else {
+                allLocalTransactions = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+                count = parseInt(recordsCount);
+              }
+              this.addLocalTransactionsUtil([], allLocalTransactions, count);
+              tree._onDidChangeTreeData.fire(undefined);
+            } else {
+              this.children = [];
+              tree._onDidChangeTreeData.fire(undefined);
+              window.showInformationMessage(`No local transactions found`);
+            }
           }
+        } catch (error) {
+          window.showErrorMessage(`Something went wrong when fetching local transactions - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
         }
         }
       );
