@@ -90,7 +90,7 @@ export class CICSProgramTree extends TreeItem {
       } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No programs found`);
       } else {
-        window.showErrorMessage(`Something went wrong when fetching programs`);
+        window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
     }
   }
