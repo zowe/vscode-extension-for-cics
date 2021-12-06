@@ -10,6 +10,7 @@
 */
 
 import { commands, window } from "vscode";
+import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 
 export function getClearPlexFilterCommand(tree: CICSTree) {
@@ -28,28 +29,32 @@ export function getClearPlexFilterCommand(tree: CICSTree) {
           node.filterRegions("*", tree);
         } 
         if (resourceToClear !== "Regions") {
-            for (const region of node.children){
-              if (region.getIsActive()){
-                let treeToClear;
-                if (resourceToClear === "Programs"){
-                    treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
-                    treeToClear.clearFilter();
-                    await treeToClear.loadContents();
-                } else if (resourceToClear === "Local Transactions"){
-                    treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
-                    treeToClear.clearFilter();
-                    await treeToClear.loadContents();
-                } else if (resourceToClear === "Local Files"){
-                    treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
-                    treeToClear.clearFilter();
-                    await treeToClear.loadContents();
-                } else if (resourceToClear === "All"){
-                  for (const child of region.children){
-                    child.clearFilter();
-                    await child.loadContents();
+            for (const region of node.children) {
+              if (region instanceof CICSRegionTree) {
+                if (region.getIsActive()){
+                  if (region.children) {
+                    let treeToClear;
+                    if (resourceToClear === "Programs"){
+                        treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+                        treeToClear.clearFilter();
+                        await treeToClear.loadContents();
+                    } else if (resourceToClear === "Local Transactions"){
+                        treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
+                        treeToClear.clearFilter();
+                        await treeToClear.loadContents();
+                    } else if (resourceToClear === "Local Files"){
+                        treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+                        treeToClear.clearFilter();
+                        await treeToClear.loadContents();
+                    } else if (resourceToClear === "All"){
+                      for (const child of region.children){
+                        child.clearFilter();
+                        await child.loadContents();
+                      }
+                    }
                   }
                 }
-            }
+              }
               
           }
         }
