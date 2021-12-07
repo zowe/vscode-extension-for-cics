@@ -73,8 +73,18 @@ export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<an
                 }
               }
               for (const parentRegion of parentRegions) {
-                const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
-                await programTree.loadContents();
+                const localFileTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+                // Only load contents if the tree is expanded
+                if (localFileTree.collapsibleState === 2) {
+                  await localFileTree.loadContents();
+                }
+                if (parentRegion.parentPlex) {
+                  const allLocalFileTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0];
+                  if (allLocalFileTreeTree.collapsibleState === 2) {
+                    //@ts-ignore
+                    await allLocalFileTreeTree.loadContents(tree);
+                  }
+                }
               }
               tree._onDidChangeTreeData.fire(undefined);
             });

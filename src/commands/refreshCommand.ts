@@ -12,6 +12,7 @@
 ;
 import { commands, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
+import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTree } from "../trees/CICSTree";
 
 export function getRefreshCommand(tree: CICSTree) {
@@ -42,7 +43,9 @@ export function getRefreshCommand(tree: CICSTree) {
               // plex tree -> .children is region trees
               for (const region of sessionChild.children) {
                 for (const child of region.children!) {
-                  await child.loadContents();
+                  if (child instanceof CICSProgramTree) {
+                    await child.loadContents();
+                  }
                 }
               }
             } else {

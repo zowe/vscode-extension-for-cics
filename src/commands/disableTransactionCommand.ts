@@ -84,8 +84,18 @@ export function getDisableTransactionCommand(tree: CICSTree, treeview: TreeView<
               }
             }
             for (const parentRegion of parentRegions) {
-              const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
-              await programTree.loadContents();
+              const transactionTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
+              // Only load contents if the tree is expanded
+              if (transactionTree.collapsibleState === 2) {
+                await transactionTree.loadContents();
+              }
+              if (parentRegion.parentPlex) {
+                const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0];
+                if (allTransactionTree.collapsibleState === 2) {
+                  //@ts-ignore
+                  await allTransactionTree.loadContents(tree);
+                }
+              }
             }
             tree._onDidChangeTreeData.fire(undefined);
           });

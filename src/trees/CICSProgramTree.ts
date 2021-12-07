@@ -15,6 +15,8 @@ import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
+import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
+import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 export class CICSProgramTree extends TreeItem {
   children: CICSProgramTreeItem[] = [];
   parentRegion: CICSRegionTree;
@@ -53,22 +55,10 @@ export class CICSProgramTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.Program.Filter')}`;
-    if (!defaultCriteria || defaultCriteria.length === 0) {
-      await workspace.getConfiguration().update('Zowe.CICS.Program.Filter', 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)');
-      defaultCriteria = 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)';
-    }
+    let defaultCriteria = await getDefaultProgramFilter();
     let criteria;
     if (this.activeFilter) {
-      const splitActiveFilter = this.activeFilter.split(",");
-      criteria = "(";
-      for(const index in splitActiveFilter!){
-        criteria += `PROGRAM=${splitActiveFilter[parseInt(index)]}`;
-        if (parseInt(index) !== splitActiveFilter.length-1){
-          criteria += " OR ";
-        }
-      }
-      criteria += ")";
+      criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
     } else {
       criteria = defaultCriteria;
     }
@@ -100,7 +90,7 @@ export class CICSProgramTree extends TreeItem {
       } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No programs found`);
       } else {
-        window.showErrorMessage(`Something went wrong when fetching programs`);
+        window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
     }
   }

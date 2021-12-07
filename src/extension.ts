@@ -14,7 +14,7 @@ import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
-import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
+import { commands, ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowAttributesCommand,
@@ -42,8 +42,14 @@ import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 import { CICSRegionTree } from "./trees/CICSRegionTree";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { join } from "path";
-import { getResource } from "@zowe/cics-for-zowe-cli";
-import * as https from "https";
+import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
+import { viewMoreCommand } from "./commands/viewMoreAllPrograms";
+import { CICSCombinedTransactionsTree } from "./trees/CICSCombinedTransactionTree";
+import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
+import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
+import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
+import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
+import { getClearCombinedResourcesFilterCommand } from "./commands/clearCombinedResourcesFilterCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -80,6 +86,9 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicsplex.")) {
       try {
         const plexProfile = node.element.getProfile();
+        const combinedProgramTree = new CICSCombinedProgramTree(node.element);
+        const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
+        const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
           // Store applied filters
           node.element.findResourceFilters();
@@ -121,6 +130,11 @@ export async function activate(context: ExtensionContext) {
                     activeCount += 1;
                   }
                 }
+              }
+              if (node.element.getChildren().length > 1) {
+                node.element.addCombinedTree(combinedProgramTree);
+                node.element.addCombinedTree(combinedTransactionTree);
+                node.element.addCombinedTree(combinedLocalFileTree);
               }
               // if label contains the filter, then keep the filter label
               node.element.setLabel(`${
@@ -199,10 +213,19 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    } else if (node.element.contextValue.includes("cicsprogram.")) {
+    } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
+      node.element.loadContents(treeDataProv);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
+      node.element.loadContents(treeDataProv);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
+      node.element.loadContents(treeDataProv);
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   });
 
+  treeview.onDidCollapseElement(async (node) => node.element.collapsibleState = TreeItemCollapsibleState.Collapsed);
 
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
@@ -233,11 +256,17 @@ export async function activate(context: ExtensionContext) {
     getFilterProgramsCommand(treeDataProv),
     getFilterTransactionCommand(treeDataProv),
     getFilterLocalFilesCommand(treeDataProv),
-
+    getFilterAllProgramsCommand(treeDataProv),
+    getFilterAllTransactionsCommand(treeDataProv),
+    getFilterAllLocalFilesCommand(treeDataProv),
+    
     getFilterPlexResources(treeDataProv),
 
     getClearProgramFilterCommand(treeDataProv),
-    getClearPlexFilterCommand(treeDataProv)
+    getClearPlexFilterCommand(treeDataProv),
+    getClearCombinedResourcesFilterCommand(treeDataProv),
+    
+    viewMoreCommand(treeDataProv, treeview)
   );
 }
 

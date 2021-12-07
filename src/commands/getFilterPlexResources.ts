@@ -10,6 +10,7 @@
 */
 
 import { commands, TreeItemCollapsibleState, window } from "vscode";
+import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
@@ -108,19 +109,23 @@ export function getFilterPlexResources(tree: CICSTree) {
           node.filterRegions(pattern!, tree);
         } else {
           for (const region of node.children){
-            if(region.getIsActive()){
-              let treeToFilter;
-              if (resourceToFilter === "Programs"){
-                  treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
-              } else if (resourceToFilter === "Local Transactions"){
-                  treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
-              } else if (resourceToFilter === "Local Files"){
-                  treeToFilter = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+            if (region instanceof CICSRegionTree) {
+              if (region.getIsActive()) {
+                let treeToFilter;
+                if (resourceToFilter === "Programs"){
+                    treeToFilter = region.children?.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+                } else if (resourceToFilter === "Local Transactions"){
+                    treeToFilter = region.children?.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
+                } else if (resourceToFilter === "Local Files"){
+                    treeToFilter = region.children?.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+                }
+                if (treeToFilter) {
+                  treeToFilter.setFilter(pattern!);
+                  await treeToFilter.loadContents();
+                  treeToFilter.collapsibleState = TreeItemCollapsibleState.Expanded;
+                }
+                region.collapsibleState = TreeItemCollapsibleState.Expanded;
               }
-              treeToFilter.setFilter(pattern!);
-              await treeToFilter.loadContents();
-              treeToFilter.collapsibleState = TreeItemCollapsibleState.Expanded;
-              region.collapsibleState = TreeItemCollapsibleState.Expanded;
             }
           }
         }

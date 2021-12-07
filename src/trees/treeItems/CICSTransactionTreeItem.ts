@@ -36,4 +36,8 @@ export class CICSTransactionTreeItem extends TreeItem {
     this.parentRegion = parentRegion;
     this.transactionName = transaction.tranid;
   }
+
+  public setLabel(newLabel: string) {
+    this.label = newLabel;
+  }
 }

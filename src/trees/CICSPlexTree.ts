@@ -18,9 +18,12 @@ import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSTree } from "./CICSTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
+import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
+import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
+import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 
 export class CICSPlexTree extends TreeItem {
-  children: CICSRegionTree[] = [];
+  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree) [] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
@@ -103,6 +106,9 @@ export class CICSPlexTree extends TreeItem {
             }
         }
       }
+      this.addCombinedTree(new CICSCombinedProgramTree(this));
+      this.addCombinedTree(new CICSCombinedTransactionsTree(this));
+      this.addCombinedTree(new CICSCombinedLocalFileTree(this));
       const newLabel = pattern === "*" ? `${this.getPlexName()} [${activeCount}/${totalCount}]` : `${this.getPlexName()} (${pattern}) [${activeCount}/${totalCount}]`;
       this.setLabel(newLabel);
       tree._onDidChangeTreeData.fire(undefined);
@@ -131,11 +137,13 @@ export class CICSPlexTree extends TreeItem {
   // Store all filters on children resources
   public findResourceFilters() {
     for (const region of this.children) {
-      if (region.children) {
-        for (const resourceTree of region.children) {
-          const filter = resourceTree.getFilter();
-          if (filter) {
-            this.resourceFilters[region.getRegionName()] = {[resourceTree.label!.toString().split(' ')[0]]: filter};
+      if (region instanceof CICSRegionTree) {
+        if (region.children) {
+          for (const resourceTree of region.children) {
+            const filter = resourceTree.getFilter();
+            if (filter) {
+              this.resourceFilters[region.getRegionName()] = {[resourceTree.label!.toString().split(' ')[0]]: filter};
+            }
           }
         }
       }
@@ -144,13 +152,15 @@ export class CICSPlexTree extends TreeItem {
 
   public async reapplyFilter() {
     for (const region of this.children) {
-      const resourceFilters = this.getResourceFilter(region.getRegionName());
-      if (resourceFilters) {
-        for (const resourceTree of region.children!) {
-          if (resourceFilters[resourceTree.label!.toString().split(' ')[0]]) {
-            resourceTree.setFilter(resourceFilters[resourceTree.label!.toString()]);
-            await resourceTree.loadContents();
-            resourceTree.collapsibleState = TreeItemCollapsibleState.Expanded;
+      if (region instanceof CICSRegionTree) {
+        const resourceFilters = this.getResourceFilter(region.getRegionName());
+        if (resourceFilters) {
+          for (const resourceTree of region.children!) {
+            if (resourceFilters[resourceTree.label!.toString().split(' ')[0]]) {
+              resourceTree.setFilter(resourceFilters[resourceTree.label!.toString()]);
+              await resourceTree.loadContents();
+              resourceTree.collapsibleState = TreeItemCollapsibleState.Expanded;
+            }
           }
         }
       }
@@ -173,6 +183,10 @@ export class CICSPlexTree extends TreeItem {
     return this.parent;
   }
 
+  public getChildren() {
+    return this.children;
+  }
+
   public clearChildren() {
     this.children = [];
   }
@@ -184,5 +198,9 @@ export class CICSPlexTree extends TreeItem {
 
   public getActiveFilter() {
     return this.activeFilter;
+  }
+
+  public addCombinedTree(combinedTree: (CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree)) {
+    this.children.push(combinedTree);
   }
 }

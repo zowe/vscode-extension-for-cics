@@ -15,6 +15,7 @@ import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { CICSRegionTree } from "./CICSRegionTree";
 import * as https from "https";
+import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 
 export class CICSLocalFileTree extends TreeItem {
   children: CICSLocalFileTreeItem[] = [];
@@ -61,15 +62,7 @@ export class CICSLocalFileTree extends TreeItem {
     }
     let criteria;
     if (this.activeFilter) {
-      const splitActiveFilter = this.activeFilter.split(",");
-      criteria = "(";
-      for(const index in splitActiveFilter!){
-        criteria += `file=${splitActiveFilter[parseInt(index)]}`;
-        if (parseInt(index) !== splitActiveFilter.length-1){
-          criteria += " OR ";
-        }
-      }
-      criteria += ")";
+      criteria = toEscapedCriteriaString(this.activeFilter, 'file');
     } else {
       criteria = defaultCriteria;
     }
@@ -101,7 +94,7 @@ export class CICSLocalFileTree extends TreeItem {
       } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No local files found`);
       } else {
-        window.showErrorMessage(`Something went wrong when fetching local files`);
+        window.showErrorMessage(`Something went wrong when fetching local files - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
     }
   }
