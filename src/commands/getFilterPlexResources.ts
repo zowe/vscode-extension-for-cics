@@ -21,7 +21,8 @@ export function getFilterPlexResources(tree: CICSTree) {
     "cics-extension-for-zowe.filterPlexResources",
     async (node) => {
       if (node) {
-        const plexProfile = node.getProfile();
+        const plex = node.getParent();
+        const plexProfile = plex.getProfile();
         let resourceToFilter;
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
           resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
