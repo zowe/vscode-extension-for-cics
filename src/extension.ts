@@ -120,27 +120,26 @@ export async function activate(context: ExtensionContext) {
               let activeCount = 0;
               let totalCount = 0;
               const regionFilterRegex = node.element.getActiveFilter() ? RegExp(node.element.getActiveFilter()) : undefined;
+              node.element.addRegionContainer();
+              const regionContainer = node.element.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
               for (const region of regionInfo) {
                 // If region filter exists then match it
                 if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
                   const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
-                  node.element.addRegion(newRegionTree);
+                  regionContainer.addRegion(newRegionTree);
                   totalCount += 1;
                   if (region.cicsstate === 'ACTIVE') {
                     activeCount += 1;
                   }
                 }
               }
-              if (node.element.getChildren().length > 1) {
+              if (regionContainer.getChildren().length > 1) {
                 node.element.addCombinedTree(combinedProgramTree);
                 node.element.addCombinedTree(combinedTransactionTree);
                 node.element.addCombinedTree(combinedLocalFileTree);
               }
-              // if label contains the filter, then keep the filter label
-              node.element.setLabel(`${
-                node.element.label.split(' ').length > 2 ?
-                node.element.label.split(' ').slice(0,2).join(" ") :
-                node.element.getPlexName()} [${activeCount}/${totalCount}]`);
+
+              regionContainer.setLabel(`Regions [${activeCount}/${totalCount}]`);
 
               await node.element.reapplyFilter();
               // Keep plex open after label change
