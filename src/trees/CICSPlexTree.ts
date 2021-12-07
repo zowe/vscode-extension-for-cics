@@ -21,9 +21,10 @@ import * as https from "https";
 import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
 import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
 import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
+import { CICSRegionsContainer } from "./CICSRegionsContainer";
 
 export class CICSPlexTree extends TreeItem {
-  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree) [] = [];
+  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSRegionsContainer) [] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
@@ -202,5 +203,9 @@ export class CICSPlexTree extends TreeItem {
 
   public addCombinedTree(combinedTree: (CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree)) {
     this.children.push(combinedTree);
+  }
+
+  public addRegionContainer() {
+    this.children.push(new CICSRegionsContainer(this));
   }
 }
