@@ -69,57 +69,6 @@ export class CICSPlexTree extends TreeItem {
     this.children.push(region);
   }
 
-  public async filterRegions(pattern: string, tree: CICSTree) {
-    this.children = [];
-    const patternList = pattern.split(",");
-    let patternString = "";
-    for (const index in patternList) {
-      patternString += `(^${patternList[index].replace("*","(.*)")})`;
-      if (parseInt(index) !== patternList.length-1) {
-        patternString += "|";
-      }
-    }
-    this.activeFilter = pattern === "*" ? undefined : patternString;
-    const regex = new RegExp(patternString);
-    this.setLabel(pattern === "*" ? `${this.plexName}` : `${this.plexName.split(' ')[0]} (${pattern})`);
-    window.withProgress({
-      title: 'Filtering regions',
-      location: ProgressLocation.Notification,
-      cancellable: true
-    }, async (_, token) => {
-      token.onCancellationRequested(() => {
-        console.log("Cancelling the filter");
-      });
-      const regionInfo = await ProfileManagement.getRegionInfoInPlex(this);
-      let totalCount = 0;
-      let activeCount = 0;
-      for (const region of regionInfo) {
-        if (region.cicsname.match(regex)){
-          const newRegionTree = new CICSRegionTree(
-            region.cicsname, 
-            region, 
-            this.parent, 
-            this);
-          this.addRegion(newRegionTree);
-          totalCount += 1;
-            if (region.cicsstate === 'ACTIVE') {
-              activeCount += 1;
-            }
-        }
-      }
-      this.addCombinedTree(new CICSCombinedProgramTree(this));
-      this.addCombinedTree(new CICSCombinedTransactionsTree(this));
-      this.addCombinedTree(new CICSCombinedLocalFileTree(this));
-      const newLabel = pattern === "*" ? `${this.getPlexName()} [${activeCount}/${totalCount}]` : `${this.getPlexName()} (${pattern}) [${activeCount}/${totalCount}]`;
-      this.setLabel(newLabel);
-      tree._onDidChangeTreeData.fire(undefined);
-      if (!this.children.length){
-        window.showInformationMessage(`No regions found for ${this.getPlexName()}`);
-      }
-    });
-  
-  }
-
   public async loadOnlyRegion() {
     const plexProfile = this.getProfile();
     https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;
@@ -151,7 +100,7 @@ export class CICSPlexTree extends TreeItem {
     }
   }
 
-  public async reapplyFilter() {
+  public async reapplyFilter() {/////////////////
     for (const region of this.children) {
       if (region instanceof CICSRegionTree) {
         const resourceFilters = this.getResourceFilter(region.getRegionName());
