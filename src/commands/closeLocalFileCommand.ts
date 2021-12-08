@@ -19,6 +19,7 @@ import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 import * as https from "https";
+import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 
 export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -95,7 +96,8 @@ export function getCloseLocalFileCommand(tree: CICSTree, treeview: TreeView<any>
                 if (localFileTree.collapsibleState === 2) {
                   await localFileTree.loadContents();
                 }
-                if (parentRegion.parentPlex) {
+                // if node is in a plex and the plex contains the region container tree
+                if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
                   const allLocalFileTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0];
                   if (allLocalFileTreeTree.collapsibleState === 2) {
                     //@ts-ignore
