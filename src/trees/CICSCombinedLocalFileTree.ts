@@ -18,6 +18,7 @@ import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { CICSRegionsContainer } from "./CICSRegionsContainer";
 
 export class CICSCombinedLocalFileTree extends TreeItem {
   children: (CICSLocalFileTreeItem | ViewMore) [] | null;
@@ -104,7 +105,13 @@ export class CICSCombinedLocalFileTree extends TreeItem {
 
     public addLocalFilesUtil(newChildren:(CICSLocalFileTreeItem | ViewMore) [], allLocalFiles:any, count:number|undefined){
       for (const localfile of allLocalFiles) {
-        const parentRegion = this.parentPlex.children.filter(child => {
+        const regionsContainer = this.parentPlex.children.filter(child => {
+          if (child instanceof CICSRegionsContainer) {
+            return child;
+          }
+        })[0];
+        //@ts-ignore
+        const parentRegion = regionsContainer.getChildren().filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === localfile.eyu_cicsname;
           }
