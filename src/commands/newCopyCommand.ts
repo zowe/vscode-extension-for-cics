@@ -14,6 +14,7 @@ import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 import * as https from "https";
+import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 
 export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -84,7 +85,8 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
               if (programTree.collapsibleState === 2) {
                 await programTree.loadContents();
               }
-              if (parentRegion.parentPlex) {
+              // if node is in a plex and the plex contains the region container tree
+              if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
                 const allProgramsTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedprogramtree."))[0];
                 if (allProgramsTree.collapsibleState === 2) {
                   //@ts-ignore
