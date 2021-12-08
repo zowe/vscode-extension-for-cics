@@ -43,7 +43,7 @@ import { CICSRegionTree } from "./trees/CICSRegionTree";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { join } from "path";
 import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
-import { viewMoreCommand } from "./commands/viewMoreAllPrograms";
+import { viewMoreCommand } from "./commands/viewMoreCommand";
 import { CICSCombinedTransactionsTree } from "./trees/CICSCombinedTransactionTree";
 import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
