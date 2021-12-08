@@ -18,7 +18,8 @@ export function getClearPlexFilterCommand(tree: CICSTree) {
     "cics-extension-for-zowe.clearPlexFilter",
     async (node) => {
       if (node) {
-        const plexProfile = node.getProfile();
+        const plex = node.getParent();
+        const plexProfile = plex.getProfile();
         let resourceToClear;
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
           resourceToClear = await window.showQuickPick(["Programs", "Local Transactions", "Local Files", "All"]);

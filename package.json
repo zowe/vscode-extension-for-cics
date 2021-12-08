@@ -330,7 +330,7 @@
           "group": "inline"
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
+          "when": "view == cics-view && viewItem =~ /^cicsregionscontainer.*/",
           "command": "cics-extension-for-zowe.filterPlexResources",
           "group": "inline"
         },
@@ -350,7 +350,7 @@
           "group": "inline"
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicsplex.*/",
+          "when": "view == cics-view && viewItem =~ /^cicsregionscontainer.*/",
           "command": "cics-extension-for-zowe.clearPlexFilter",
           "group": "inline"
         },

@@ -20,6 +20,7 @@ import { ViewMore } from "./treeItems/utils/ViewMore";
 import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { CICSRegionsContainer } from "./CICSRegionsContainer";
 
 export class CICSCombinedProgramTree extends TreeItem {
   children: (CICSProgramTreeItem | ViewMore) [] | null;
@@ -109,7 +110,14 @@ export class CICSCombinedProgramTree extends TreeItem {
 
     public addProgramsUtil(newChildren:(CICSProgramTreeItem | ViewMore) [], allPrograms:any, count:number|undefined){
       for (const program of allPrograms) {
-        const parentRegion = this.parentPlex.children.filter(child => {
+        // Regions container must exist if all programs tree exists
+        const regionsContainer = this.parentPlex.children.filter(child => {
+          if (child instanceof CICSRegionsContainer) {
+            return child;
+          }
+        })[0];
+        //@ts-ignore
+        const parentRegion = regionsContainer.getChildren().filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === program.eyu_cicsname;
           }

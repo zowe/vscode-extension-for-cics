@@ -20,6 +20,7 @@ import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { CICSRegionsContainer } from "./CICSRegionsContainer";
 
 export class CICSCombinedTransactionsTree extends TreeItem {
   children: (CICSTransactionTreeItem | ViewMore) [] | null;
@@ -109,7 +110,13 @@ export class CICSCombinedTransactionsTree extends TreeItem {
 
     public addLocalTransactionsUtil(newChildren:(CICSTransactionTreeItem | ViewMore) [], allLocalTransactions:any, count:number|undefined){
       for (const transaction of allLocalTransactions) {
-        const parentRegion = this.parentPlex.children.filter(child => {
+        const regionsContainer = this.parentPlex.children.filter(child => {
+          if (child instanceof CICSRegionsContainer) {
+            return child;
+          }
+        })[0];
+        //@ts-ignore
+        const parentRegion = regionsContainer.getChildren().filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === transaction.eyu_cicsname;
           }
