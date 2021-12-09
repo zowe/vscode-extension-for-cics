@@ -225,6 +225,9 @@ export class ProfileManagement {
               }
             });
             const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+            if (!jsonFromXml) {
+              throw error;
+            }
             const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
             infoLoaded.push({
               plexname: null,
@@ -289,6 +292,7 @@ export class ProfileManagement {
       }
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 
@@ -312,6 +316,7 @@ export class ProfileManagement {
       }
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 
@@ -335,6 +340,7 @@ export class ProfileManagement {
       }
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 }
