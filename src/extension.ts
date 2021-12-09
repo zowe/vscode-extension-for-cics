@@ -213,13 +213,10 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
-      node.element.loadContents(treeDataProv);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
-      node.element.loadContents(treeDataProv);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
-      node.element.loadContents(treeDataProv);
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   });
