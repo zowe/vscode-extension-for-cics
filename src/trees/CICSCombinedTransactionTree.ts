@@ -74,12 +74,9 @@ export class CICSCombinedTransactionsTree extends TreeItem {
           console.log("Cancelling the load");
         });
         try {
-          let defaultCriteria = await getDefaultTransactionFilter();
           let criteria;
           if (this.activeFilter) {
             criteria = toEscapedCriteriaString(this.activeFilter, 'tranid');
-          } else {
-            criteria = defaultCriteria;
           }
           let count;
           const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);

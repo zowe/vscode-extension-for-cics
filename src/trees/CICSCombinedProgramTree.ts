@@ -74,12 +74,9 @@ export class CICSCombinedProgramTree extends TreeItem {
           console.log("Cancelling the load");
         });
         try {
-          let defaultCriteria = await getDefaultProgramFilter();
           let criteria;
           if (this.activeFilter) {
             criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
-          } else {
-            criteria = defaultCriteria;
           }
           let count;
           const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
