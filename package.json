@@ -143,15 +143,6 @@
         }
       },
       {
-        "command": "cics-extension-for-zowe.clearCombinedResourcesFilter",
-        "title": "Clear Combined tree Filter",
-        "category": "Zowe Explorer for IBM CICS",
-        "icon": {
-          "light": "resources/imgs/clear-filter-dark.svg",
-          "dark": "resources/imgs/clear-filter-light.svg"
-        }
-      },
-      {
         "command": "cics-extension-for-zowe.clearPlexFilter",
         "title": "Clear Plex Filter",
         "category": "Zowe Explorer for IBM CICS",
@@ -302,21 +293,6 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicstreelocalfile.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
-          "group": "inline"
-        },
-        {
-          "when": "view == cics-view && viewItem =~ /^cicscombinedlocalfiletree.filtered.*/",
-          "command": "cics-extension-for-zowe.clearCombinedResourcesFilter",
-          "group": "inline"
-        },
-        {
-          "when": "view == cics-view && viewItem =~ /^cicscombinedprogramtree.filtered.*/",
-          "command": "cics-extension-for-zowe.clearCombinedResourcesFilter",
-          "group": "inline"
-        },
-        {
-          "when": "view == cics-view && viewItem =~ /^cicscombinedtransactiontree.filtered.*/",
-          "command": "cics-extension-for-zowe.clearCombinedResourcesFilter",
           "group": "inline"
         },
         {

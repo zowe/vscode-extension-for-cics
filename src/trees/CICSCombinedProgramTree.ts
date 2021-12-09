@@ -21,9 +21,10 @@ import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
+import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
 
 export class CICSCombinedProgramTree extends TreeItem {
-  children: (CICSProgramTreeItem | ViewMore) [] | null;
+  children: (CICSProgramTreeItem | ViewMore ) [] | [TextTreeItem] | null;
   parentPlex: CICSPlexTree;
   activeFilter: string | undefined;
   currentCount: number;
@@ -56,10 +57,10 @@ export class CICSCombinedProgramTree extends TreeItem {
     super("All Programs", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedprogramtree.`;
     this.parentPlex = parentPlex;
-    this.children = [];
+    this.children = [new TextTreeItem("Use the search button to display programs", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = 2;
+    this.incrementCount = 500;
     this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
     }
 
@@ -73,12 +74,9 @@ export class CICSCombinedProgramTree extends TreeItem {
           console.log("Cancelling the load");
         });
         try {
-          let defaultCriteria = await getDefaultProgramFilter();
           let criteria;
           if (this.activeFilter) {
             criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
-          } else {
-            criteria = defaultCriteria;
           }
           let count;
           const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
@@ -86,8 +84,7 @@ export class CICSCombinedProgramTree extends TreeItem {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allPrograms;
-              // need to change number
-              if (recordsCount <= 3000) {
+              if (recordsCount <= 500) {
                 allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
               } else {
                 allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
@@ -144,8 +141,11 @@ export class CICSCombinedProgramTree extends TreeItem {
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {
-        const defaultCriteria = await getDefaultProgramFilter();
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,defaultCriteria);
+          let criteria;
+          if (this.activeFilter) {
+            criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
+          }
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
           if (cacheTokenInfo) {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
@@ -158,7 +158,8 @@ export class CICSCombinedProgramTree extends TreeItem {
               this.incrementCount
               );
             if (allPrograms) {
-              this.addProgramsUtil(this.children ? this.children?.filter((child)=> child instanceof CICSProgramTreeItem):[], allPrograms, count);
+              // @ts-ignore
+              this.addProgramsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSProgramTreeItem):[], allPrograms, count);
               tree._onDidChangeTreeData.fire(undefined);
             }
           }
@@ -177,5 +178,13 @@ export class CICSCombinedProgramTree extends TreeItem {
       this.label = `All Programs (${this.activeFilter})`;
       this.contextValue = `cicscombinedprogramtree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
+
+    public getChildren() {
+      return this.children ? this.children.filter(child => !(child instanceof TextTreeItem)) : [];
+    }
+
+    public getActiveFilter() {
+      return this.activeFilter;
     }
 }

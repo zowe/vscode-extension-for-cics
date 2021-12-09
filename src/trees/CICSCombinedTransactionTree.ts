@@ -21,9 +21,10 @@ import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
+import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
 
 export class CICSCombinedTransactionsTree extends TreeItem {
-  children: (CICSTransactionTreeItem | ViewMore) [] | null;
+  children: (CICSTransactionTreeItem | ViewMore) [] | [TextTreeItem] | null;
   parentPlex: CICSPlexTree;
   activeFilter: string | undefined;
   currentCount: number;
@@ -56,10 +57,10 @@ export class CICSCombinedTransactionsTree extends TreeItem {
     super("All Local Transactions", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedtransactiontree.`;
     this.parentPlex = parentPlex;
-    this.children = [];
+    this.children = [new TextTreeItem("Use the search button to display local transactions", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = 2;
+    this.incrementCount = 500;
     this.constant = CicsCmciConstants.CICS_LOCAL_TRANSACTION;
     }
 
@@ -73,12 +74,9 @@ export class CICSCombinedTransactionsTree extends TreeItem {
           console.log("Cancelling the load");
         });
         try {
-          let defaultCriteria = await getDefaultTransactionFilter();
           let criteria;
           if (this.activeFilter) {
             criteria = toEscapedCriteriaString(this.activeFilter, 'tranid');
-          } else {
-            criteria = defaultCriteria;
           }
           let count;
           const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
@@ -86,8 +84,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allLocalTransactions;
-              // need to change number
-              if (recordsCount <= 3000) {
+              if (recordsCount <= 500) {
                 allLocalTransactions = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
               } else {
                 allLocalTransactions = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
@@ -156,7 +153,8 @@ export class CICSCombinedTransactionsTree extends TreeItem {
               this.incrementCount
               );
             if (allLocalTransactions) {
-              this.addLocalTransactionsUtil(this.children ? this.children?.filter((child)=> child instanceof CICSTransactionTreeItem):[], allLocalTransactions, count);
+              // @ts-ignore
+              this.addLocalTransactionsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSTransactionTreeItem):[], allLocalTransactions, count);
               tree._onDidChangeTreeData.fire(undefined);
             }
           }
@@ -175,5 +173,13 @@ export class CICSCombinedTransactionsTree extends TreeItem {
       this.label = `All Local Transactions (${this.activeFilter})`;
       this.contextValue = `cicscombinedtransactiontree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
+
+    public getChildren() {
+      return this.children ? this.children.filter(child => !(child instanceof TextTreeItem)) : [];
+    }
+
+    public getActiveFilter() {
+      return this.activeFilter;
     }
 }

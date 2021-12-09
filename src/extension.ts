@@ -49,7 +49,6 @@ import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
-import { getClearCombinedResourcesFilterCommand } from "./commands/clearCombinedResourcesFilterCommand";
 
 export async function activate(context: ExtensionContext) {
 
@@ -213,13 +212,19 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
-      node.element.loadContents(treeDataProv);
+      if (node.element.getActiveFilter()) {
+        node.element.loadContents(treeDataProv);
+      }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
-      node.element.loadContents(treeDataProv);
+      if (node.element.getActiveFilter()) {
+        node.element.loadContents(treeDataProv);
+      }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
-      node.element.loadContents(treeDataProv);
+      if (node.element.getActiveFilter()) {
+        node.element.loadContents(treeDataProv);
+      }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   });
@@ -263,7 +268,6 @@ export async function activate(context: ExtensionContext) {
 
     getClearProgramFilterCommand(treeDataProv),
     getClearPlexFilterCommand(treeDataProv),
-    getClearCombinedResourcesFilterCommand(treeDataProv),
     
     viewMoreCommand(treeDataProv, treeview)
   );
