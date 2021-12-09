@@ -60,7 +60,7 @@ export class CICSCombinedProgramTree extends TreeItem {
     this.children = [new TextTreeItem("Use the search button to display programs", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = 2;
+    this.incrementCount = 500;
     this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
     }
 
@@ -84,8 +84,7 @@ export class CICSCombinedProgramTree extends TreeItem {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allPrograms;
-              // need to change number
-              if (recordsCount <= 3000) {
+              if (recordsCount <= 500) {
                 allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
               } else {
                 allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
