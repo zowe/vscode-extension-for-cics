@@ -141,8 +141,11 @@ export class CICSCombinedProgramTree extends TreeItem {
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {
-        const defaultCriteria = await getDefaultProgramFilter();
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,defaultCriteria);
+          let criteria;
+          if (this.activeFilter) {
+            criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
+          }
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
           if (cacheTokenInfo) {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
