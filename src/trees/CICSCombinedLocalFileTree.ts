@@ -177,4 +177,8 @@ export class CICSCombinedLocalFileTree extends TreeItem {
     public getChildren() {
       return this.children ? this.children.filter(child => !(child instanceof TextTreeItem)) : [];
     }
+
+    public getActiveFilter() {
+      return this.activeFilter;
+    }
 }
