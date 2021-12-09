@@ -21,9 +21,10 @@ import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
+import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
 
 export class CICSCombinedTransactionsTree extends TreeItem {
-  children: (CICSTransactionTreeItem | ViewMore) [] | null;
+  children: (CICSTransactionTreeItem | ViewMore) [] | [TextTreeItem] | null;
   parentPlex: CICSPlexTree;
   activeFilter: string | undefined;
   currentCount: number;
@@ -56,7 +57,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
     super("All Local Transactions", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedtransactiontree.`;
     this.parentPlex = parentPlex;
-    this.children = [];
+    this.children = [new TextTreeItem("Use the search button to display local transactions", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
     this.incrementCount = 2;
@@ -156,7 +157,8 @@ export class CICSCombinedTransactionsTree extends TreeItem {
               this.incrementCount
               );
             if (allLocalTransactions) {
-              this.addLocalTransactionsUtil(this.children ? this.children?.filter((child)=> child instanceof CICSTransactionTreeItem):[], allLocalTransactions, count);
+              // @ts-ignore
+              this.addLocalTransactionsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSTransactionTreeItem):[], allLocalTransactions, count);
               tree._onDidChangeTreeData.fire(undefined);
             }
           }
@@ -175,5 +177,9 @@ export class CICSCombinedTransactionsTree extends TreeItem {
       this.label = `All Local Transactions (${this.activeFilter})`;
       this.contextValue = `cicscombinedtransactiontree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
+
+    public getChildren() {
+      return this.children ? this.children.filter(child => !(child instanceof TextTreeItem)) : [];
     }
 }
