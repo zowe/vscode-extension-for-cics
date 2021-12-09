@@ -19,9 +19,10 @@ import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
+import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
 
 export class CICSCombinedLocalFileTree extends TreeItem {
-  children: (CICSLocalFileTreeItem | ViewMore) [] | null;
+  children: (CICSLocalFileTreeItem | ViewMore) [] | [TextTreeItem] | null;
   parentPlex: CICSPlexTree;
   activeFilter: string | undefined;
   currentCount: number;
@@ -54,7 +55,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
     super("All Local Files", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedlocalfiletree.`;
     this.parentPlex = parentPlex;
-    this.children = [];
+    this.children = [new TextTreeItem("Use the search button to display local files", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
     this.incrementCount = 2;
@@ -151,7 +152,8 @@ export class CICSCombinedLocalFileTree extends TreeItem {
               this.incrementCount
               );
             if (allLocalFiles) {
-              this.addLocalFilesUtil(this.children ? this.children?.filter((child)=> child instanceof CICSLocalFileTreeItem):[], allLocalFiles, count);
+              // @ts-ignore
+              this.addLocalFilesUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSLocalFileTreeItem):[], allLocalFiles, count);
               tree._onDidChangeTreeData.fire(undefined);
             }
           }
@@ -170,5 +172,9 @@ export class CICSCombinedLocalFileTree extends TreeItem {
       this.label = `All Local Files (${this.activeFilter})`;
       this.contextValue = `cicscombinedlocalfiletree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
+
+    public getChildren() {
+      return this.children ? this.children.filter(child => !(child instanceof TextTreeItem)) : [];
     }
 }
