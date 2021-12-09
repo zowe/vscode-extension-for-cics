@@ -300,7 +300,7 @@ export class ProfileManagement {
     try {
       const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allProgramsResponse = await axios.get(`${URL}/${resourceName}/${plexName}?NODISCARD&SUMMONLY${criteria?`${criteria?`&CRITERIA=${criteria}`:''}`:''}`, {
+      const allProgramsResponse = await axios.get(`${URL}/${resourceName}/${plexName}?NODISCARD&SUMMONLY${criteria?`${criteria?`&CRITERIA=${criteria}`:''}`:''}&OVERRIDEWARNINGCOUNT=YES`, {
         auth: {
           username: profile!.profile!.user,
           password: profile!.profile!.password,
