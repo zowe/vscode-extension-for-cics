@@ -18,6 +18,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 - [CICS Resources](#cics-resources)
     - [Show and Filter Resources in a Region](#show-and-filter-resources-in-a-region)
     - [Show and Filter Resources in a Plex](#show-and-filter-resources-in-a-plex)
+    - [Show and Filter Resources in an 'All' Resource Tree](#show-and-filter-resources-in-an-all-resource-tree)
     - [Show Attributes](#show-attributes)
     - [Enable and Disable](#enable-and-disable)
     - [New Copy and Phase In](#new-copy-and-phase-in)
@@ -38,6 +39,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 - View and search attributes of resources and regions by right-clicking and using the dynamic filtering feature.
 - Create new CICS profiles, update session details, and delete profiles using the user-friendly interface.
 - Apply multiple filters to regions, programs, local transactions and/or local files.
+- View and interact with all resources under a plex.
 
 To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md)
 
@@ -90,7 +92,7 @@ Expand a CICS profile to see the region name, and expand the region to view its 
 
 ### Show and Filter Resources in a Region
 
-Expand a CICS region to show folders for the resource types `Programs` <img src="./docs/images/resource-type-programs.png" width="16px"/>  , `Transactions` <img src="./docs/images/resource-type-transactions.png" width="16px"/> and `Local Files` <img src="./docs/images/resource-type-local-files.png" width="16px"/>.  Expand each type to show the resources.
+Expand a CICS region to show folders for the resource types `Programs` <img src="./docs/images/resource-type-programs.png" width="16px"/>  , `Transactions` <img src="./docs/images/resource-type-transactions.png" width="16px"/> and `Local Files` <img src="./docs/images/resource-type-local-files.png" width="16px"/>.  Expand each type to show the resources. The number of resources in a resource tree will appear in square brackets next to the tree name.
 
 The list of resources are pre-filtered to exclude many of the IBM supplied ones to narrow the contents to just include user programs.  Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  against a resource type to apply a filter.  This can be an exact resource name or else you can use wildcards.  The search history is saved so you can recall previous searches.  
 
@@ -104,9 +106,9 @@ To reset the filter to its initial criteria use the clear filter icon <img src="
 
 ### Show and Filter Resources in a Plex
 
-Similar to filtering resources in a region, it is also possible to apply a filter on a plex. Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  inline with the plex and then select either `Regions`,  `Programs`, `Local Transactions` or `Local Files` from the drop-down menu to specify which resource type the filter should be applied to for all regions in the plex. 
+Similar to filtering resources in a region, it is also possible to apply a filter on a all region resources in a plex. Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  inline with the `Regions` tree and then select either `Regions`,  `Programs`, `Local Transactions` or `Local Files` from the drop-down menu to specify which resource type the filter should be applied to for all regions in the plex. 
 
-To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the plex. This will open a drop-down menu which gives the option to clear the filter for all the `Regions`, `Programs`, `Local Transactions` or `Local Files` in the plex, and an option to otherwise clear `All` filters within the plex.
+To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the `Regions` tree. This will open a drop-down menu which gives the option to clear the filter for all the `Regions`, `Programs`, `Local Transactions` or `Local Files` in the plex, and an option to otherwise clear `All` filters within the plex.
 
 <p align="center">
 <img src="./docs/images/plex-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
@@ -114,6 +116,16 @@ To reset the filter to its initial criteria use the clear filter icon <img src="
 
 **Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching. 
 
+### Show and Filter Resources in an 'All' Resource Tree
+Plexes contain an `All Programs`, `All Local Transactions` and `All Local Files` trees which contain all the corresponding resources from all regions in the plex.
+
+To view resources under these trees, use the search icon <img src="./docs/images/resource-filter.png" width="16px"/> inline with the tree and apply a filter.
+
+<p align="center">
+<img src="./docs/images/all-resources.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+</p>
+
+If the applied filter results in over 500 records, either change the filter to narrow down the search, or click the `view X more ...` item to retrieve 'X' more resources.
 ### Show Attributes
 
 Right-click and use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region, `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.  
