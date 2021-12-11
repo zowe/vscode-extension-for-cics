@@ -14,7 +14,7 @@ import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
 import { getEnableProgramCommand } from "./commands/enableProgramCommand";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
-import { commands, ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
+import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowAttributesCommand,
@@ -41,7 +41,6 @@ import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 import { CICSRegionTree } from "./trees/CICSRegionTree";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
-import { join } from "path";
 import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
 import { CICSCombinedTransactionsTree } from "./trees/CICSCombinedTransactionTree";
@@ -49,6 +48,7 @@ import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
+import { getIconPathInResources } from "./utils/getIconPath";
 
 export async function activate(context: ExtensionContext) {
 
@@ -150,24 +150,7 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       } catch (error) {
         console.log(error);
-        const newSessionTree = new CICSSessionTree(node.element.getParent().profile, {
-          light: join(
-            __filename,
-            "..",
-            "..",
-            "resources",
-            "imgs",
-            "profile-disconnected-dark.svg"
-          ),
-          dark: join(
-            __filename,
-            "..",
-            "..",
-            "resources",
-            "imgs",
-            "profile-disconnected-light.svg"
-          ),
-        });
+        const newSessionTree = new CICSSessionTree(node.element.getParent().profile, getIconPathInResources("profile-disconnected-dark.svg","profile-disconnected-light.svg"));
         treeDataProv.loadedProfiles.splice(treeDataProv.getLoadedProfiles().indexOf(node.element.getParent()), 1, newSessionTree);
         treeDataProv._onDidChangeTreeData.fire(undefined);
       }
@@ -226,10 +209,20 @@ export async function activate(context: ExtensionContext) {
         node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
+      node.element.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
+      treeDataProv._onDidChangeTreeData.fire(undefined);
     }
   });
 
-  treeview.onDidCollapseElement(async (node) => node.element.collapsibleState = TreeItemCollapsibleState.Collapsed);
+  treeview.onDidCollapseElement(async (node) => {
+    if (node.element.contextValue.includes("cicsregionscontainer.")) {
+      node.element.iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg");
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+    }
+    node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
+  }
+  );
 
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),

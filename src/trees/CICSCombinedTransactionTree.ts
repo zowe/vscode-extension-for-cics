@@ -10,7 +10,6 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
-import { join } from "path";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
@@ -18,10 +17,10 @@ import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
-import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSCombinedTransactionsTree extends TreeItem {
   children: (CICSTransactionTreeItem | ViewMore) [] | [TextTreeItem] | null;
@@ -33,26 +32,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
 
   constructor(
     parentPlex: CICSPlexTree,
-    public iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "transactions-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "transactions-light.svg"
-      ),
-    }
+    public iconPath = getIconPathInResources("transactions-dark.svg", "transactions-light.svg")
   ) {
     super("All Local Transactions", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedtransactiontree.`;
