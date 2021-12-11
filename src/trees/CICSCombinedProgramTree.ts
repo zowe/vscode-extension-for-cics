@@ -9,19 +9,18 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
-import { join } from "path";
+import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
-import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSCombinedProgramTree extends TreeItem {
   children: (CICSProgramTreeItem | ViewMore ) [] | [TextTreeItem] | null;
@@ -33,26 +32,7 @@ export class CICSCombinedProgramTree extends TreeItem {
 
   constructor(
     parentPlex: CICSPlexTree,
-    public iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "programs-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "programs-light.svg"
-      ),
-    }
+    public iconPath = getIconPathInResources("programs-dark.svg","programs-light.svg")
   ) {
     super("All Programs", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedprogramtree.`;

@@ -9,19 +9,17 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
+import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSRegionTree } from "./CICSRegionTree";
-import { join } from "path";
-import { ProfileManagement } from "../utils/profileManagement";
 import { IProfileLoaded } from "@zowe/imperative";
 import { CICSSessionTree } from "./CICSSessionTree";
-import { CICSTree } from "./CICSTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
 import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
 import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSPlexTree extends TreeItem {
   children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSRegionsContainer) [] = [];
@@ -35,26 +33,7 @@ export class CICSPlexTree extends TreeItem {
     plexName: string,
     profile: IProfileLoaded,
     sessionTree: CICSSessionTree,
-    public readonly iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "list-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "list-light.svg"
-      ),
-    }
+    public readonly iconPath = getIconPathInResources("list-dark.svg", "list-light.svg")
   ) {
     super(plexName, TreeItemCollapsibleState.Collapsed);
     this.plexName = plexName;

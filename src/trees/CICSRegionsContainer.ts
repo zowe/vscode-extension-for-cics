@@ -10,11 +10,11 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
-import { join } from "path";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSRegionsContainer extends TreeItem {
   children: (CICSRegionTree)[];
@@ -24,26 +24,7 @@ export class CICSRegionsContainer extends TreeItem {
 
   constructor(
     parent: CICSPlexTree,
-    public iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "region-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "region-light.svg"
-      ),
-    }
+    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('Regions', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicsregionscontainer.`;

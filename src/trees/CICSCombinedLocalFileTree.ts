@@ -20,6 +20,7 @@ import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSCombinedLocalFileTree extends TreeItem {
   children: (CICSLocalFileTreeItem | ViewMore) [] | [TextTreeItem] | null;
@@ -31,26 +32,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
 
   constructor(
     parentPlex: CICSPlexTree,
-    public iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "bars-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "bars-light.svg"
-      ),
-    }
+    public iconPath = getIconPathInResources("bars-dark.svg", "bars-light.svg")
   ) {
     super("All Local Files", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedlocalfiletree.`;

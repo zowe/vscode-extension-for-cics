@@ -11,9 +11,9 @@
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSRegionTree } from "./CICSRegionTree";
-import { join } from "path";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { Session } from "@zowe/imperative";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSSessionTree extends TreeItem {
   children: (CICSPlexTree | CICSRegionTree)[];
@@ -22,26 +22,7 @@ export class CICSSessionTree extends TreeItem {
 
   constructor(
     profile: any,
-    public readonly iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "profile-unverified-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "profile-unverified-light.svg"
-      ),
-    }
+    public readonly iconPath = getIconPathInResources("profile-unverified-dark.svg", "profile-unverified-light.svg")
   ) {
     super(profile.name, TreeItemCollapsibleState.Collapsed);
     this.children = [];

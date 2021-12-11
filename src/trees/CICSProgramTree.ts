@@ -9,14 +9,14 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
-import { join } from "path";
+import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { getIconPathInResources } from "../utils/getIconPath";
 export class CICSProgramTree extends TreeItem {
   children: CICSProgramTreeItem[] = [];
   parentRegion: CICSRegionTree;
@@ -24,26 +24,7 @@ export class CICSProgramTree extends TreeItem {
 
   constructor(
     parentRegion: CICSRegionTree,
-    public readonly iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "programs-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "programs-light.svg"
-      ),
-    }
+    public readonly iconPath = getIconPathInResources("programs-dark.svg", "programs-light.svg")
   ) {
     super('Programs', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;

@@ -10,12 +10,12 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
-import { join } from "path";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { CICSRegionTree } from "./CICSRegionTree";
 import * as https from "https";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSLocalFileTree extends TreeItem {
   children: CICSLocalFileTreeItem[] = [];
@@ -24,26 +24,7 @@ export class CICSLocalFileTree extends TreeItem {
 
   constructor(
     parentRegion: CICSRegionTree,
-    public readonly iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "bars-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "bars-light.svg"
-      ),
-    }
+    public readonly iconPath = getIconPathInResources("bars-dark.svg","bars-light.svg")
   ) {
     super('Local Files', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;

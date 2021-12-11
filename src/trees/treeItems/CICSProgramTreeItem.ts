@@ -11,7 +11,7 @@
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSRegionTree } from "../CICSRegionTree";
-import { join } from "path";
+import { getIconPathInResources } from "../../utils/getIconPath";
 
 export class CICSProgramTreeItem extends TreeItem {
   program: any;
@@ -20,10 +20,7 @@ export class CICSProgramTreeItem extends TreeItem {
   constructor(
     program: any,
     parentRegion: CICSRegionTree,
-    public readonly iconPath = {
-      light: join(__filename, "..", "..", "..", "..", "resources", "imgs", "program-dark.svg"),
-      dark: join(__filename, "..", "..", "..", "..", "resources", "imgs", "program-light.svg"),
-    }
+    public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
   ) {
 
     super(

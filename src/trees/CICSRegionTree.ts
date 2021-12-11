@@ -10,12 +10,12 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { join } from "path";
 import { CICSProgramTree } from "./CICSProgramTree";
 import { CICSTransactionTree } from "./CICSTransactionTree";
 import { CICSLocalFileTree } from "./CICSLocalFileTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSRegionTree extends TreeItem {
   children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree] | null;
@@ -37,26 +37,7 @@ export class CICSRegionTree extends TreeItem {
     region: any,
     parentSession: CICSSessionTree,
     parentPlex: CICSPlexTree | undefined,
-    public iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "region-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "region-light.svg"
-      ),
-    }
+    public iconPath = getIconPathInResources("region-dark.svg", "region-light.svg")
   ) {
     super(regionName, TreeItemCollapsibleState.Collapsed);
     this.region = region;
@@ -76,26 +57,7 @@ export class CICSRegionTree extends TreeItem {
     if (!this.isActive) {
       this.children = null;
       this.collapsibleState = TreeItemCollapsibleState.None;
-      this.iconPath = {
-        light: join(
-          __filename,
-          "..",
-          "..",
-          "..",
-          "resources",
-          "imgs",
-          "region-dark-disabled.svg"
-        ),
-        dark: join(
-          __filename,
-          "..",
-          "..",
-          "..",
-          "resources",
-          "imgs",
-          "region-light-disabled.svg"
-        ),
-      };
+      this.iconPath = getIconPathInResources("region-dark-disabled.svg", "region-light-disabled.svg");
     } else {
       this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)];
     }

@@ -11,7 +11,6 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
-import { join } from "path";
 import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
@@ -21,6 +20,7 @@ import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
@@ -108,26 +108,7 @@ export class CICSTree
             try {
                 const plexInfo = await ProfileManagement.getPlexInfo(profile);
                 
-                newSessionTree = new CICSSessionTree(profile, {
-                    light: join(
-                      __filename,
-                      "..",
-                      "..",
-                      "..",
-                      "resources",
-                      "imgs",
-                      "profile-dark.svg"
-                    ),
-                    dark: join(
-                      __filename,
-                      "..",
-                      "..",
-                      "..",
-                      "resources",
-                      "imgs",
-                      "profile-light.svg"
-                    ),
-                  });
+                newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
 
                 for (const item of plexInfo) {
                     if (item.plexname === null) {
@@ -174,26 +155,7 @@ export class CICSTree
                 this._onDidChangeTreeData.fire(undefined);
             } catch (error) {
                 https.globalAgent.options.rejectUnauthorized = undefined;
-                newSessionTree = new CICSSessionTree(profile, {
-                    light: join(
-                      __filename,
-                      "..",
-                      "..",
-                      "..",
-                      "resources",
-                      "imgs",
-                      "profile-disconnected-dark.svg"
-                    ),
-                    dark: join(
-                      __filename,
-                      "..",
-                      "..",
-                      "..",
-                      "resources",
-                      "imgs",
-                      "profile-disconnected-light.svg"
-                    ),
-                  });
+                newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-disconnected-dark.svg", "profile-disconnected-light.svg"));
                 if (sessionTree) {
                     this.loadedProfiles.splice(position!, 1, newSessionTree);
                 }

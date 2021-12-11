@@ -9,14 +9,14 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, workspace } from "vscode";
-import { join } from "path";
+import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
 import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { getIconPathInResources } from "../utils/getIconPath";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];
@@ -25,26 +25,7 @@ export class CICSTransactionTree extends TreeItem {
 
   constructor(
     parentRegion: CICSRegionTree,
-    public readonly iconPath = {
-      light: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "transactions-dark.svg"
-      ),
-      dark: join(
-        __filename,
-        "..",
-        "..",
-        "..",
-        "resources",
-        "imgs",
-        "transactions-light.svg"
-      ),
-    }
+    public readonly iconPath = getIconPathInResources("transactions-dark.svg", "transactions-light.svg")
   ) {
     super('Transactions', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
