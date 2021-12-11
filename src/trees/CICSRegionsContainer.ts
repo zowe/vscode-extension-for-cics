@@ -72,6 +72,8 @@ export class CICSRegionsContainer extends TreeItem {
       }
       const newLabel = pattern === "*" ? `Regions [${activeCount}/${totalCount}]` : `Regions (${pattern}) [${activeCount}/${totalCount}]`;
       this.setLabel(newLabel);
+      this.collapsibleState = TreeItemCollapsibleState.Expanded;
+      this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
       tree._onDidChangeTreeData.fire(undefined);
       if (!this.children.length){
         window.showInformationMessage(`No regions found for ${this.parent.getPlexName()}`);
