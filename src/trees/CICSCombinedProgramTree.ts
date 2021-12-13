@@ -32,7 +32,7 @@ export class CICSCombinedProgramTree extends TreeItem {
 
   constructor(
     parentPlex: CICSPlexTree,
-    public iconPath = getIconPathInResources("programs-dark.svg","programs-light.svg")
+    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super("All Programs", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicscombinedprogramtree.`;
@@ -71,9 +71,11 @@ export class CICSCombinedProgramTree extends TreeItem {
                 count = parseInt(recordsCount);
               }
               this.addProgramsUtil([], allPrograms, count);
+              this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
             } else {
               this.children = [];
+              this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
               window.showInformationMessage(`No programs found`);
             }
