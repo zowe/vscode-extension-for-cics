@@ -9,6 +9,7 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Fixed bug which resulted in duplicate occurrences of plexes.
 - Added a resource count for programs, local transactions and local files and a region count [#117](https://github.com/zowe/vscode-extension-for-cics/issues/117).
 - Grouped regions together in a new 'Regions' tree [#142](https://github.com/zowe/vscode-extension-for-cics/pull/142)
+- Added progress bar to indicate the loading of resources [#118](https://github.com/zowe/vscode-extension-for-cics/issues/118)
 - Improved error messages.
 - Updated resource icons.
 ## `1.1.1`
