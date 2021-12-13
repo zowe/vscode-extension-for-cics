@@ -24,7 +24,7 @@ export class CICSProgramTree extends TreeItem {
 
   constructor(
     parentRegion: CICSRegionTree,
-    public readonly iconPath = getIconPathInResources("programs-dark.svg", "programs-light.svg")
+    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('Programs', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
@@ -62,6 +62,7 @@ export class CICSProgramTree extends TreeItem {
         //@ts-ignore
         this.addProgram(newProgramItem);
       }
+      this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore

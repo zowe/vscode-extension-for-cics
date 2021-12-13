@@ -25,7 +25,7 @@ export class CICSTransactionTree extends TreeItem {
 
   constructor(
     parentRegion: CICSRegionTree,
-    public readonly iconPath = getIconPathInResources("transactions-dark.svg", "transactions-light.svg")
+    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('Transactions', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
@@ -63,6 +63,7 @@ export class CICSTransactionTree extends TreeItem {
         //@ts-ignore
         this.addTransaction(newTransactionItem);
       }
+      this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore

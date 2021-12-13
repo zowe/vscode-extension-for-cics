@@ -24,7 +24,7 @@ export class CICSLocalFileTree extends TreeItem {
 
   constructor(
     parentRegion: CICSRegionTree,
-    public readonly iconPath = getIconPathInResources("bars-dark.svg","bars-light.svg")
+    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('Local Files', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
@@ -66,6 +66,7 @@ export class CICSLocalFileTree extends TreeItem {
         //@ts-ignore
         this.addLocalFile(newLocalFileItem);
       }
+      this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
