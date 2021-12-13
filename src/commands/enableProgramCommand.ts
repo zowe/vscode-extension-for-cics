@@ -76,7 +76,8 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
               // if node is in a plex and the plex contains the region container tree
               if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
                 const allProgramsTree = parentRegion.parentPlex!.children!.filter((child: any) => child.contextValue.includes("cicscombinedprogramtree."))[0];
-                if (allProgramsTree.collapsibleState === 2) {
+                //@ts-ignore
+                if (allProgramsTree.collapsibleState === 2 && allProgramsTree.getActiveFilter()) {
                   //@ts-ignore
                   await allProgramsTree.loadContents(tree);
               }

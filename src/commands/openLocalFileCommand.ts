@@ -93,7 +93,8 @@ export function getOpenLocalFileCommand(tree: CICSTree, treeview: TreeView<any>)
               // if node is in a plex and the plex contains the region container tree
               if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
                 const allLocalFileTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0];
-                if (allLocalFileTreeTree.collapsibleState === 2) {
+                //@ts-ignore
+                if (allLocalFileTreeTree.collapsibleState === 2 && allLocalFileTreeTree.getActiveFilter()) {
                   //@ts-ignore
                   await allLocalFileTreeTree.loadContents(tree);
                 }

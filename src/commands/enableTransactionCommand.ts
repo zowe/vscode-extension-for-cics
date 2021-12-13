@@ -76,7 +76,8 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
               // if node is in a plex and the plex contains the region container tree
               if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
                 const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0];
-                if (allTransactionTree.collapsibleState === 2) {
+                //@ts-ignore
+                if (allTransactionTree.collapsibleState === 2 && allTransactionTree.getActiveFilter()) {
                   //@ts-ignore
                   await allTransactionTree.loadContents(tree);
                 }
