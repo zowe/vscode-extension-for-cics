@@ -2,6 +2,15 @@
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
+## `1.2.0`
+- Updated tree nodes to lazily load contents so that resources are only fetched when necessary [#124](https://github.com/zowe/vscode-extension-for-cics/issues/124).
+- Added 'All Programs', 'All Local Transactions' and 'All Local Files' trees to show all resources under a plex [#138](https://github.com/zowe/vscode-extension-for-cics/pull/138).
+- Limited the number of resources shown in the 'All' trees at one time and included a 'View X more...' item to fetch more data [#138](https://github.com/zowe/vscode-extension-for-cics/pull/138).
+- Fixed bug which resulted in duplicate occurrences of plexes.
+- Added a resource count for programs, local transactions and local files and a region count [#117](https://github.com/zowe/vscode-extension-for-cics/issues/117).
+- Grouped regions together in a new 'Regions' tree [#142](https://github.com/zowe/vscode-extension-for-cics/pull/142)
+- Improved error messages.
+- Updated resource icons.
 ## `1.1.1`
 - Fixed the bug that cause z/OSMF profiles with untrusted CA to be invalidated [#116](https://github.com/zowe/vscode-extension-for-cics/issues/116).
 - Added 'Zowe Explorer for IBM CICS' in `category` section of the `contributes.commands` section in `package.json` for Zowe Explorer conformance.
