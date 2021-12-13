@@ -89,8 +89,6 @@ export async function activate(context: ExtensionContext) {
         const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
         const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          // Store applied filters
-          node.element.findResourceFilters();
           window.withProgress({
             title: 'Loading region',
             location: ProgressLocation.Notification,
@@ -102,7 +100,6 @@ export async function activate(context: ExtensionContext) {
             await node.element.loadOnlyRegion();
             treeDataProv._onDidChangeTreeData.fire(undefined);
           });
-          await node.element.reapplyFilter();
         } else {
           window.withProgress({
             title: 'Loading regions',
@@ -114,7 +111,6 @@ export async function activate(context: ExtensionContext) {
             });
             const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
             if (regionInfo) {   
-              node.element.findResourceFilters();
               node.element.clearChildren();  
               let activeCount = 0;
               let totalCount = 0;
@@ -137,10 +133,7 @@ export async function activate(context: ExtensionContext) {
                 node.element.addCombinedTree(combinedTransactionTree);
                 node.element.addCombinedTree(combinedLocalFileTree);
               }
-
               regionContainer.setLabel(`Regions [${activeCount}/${totalCount}]`);
-
-              await node.element.reapplyFilter();
               // Keep plex open after label change
               node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
             }
@@ -215,10 +208,26 @@ export async function activate(context: ExtensionContext) {
     }
   });
 
+  const setIconClosed = (node: any) => {
+    node.element.iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg");
+    treeDataProv._onDidChangeTreeData.fire(undefined);
+  };
+
   treeview.onDidCollapseElement(async (node) => {
     if (node.element.contextValue.includes("cicsregionscontainer.")) {
-      node.element.iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg");
-      treeDataProv._onDidChangeTreeData.fire(undefined);
+      setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
+      setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
+      setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
+      setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicstreeprogram.")) {
+      setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicstreetransaction.")) {
+      setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
+      setIconClosed(node);
     }
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
   }
