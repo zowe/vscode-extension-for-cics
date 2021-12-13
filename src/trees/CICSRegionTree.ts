@@ -63,4 +63,8 @@ export class CICSRegionTree extends TreeItem {
     }
 
   }
+
+  public getChildren() {
+    return this.children;
+  }
 }
