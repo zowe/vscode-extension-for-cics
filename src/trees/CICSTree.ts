@@ -212,27 +212,32 @@ export class CICSTree
                             default:
                                 window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
                         }
-
-                    } else if ("response" in error!) {
+                    // } else if ("response" in error!) {
+                    //     //@ts-ignore
+                    //     if (error.response !== 'undefined' && error.response.status){
+                    //         //@ts-ignore
+                    //         switch(error.response.status) {
+                    //             case 404:
+                    //                 window.showErrorMessage(`Error: Request failed with status code 404 for Profile '${profile.name}' - Not Found`);
+                    //             case 500:
+                    //                 window.showErrorMessage(`Error: Request failed with status code 500 for Profile '${profile.name}'`);
+                    //             default:
+                    //                 //@ts-ignore
+                    //                 window.showErrorMessage(`Error: Request failed with status code ${error.response.status} for Profile '${profile.name}'`);
+                    //         }
+                    //     } else {
+                    //         window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+                    //     }
+                    //@ts-ignore
+                    } else if (error.statusCode) {
                         //@ts-ignore
-                        if (error.response !== 'undefined' && error.response.status){
-                            //@ts-ignore
-                            switch(error.response.status) {
-                                case 404:
-                                    window.showErrorMessage(`Error: Request failed with status code 404 for Profile '${profile.name}' - Not Found`);
-                                case 500:
-                                    window.showErrorMessage(`Error: Request failed with status code 500 for Profile '${profile.name}'`);
-                                default:
-                                    //@ts-ignore
-                                    window.showErrorMessage(`Error: Request failed with status code ${error.response.status} for Profile '${profile.name}'`);
-                            }
-                        } else {
-                            window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
-                        }
+                        window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${error?.statusCode}${error.statusMessage ? ` (${error.statusMessage})` : ''}`);
                     }
                 }
+                if (typeof(error) === 'string') {
+                    window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - `+ error);
+                }
                 console.log(error);
-
                 
             }
             }
