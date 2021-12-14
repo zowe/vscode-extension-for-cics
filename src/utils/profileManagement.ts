@@ -11,12 +11,11 @@
 
 import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile } from "@zowe/imperative";
 import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
-import axios from "axios";
-import { type } from "os";
 import { window } from "vscode";
 import { xml2json } from "xml-js";
 import cicsProfileMeta from "./profileDefinition";
 import * as https from "https";
+import * as http from "http";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
 export class ProfileManagement {
 
@@ -58,29 +57,66 @@ export class ProfileManagement {
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
+  public static async makeRequest(options: any, protocol: string) : Promise<{data:string,statusCode:number}> {
+    return new Promise((resolve, reject) => {
+      const protocolModule = protocol.toLowerCase() === 'http' ? http : https;
+      const req = protocolModule.get(options, res => {
+        res.setEncoding("utf8");
+        let body = "";
+        res.on("data", data => {
+          body += data;
+        });
+        res.on("end", () => {
+          const statusCode = res.statusCode;
+          if (statusCode !== 200) {
+            const error = {
+              statusCode: statusCode,
+              statusMessage: res.statusMessage ? res.statusMessage : undefined
+            };
+            reject(error);
+          } else {
+            resolve({
+              data: body,
+              statusCode: statusCode //200
+            });
+          }
+        });
+      });
+      req.on('error', (err) => {
+        reject(err);
+      });
+      // send request
+      req.end();
+    });
+  };
+
+  public static cmciResponseXml2Json(data: string) {
+    return JSON.parse(xml2json(data, { compact: true, spaces: 4 }));
+  }
+
   public static async getPlexInfo(profile: IProfileLoaded) {
-    const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
     const infoLoaded: { plexname: string | null, regions: any[]; }[] = [];
 
     https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
 
+    let options = {
+      hostname: profile!.profile!.host,
+      port: profile!.profile!.port,
+      path: '/CICSSystemManagement',
+      method: 'GET',
+      auth: `${profile!.profile!.user}:${profile!.profile!.password}`
+    };
+
     if (profile!.profile!.cicsPlex) {
       if (profile!.profile!.regionName) {
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         /**
          * Both Supplied, no searching required - Only load 1 region
          */
-        const singleRegionResponse = await axios.get(
-          `${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, 
-        {
-          auth: {
-            username: profile!.profile!.user,
-            password: profile!.profile!.password,
-          }
-        });
-        const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
+        options.path += `/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`;
+
+        const singleRegionResponseData = await this.makeRequest(options, profile!.profile!.protocol);
+        const jsonFromXml = this.cmciResponseXml2Json(singleRegionResponseData.data);
+
         if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
           const singleRegion = jsonFromXml.response.records.cicsmanagedregion._attributes;
           infoLoaded.push({
@@ -92,25 +128,14 @@ export class ProfileManagement {
           https.globalAgent.options.rejectUnauthorized = undefined;
           throw new Error("Region Not Found");
         }
-
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       } else {
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         /**
          * Plex given - must search for regions
          */
+        options.path += `/CICSManagedRegion/${profile!.profile!.cicsPlex}`;
+        const singleRegionResponseData = await this.makeRequest(options, profile!.profile!.protocol);
+        const jsonFromXml = this.cmciResponseXml2Json(singleRegionResponseData.data);
 
-        const allRegionResponse = await axios.get(`${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}`, {
-          auth: {
-            username: profile!.profile!.user,
-            password: profile!.profile!.password,
-          }
-        });
-        const jsonFromXml = JSON.parse(xml2json(allRegionResponse.data, { compact: true, spaces: 4 }));
         if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
           const allRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
           infoLoaded.push({
@@ -122,28 +147,16 @@ export class ProfileManagement {
           https.globalAgent.options.rejectUnauthorized = undefined;
           throw new Error("Plex Not Found");
         }
-
-
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       }
     } else {
       if (profile!.profile!.regionName) {
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         /**
          * Region but no plex - Single region system, use that
          */
+        options.path += `/CICSRegion/${profile!.profile!.regionName}`;
+        const singleRegionResponseData = await this.makeRequest(options, profile!.profile!.protocol);
+        const jsonFromXml = this.cmciResponseXml2Json(singleRegionResponseData.data);
 
-        const singleRegionResponse = await axios.get(`${URL}/CICSRegion/${profile!.profile!.regionName}`, {
-          auth: {
-            username: profile!.profile!.user,
-            password: profile!.profile!.password,
-          }
-        });
-        const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
         if (jsonFromXml.response.records && jsonFromXml.response.records.cicsregion) {
           const singleRegion = jsonFromXml.response.records.cicsregion._attributes;
           infoLoaded.push({
@@ -155,59 +168,42 @@ export class ProfileManagement {
           https.globalAgent.options.rejectUnauthorized = undefined;
           throw new Error("Region Not Found");
         }
-
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
       } else {
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         /**
          * Nothing given - Test if plex and find all info
          */
         try {
-          const testIfPlexResponse = await axios.get(`${URL}/CICSCICSPlex`, {
-            auth: {
-              username: profile!.profile!.user,
-              password: profile!.profile!.password,
-            }
-          });
-          if (testIfPlexResponse.status === 200) {
+          options.path += `/CICSCICSPlex`;
+          const testIfPlexResponse = await this.makeRequest(options, profile!.profile!.protocol);
+          const jsonFromXml = this.cmciResponseXml2Json(testIfPlexResponse.data);
+          if (!jsonFromXml.error) {
             // Plex
-            const jsonFromXml = JSON.parse(xml2json(testIfPlexResponse.data, { compact: true, spaces: 4 }));
             if (jsonFromXml.response.records && jsonFromXml.response.records.cicscicsplex) {
-              const returnedPlexes = jsonFromXml.response.records.cicscicsplex.map((item: { _attributes: any; }) => item._attributes);
-              
-              const uniqueReturnedPlexes = returnedPlexes.filter((plex:any, index:number) =>
-                index === returnedPlexes.findIndex((found:any) => (
-                  found.plexname === plex.plexname
-                ))
-              );
+            const returnedPlexes = jsonFromXml.response.records.cicscicsplex.map((item: { _attributes: any; }) => item._attributes);
+            
+            const uniqueReturnedPlexes = returnedPlexes.filter((plex:any, index:number) =>
+              index === returnedPlexes.findIndex((found:any) => (
+                found.plexname === plex.plexname
+              ))
+            );
 
-              for (const plex of uniqueReturnedPlexes) {
-                try {
-                  infoLoaded.push({
-                    plexname: plex.plexname,
-                    regions: []
-                  });
-                } catch (error) {
-                   console.log(error);
-                }
+            for (const plex of uniqueReturnedPlexes) {
+              try {
+                infoLoaded.push({
+                  plexname: plex.plexname,
+                  regions: []
+                });
+              } catch (error) {
+                  console.log(error);
               }
+            }
             }
 
           } else {
             // Not Plex
-
-            const singleRegion = await axios.get(`${URL}/CICSRegion`, {
-              auth: {
-                username: profile!.profile!.user,
-                password: profile!.profile!.password,
-              }
-            });
-            const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+            options.path += `/CICSRegion`;
+            const singleRegionResponseData = await this.makeRequest(options, profile!.profile!.protocol);
+            const jsonFromXml = this.cmciResponseXml2Json(singleRegionResponseData.data);
             const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
             infoLoaded.push({
               plexname: null,
@@ -216,15 +212,10 @@ export class ProfileManagement {
           }
         } catch (error) {
           // Not Plex - Could be error
-
           try {
-              const singleRegion = await axios.get(`${URL}/CICSRegion`, {
-              auth: {
-                username: profile!.profile!.user,
-                password: profile!.profile!.password,
-              }
-            });
-            const jsonFromXml = JSON.parse(xml2json(singleRegion.data, { compact: true, spaces: 4 }));
+            options.path = `/CICSSystemManagement/CICSRegion`;
+            const singleRegionResponseData = await this.makeRequest(options, profile!.profile!.protocol);
+            const jsonFromXml = this.cmciResponseXml2Json(singleRegionResponseData.data);
             if (!jsonFromXml) {
               throw error;
             }
@@ -247,23 +238,23 @@ export class ProfileManagement {
   public static async getRegionInfoInPlex(plex: CICSPlexTree) {
     try {
       const profile = plex.getProfile();
-      const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+      let options = {
+        hostname: profile!.profile!.host,
+        port: profile!.profile!.port,
+        path: `/CICSSystemManagement/CICSManagedRegion/${plex.getPlexName()}`,
+        method: 'GET',
+        auth: `${profile!.profile!.user}:${profile!.profile!.password}`
+      };
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const regionResponse = await axios.get(`${URL}/CICSManagedRegion/${plex.getPlexName()}`, {
-        auth: {
-          username: profile!.profile!.user,
-          password: profile!.profile!.password,
-        }
-      });
+      const regionResponse = await this.makeRequest(options, profile!.profile!.protocol);
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if (regionResponse.status === 200) {
-        const jsonFromXml = JSON.parse(xml2json(regionResponse.data, { compact: true, spaces: 4 }));
+      if (regionResponse.statusCode === 200) {
+        const jsonFromXml = this.cmciResponseXml2Json(regionResponse.data);
         if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
           const returnedRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
           return returnedRegions;
         }
       }
-      
     } catch (error) {
         console.log(error);
         window.showErrorMessage(`Cannot find plex ${plex.getPlexName()} for profile ${plex.getParent().label}`);
@@ -274,17 +265,18 @@ export class ProfileManagement {
   public static async getAllResourcesInPlex(plex: CICSPlexTree, resourceName:string, criteria?: string) {
     try {
       const profile = plex.getProfile();
-      const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+      let options = {
+        hostname: profile!.profile!.host,
+        port: profile!.profile!.port,
+        path: `/CICSSystemManagement/${resourceName}/${plex.getPlexName()}?OVERRIDEWARNINGCOUNT=YES${criteria?`&CRITERIA=${criteria}`:''}`,
+        method: 'GET',
+        auth: `${profile!.profile!.user}:${profile!.profile!.password}`
+      };
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allItemsResponse = await axios.get(`${URL}/${resourceName}/${plex.getPlexName()}?OVERRIDEWARNINGCOUNT=YES${criteria?`&CRITERIA=${criteria}`:''}`, {
-        auth: {
-          username: profile!.profile!.user,
-          password: profile!.profile!.password,
-        }
-      });
+      const allItemsResponse = await this.makeRequest(options, profile!.profile!.protocol);
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if (allItemsResponse.status === 200) {
-        const jsonFromXml = JSON.parse(xml2json(allItemsResponse.data, { compact: true, spaces: 4 }));
+      if (allItemsResponse.statusCode === 200) {
+        const jsonFromXml = this.cmciResponseXml2Json(allItemsResponse.data);
         if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records[resourceName.toLowerCase()]) {
           const returnedResources = jsonFromXml.response.records[resourceName.toLowerCase()].map((item: { _attributes: any; }) => item._attributes);
           return returnedResources;
@@ -298,17 +290,18 @@ export class ProfileManagement {
 
   public static async generateCacheToken(profile: IProfileLoaded, plexName: string, resourceName:string, criteria?: string) {
     try {
-      const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+      let options = {
+        hostname: profile!.profile!.host,
+        port: profile!.profile!.port,
+        path: `/CICSSystemManagement/${resourceName}/${plexName}?NODISCARD&SUMMONLY${criteria?`${criteria?`&CRITERIA=${criteria}`:''}`:''}&OVERRIDEWARNINGCOUNT=YES`,
+        method: 'GET',
+        auth: `${profile!.profile!.user}:${profile!.profile!.password}`
+      };
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allProgramsResponse = await axios.get(`${URL}/${resourceName}/${plexName}?NODISCARD&SUMMONLY${criteria?`${criteria?`&CRITERIA=${criteria}`:''}`:''}&OVERRIDEWARNINGCOUNT=YES`, {
-        auth: {
-          username: profile!.profile!.user,
-          password: profile!.profile!.password,
-        }
-      });
+      const allProgramsResponse = await this.makeRequest(options, profile!.profile!.protocol);
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if (allProgramsResponse.status === 200) {
-        const jsonFromXml = JSON.parse(xml2json(allProgramsResponse.data, { compact: true, spaces: 4 }));
+      if (allProgramsResponse.statusCode === 200) {
+        const jsonFromXml = this.cmciResponseXml2Json(allProgramsResponse.data);
         if (jsonFromXml.response && jsonFromXml.response.resultsummary) {
           const resultsSummary = jsonFromXml.response.resultsummary._attributes;
           return { 'cacheToken': resultsSummary.cachetoken, 'recordCount': resultsSummary.recordcount};
@@ -322,17 +315,18 @@ export class ProfileManagement {
 
   public static async getCachedResources(profile: IProfileLoaded, cacheToken: string, resourceName:string, start=1, increment=800) {
     try {
-      const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
+      let options = {
+        hostname: profile!.profile!.host,
+        port: profile!.profile!.port,
+        path: `/CICSSystemManagement/CICSResultCache/${cacheToken}/${start}/${increment}`,
+        method: 'GET',
+        auth: `${profile!.profile!.user}:${profile!.profile!.password}`
+      };
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allItemsResponse = await axios.get(`${URL}/CICSResultCache/${cacheToken}/${start}/${increment}`, {
-        auth: {
-          username: profile!.profile!.user,
-          password: profile!.profile!.password,
-        }
-      });
+      const allItemsResponse = await this.makeRequest(options, profile!.profile!.protocol);
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if (allItemsResponse.status === 200) {
-        const jsonFromXml = JSON.parse(xml2json(allItemsResponse.data, { compact: true, spaces: 4 }));
+      if (allItemsResponse.statusCode === 200) {
+        const jsonFromXml = this.cmciResponseXml2Json(allItemsResponse.data);
         if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records[resourceName.toLowerCase()]) {
           const returnedResources = jsonFromXml.response.records[resourceName.toLowerCase()].map((item: { _attributes: any; }) => item._attributes);
           return returnedResources;
