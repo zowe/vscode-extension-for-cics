@@ -106,8 +106,11 @@ export class CICSTree
             message: `Loading ${profile.name}`
             });
             try {
-                const plexInfo = await ProfileManagement.getPlexInfo(profile);
-                
+                //const plexInfo = await ProfileManagement.getPlexInfo(profile);
+                const plexInfo = [{
+                    plexname: profile!.profile!.cicsPlex,
+                    regions: [profile!.profile!.regionName]
+                }];
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
 
                 for (const item of plexInfo) {
