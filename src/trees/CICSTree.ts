@@ -127,17 +127,17 @@ export class CICSTree
                         });
                         try {
 
-                            https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
+                            // https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
 
                             const regionsObtained = await getResource(session, {
                                 name: "CICSRegion",
                                 regionName: item.regions[0].applid
                             });
-                            https.globalAgent.options.rejectUnauthorized = undefined;
+                            // https.globalAgent.options.rejectUnauthorized = undefined;
                             const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
                             newSessionTree.addRegion(newRegionTree);
                         } catch (error) {
-                            https.globalAgent.options.rejectUnauthorized = undefined;
+                            // https.globalAgent.options.rejectUnauthorized = undefined;
                             console.log(error);
                         }
                     } else {
@@ -157,7 +157,7 @@ export class CICSTree
                 }
                 this._onDidChangeTreeData.fire(undefined);
             } catch (error) {
-                https.globalAgent.options.rejectUnauthorized = undefined;
+                // https.globalAgent.options.rejectUnauthorized = undefined;
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-disconnected-dark.svg", "profile-disconnected-light.svg"));
                 if (sessionTree) {
                     this.loadedProfiles.splice(position!, 1, newSessionTree);

@@ -50,7 +50,7 @@ export class CICSLocalFileTree extends TreeItem {
     this.children = [];
     try {
 
-      https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+     // https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
       
       const localFileResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalFile",
@@ -58,7 +58,7 @@ export class CICSLocalFileTree extends TreeItem {
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
-      https.globalAgent.options.rejectUnauthorized = undefined;
+     // https.globalAgent.options.rejectUnauthorized = undefined;
       const localFileArray = Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile];
       this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[${localFileArray.length}]`;
       for (const localFile of localFileArray) {
@@ -68,7 +68,7 @@ export class CICSLocalFileTree extends TreeItem {
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
-      https.globalAgent.options.rejectUnauthorized = undefined;
+      //https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a local file filter to narrow search`);

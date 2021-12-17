@@ -47,7 +47,7 @@ export class CICSTransactionTree extends TreeItem {
     this.children = [];
     try {
 
-      https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+      // https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
       const transactionResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalTransaction",
@@ -55,7 +55,7 @@ export class CICSTransactionTree extends TreeItem {
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
-      https.globalAgent.options.rejectUnauthorized = undefined;
+      // https.globalAgent.options.rejectUnauthorized = undefined;
       const transactionArray = Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction];
       this.label = `Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[${transactionArray.length}]`;
       for (const transaction of transactionArray) {
@@ -65,7 +65,7 @@ export class CICSTransactionTree extends TreeItem {
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
-      https.globalAgent.options.rejectUnauthorized = undefined;
+      // https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a transaction filter to narrow search`);

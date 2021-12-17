@@ -46,7 +46,7 @@ export class CICSProgramTree extends TreeItem {
     this.children = [];
     try {
 
-      https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+      // https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
       const programResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSProgram",
@@ -54,7 +54,7 @@ export class CICSProgramTree extends TreeItem {
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
-      https.globalAgent.options.rejectUnauthorized = undefined;
+      // https.globalAgent.options.rejectUnauthorized = undefined;
       const programsArray = Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram];
       this.label = `Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[${programsArray.length}]`;
       for (const program of programsArray) {
@@ -64,7 +64,7 @@ export class CICSProgramTree extends TreeItem {
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
-      https.globalAgent.options.rejectUnauthorized = undefined;
+      // https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);
