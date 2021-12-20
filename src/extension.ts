@@ -89,17 +89,33 @@ export async function activate(context: ExtensionContext) {
         const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
         const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          window.withProgress({
-            title: 'Loading region',
-            location: ProgressLocation.Notification,
-            cancellable: false
-          }, async (_, token) => {
-            token.onCancellationRequested(() => {
-              console.log("Cancelling the loading of the region");
+          if (!node.element.getGroupName()) {
+            // CICSRegion
+            window.withProgress({
+              title: 'Loading region',
+              location: ProgressLocation.Notification,
+              cancellable: false
+            }, async (_, token) => {
+              token.onCancellationRequested(() => {
+                console.log("Cancelling the loading of the region");
+              });
+              await node.element.loadOnlyRegion();
+              treeDataProv._onDidChangeTreeData.fire(undefined);
             });
-            await node.element.loadOnlyRegion();
-            treeDataProv._onDidChangeTreeData.fire(undefined);
+          } else {
+            // CICSGroup
+            window.withProgress({
+              title: 'Loading region',
+              location: ProgressLocation.Notification,
+              cancellable: false
+            }, async (_, token) => {
+              token.onCancellationRequested(() => {
+                console.log("Cancelling the loading of the region");
+              });
+              node.element.loadRegionsInCICSGroup(treeDataProv);
+              treeDataProv._onDidChangeTreeData.fire(undefined);
           });
+          }
         } else {
           window.withProgress({
             title: 'Loading regions',
