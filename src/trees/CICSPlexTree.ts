@@ -20,6 +20,7 @@ import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
 import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { getIconPathInResources } from "../utils/getIconPath";
+import { CICSTree } from "./CICSTree";
 
 export class CICSPlexTree extends TreeItem {
   children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSRegionsContainer) [] = [];
@@ -28,11 +29,13 @@ export class CICSPlexTree extends TreeItem {
   parent: CICSSessionTree;
   resourceFilters: any;
   activeFilter: string | undefined;
+  groupName: string | undefined;
 
   constructor(
     plexName: string,
     profile: IProfileLoaded,
     sessionTree: CICSSessionTree,
+    group?: string,
     public readonly iconPath = getIconPathInResources("cics-plex-dark.svg", "cics-plex-light.svg")
   ) {
     super(plexName, TreeItemCollapsibleState.Collapsed);
@@ -42,6 +45,7 @@ export class CICSPlexTree extends TreeItem {
     this.contextValue = `cicsplex.${plexName}`;
     this.resourceFilters = {};
     this.activeFilter = undefined;
+    this.groupName = group;
   }
 
   public addRegion(region: CICSRegionTree) {
@@ -61,6 +65,28 @@ export class CICSPlexTree extends TreeItem {
     const newRegionTree = new CICSRegionTree(plexProfile.profile!.regionName, regionsObtained.response.records.cicsregion, this.getParent(), this);
     this.clearChildren(); 
     this.addRegion(newRegionTree);
+  }
+
+  public async loadRegionsInCICSGroup(tree: CICSTree) {
+    const plexProfile = this.getProfile();
+    https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;
+    const session = this.getParent().getSession();
+    const regionsObtained = await getResource(session, {
+        name: "CICSManagedRegion",
+        cicsPlex: plexProfile.profile!.cicsPlex,
+        regionName: plexProfile.profile!.regionName
+    });
+    https.globalAgent.options.rejectUnauthorized = undefined;
+    this.clearChildren(); 
+    this.addRegionContainer();
+    const regionContainer = this.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
+    const regionsArray = Array.isArray(regionsObtained.response.records.cicsmanagedregion) ? regionsObtained.response.records.cicsmanagedregion : [regionsObtained.response.records.cicsmanagedregion];
+    for (const region of regionsArray) {
+      const newRegionTree = new CICSRegionTree(region.cicsname, region, this.getParent(), this);
+      //@ts-ignore
+      regionContainer.addRegion(newRegionTree);
+    }
+    tree._onDidChangeTreeData.fire(undefined);
   }
 
   // // Store all filters on children resources
@@ -128,7 +154,7 @@ export class CICSPlexTree extends TreeItem {
 
   public setLabel(label: string) {
     this.label = label;
-    this.plexName = label;
+    //this.plexName = label;
   }
 
   public getActiveFilter() {
@@ -141,5 +167,9 @@ export class CICSPlexTree extends TreeItem {
 
   public addRegionContainer() {
     this.children.push(new CICSRegionsContainer(this));
+  }
+
+  public getGroupName() {
+    return this.groupName;
   }
 }
