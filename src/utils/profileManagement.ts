@@ -60,7 +60,11 @@ export class ProfileManagement {
 
   public static async getPlexInfo(profile: IProfileLoaded) {
     const URL = `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`;
-    const infoLoaded: { plexname: string | null, regions: any[]; }[] = [];
+    const infoLoaded: { 
+      plexname: string | null,
+      regions: any[],
+      group: boolean 
+    }[] = [];
 
     https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
 
@@ -72,27 +76,56 @@ export class ProfileManagement {
         /**
          * Both Supplied, no searching required - Only load 1 region
          */
-        const singleRegionResponse = await axios.get(
-          `${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, 
+        const checkIfSystemGroup = await axios.get(
+          `${URL}/CICSRegionGroup/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}?CRITERIA=(GROUP=${profile!.profile!.regionName})`, 
         {
           auth: {
             username: profile!.profile!.user,
             password: profile!.profile!.password,
           }
         });
-        const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
-        if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
-          const singleRegion = jsonFromXml.response.records.cicsmanagedregion._attributes;
+        const jsonFromXml1 = JSON.parse(xml2json(checkIfSystemGroup.data, { compact: true, spaces: 4 }));
+        if (jsonFromXml1.response.resultsummary && jsonFromXml1.response.resultsummary._attributes && jsonFromXml1.response.resultsummary._attributes.recordcount !== '0') {
+          // CICSGroup
+          const singleGroupResponse = await axios.get(
+            `${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, 
+          {
+            auth: {
+              username: profile!.profile!.user,
+              password: profile!.profile!.password,
+            }
+          });
+          const jsonFromXml = JSON.parse(xml2json(singleGroupResponse.data, { compact: true, spaces: 4 }));
+          const allRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
           infoLoaded.push({
             plexname: profile!.profile!.cicsPlex,
-            regions: [singleRegion]
+            regions: [allRegions],
+            group: true
           });
         } else {
-          window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} in plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
-          https.globalAgent.options.rejectUnauthorized = undefined;
-          throw new Error("Region Not Found");
+          // Region
+          const singleRegionResponse = await axios.get(
+            `${URL}/CICSManagedRegion/${profile!.profile!.cicsPlex}/${profile!.profile!.regionName}`, 
+          {
+            auth: {
+              username: profile!.profile!.user,
+              password: profile!.profile!.password,
+            }
+          });
+          const jsonFromXml = JSON.parse(xml2json(singleRegionResponse.data, { compact: true, spaces: 4 }));
+          if (jsonFromXml.response.records && jsonFromXml.response.records.cicsmanagedregion) {
+            const singleRegion = jsonFromXml.response.records.cicsmanagedregion._attributes;
+            infoLoaded.push({
+              plexname: profile!.profile!.cicsPlex,
+              regions: [singleRegion],
+              group: false
+            });
+          } else {
+            window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} in plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
+            https.globalAgent.options.rejectUnauthorized = undefined;
+            throw new Error("Region Not Found");
+          }
         }
-
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -115,7 +148,8 @@ export class ProfileManagement {
           const allRegions = jsonFromXml.response.records.cicsmanagedregion.map((item: { _attributes: any; }) => item._attributes);
           infoLoaded.push({
             plexname: profile!.profile!.cicsPlex,
-            regions: allRegions
+            regions: allRegions,
+            group: false
           });
         } else {
           window.showErrorMessage(`Cannot find plex ${profile!.profile!.cicsPlex} for profile ${profile!.name}`);
@@ -148,7 +182,8 @@ export class ProfileManagement {
           const singleRegion = jsonFromXml.response.records.cicsregion._attributes;
           infoLoaded.push({
             plexname: null,
-            regions: [singleRegion]
+            regions: [singleRegion],
+            group: false
           });
         } else {
           window.showErrorMessage(`Cannot find region ${profile!.profile!.regionName} for profile ${profile!.name}`);
@@ -190,7 +225,8 @@ export class ProfileManagement {
                 try {
                   infoLoaded.push({
                     plexname: plex.plexname,
-                    regions: []
+                    regions: [],
+                    group: false
                   });
                 } catch (error) {
                    console.log(error);
@@ -211,7 +247,8 @@ export class ProfileManagement {
             const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
             infoLoaded.push({
               plexname: null,
-              regions: [returnedRegion]
+              regions: [returnedRegion],
+              group: false
             });
           }
         } catch (error) {
@@ -231,7 +268,8 @@ export class ProfileManagement {
             const returnedRegion = jsonFromXml.response.records.cicsregion._attributes;
             infoLoaded.push({
               plexname: null,
-              regions: [returnedRegion]
+              regions: [returnedRegion],
+              group: false
             });
           } catch (error) {
             https.globalAgent.options.rejectUnauthorized = undefined;
