@@ -50,6 +50,7 @@ import { getFilterAllTransactionsCommand } from "./commands/filterAllTransaction
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
 import { getIconPathInResources } from "./utils/getIconPath";
 import { plexExpansionHandler } from "./utils/plexExpansionHandler";
+import { sessionExpansionHandler } from "./utils/sessionExpansionHandler";
 
 export async function activate(context: ExtensionContext) {
 
@@ -76,16 +77,14 @@ export async function activate(context: ExtensionContext) {
 
   treeview.onDidExpandElement(async (node) => {
     if (node.element.contextValue.includes("cicssession.")) {
-      let profile : any;
       try {
-        profile = await ProfileManagement.getProfilesCache().loadNamedProfile(node.element.label?.toString()!, 'cics');
-        await treeDataProv.loadProfile(profile, treeDataProv.getLoadedProfiles().indexOf(node.element), node.element);
+        await sessionExpansionHandler(node.element, treeDataProv);
       } catch (error) {
         console.log(error);
       }
     } else if (node.element.contextValue.includes("cicsplex.")) {
       try {
-        plexExpansionHandler(node.element, treeDataProv);
+        await plexExpansionHandler(node.element, treeDataProv);
       } catch (error) {
         console.log(error);
         const newSessionTree = new CICSSessionTree(node.element.getParent().profile, getIconPathInResources("profile-disconnected-dark.svg","profile-disconnected-light.svg"));
