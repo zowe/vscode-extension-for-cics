@@ -79,13 +79,27 @@ export class CICSPlexTree extends TreeItem {
     https.globalAgent.options.rejectUnauthorized = undefined;
     this.clearChildren(); 
     this.addRegionContainer();
-    const regionContainer = this.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
+    //@ts-ignore
+    const regionContainer: CICSRegionsContainer = this.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
     const regionsArray = Array.isArray(regionsObtained.response.records.cicsmanagedregion) ? regionsObtained.response.records.cicsmanagedregion : [regionsObtained.response.records.cicsmanagedregion];
+    let activeCount = 0;
+    let totalCount = 0;
+    const regionFilterRegex = this.getActiveFilter() ? RegExp(this.getActiveFilter()!) : undefined;
     for (const region of regionsArray) {
-      const newRegionTree = new CICSRegionTree(region.cicsname, region, this.getParent(), this);
-      //@ts-ignore
-      regionContainer.addRegion(newRegionTree);
+      // If region filter exists then match it
+      if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
+        const newRegionTree = new CICSRegionTree(region.cicsname, region, this.getParent(), this);
+        //@ts-ignore
+        regionContainer.addRegion(newRegionTree);
+        totalCount += 1;
+        if (region.cicsstate === 'ACTIVE') {
+          activeCount += 1;
+        }
+      }
     }
+    regionContainer.setLabel(`Regions [${activeCount}/${totalCount}]`);
+    // Keep plex open after label change
+    this.collapsibleState = TreeItemCollapsibleState.Expanded;
     tree._onDidChangeTreeData.fire(undefined);
   }
 
