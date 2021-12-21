@@ -71,7 +71,7 @@ export class CICSCombinedProgramTree extends TreeItem {
             if (parseInt(recordsCount, 10)) {
               let allPrograms;
               if (recordsCount <= 500) {
-                allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+                allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
               } else {
                 allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
                 count = parseInt(recordsCount);
