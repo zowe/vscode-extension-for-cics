@@ -44,7 +44,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
     this.constant = "CICSLocalFile";
     }
 
-    public async loadContents(tree : CICSTree){
+    public async loadContents(tree : CICSTree, group?: string){
       window.withProgress({
         title: 'Loading Local Files',
         location: ProgressLocation.Notification,
@@ -59,13 +59,13 @@ export class CICSCombinedLocalFileTree extends TreeItem {
         }
         let count;
         try {
-          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant, criteria);
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(), this.parentPlex.getPlexName(), this.constant, criteria, group);
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allLocalFiles;
               if (recordsCount <= 500) {
-                allLocalFiles = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+                allLocalFiles = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
               } else {
                 allLocalFiles = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
                 count = parseInt(recordsCount);
@@ -163,5 +163,9 @@ export class CICSCombinedLocalFileTree extends TreeItem {
 
     public getActiveFilter() {
       return this.activeFilter;
+    }
+
+    public getParent() {
+      return this.parentPlex;
     }
 }
