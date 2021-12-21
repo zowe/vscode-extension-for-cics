@@ -81,20 +81,20 @@ export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
             //@ts-ignore
             const regionContainer: CICSRegionsContainer = plex.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
             for (const region of regionInfo) {
-            // If region filter exists then match it
-            if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
-                const newRegionTree = new CICSRegionTree(region.cicsname, region, plex.getParent(), plex);
-                regionContainer.addRegion(newRegionTree);
-                totalCount += 1;
-                if (region.cicsstate === 'ACTIVE') {
-                activeCount += 1;
+                // If region filter exists then match it
+                if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
+                    const newRegionTree = new CICSRegionTree(region.cicsname, region, plex.getParent(), plex);
+                    regionContainer.addRegion(newRegionTree);
+                    totalCount += 1;
+                    if (region.cicsstate === 'ACTIVE') {
+                        activeCount += 1;
+                    }
                 }
             }
-            }
             if (regionContainer.getChildren().length > 1) {
-            plex.addCombinedTree(combinedProgramTree);
-            plex.addCombinedTree(combinedTransactionTree);
-            plex.addCombinedTree(combinedLocalFileTree);
+                plex.addCombinedTree(combinedProgramTree);
+                plex.addCombinedTree(combinedTransactionTree);
+                plex.addCombinedTree(combinedLocalFileTree);
             }
             regionContainer.setLabel(`Regions [${activeCount}/${totalCount}]`);
             // Keep plex open after label change
