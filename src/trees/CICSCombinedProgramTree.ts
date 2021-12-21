@@ -44,7 +44,7 @@ export class CICSCombinedProgramTree extends TreeItem {
     this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
     }
 
-    public async loadContents(tree : CICSTree){
+    public async loadContents(tree: CICSTree, group?: string){
       window.withProgress({
         title: 'Loading Programs',
         location: ProgressLocation.Notification,
@@ -59,13 +59,19 @@ export class CICSCombinedProgramTree extends TreeItem {
             criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
           }
           let count;
-          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(
+            this.parentPlex.getProfile(),
+            this.parentPlex.getPlexName(),
+            this.constant,
+            criteria,
+            group
+            );
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allPrograms;
               if (recordsCount <= 500) {
-                allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+                allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
               } else {
                 allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
                 count = parseInt(recordsCount);
@@ -168,5 +174,9 @@ export class CICSCombinedProgramTree extends TreeItem {
 
     public getActiveFilter() {
       return this.activeFilter;
+    }
+
+    public getParent() {
+      return this.parentPlex;
     }
 }

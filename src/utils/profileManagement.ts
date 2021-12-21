@@ -287,7 +287,7 @@ export class ProfileManagement {
     }
   }
 
-  public static async generateCacheToken(profile: IProfileLoaded, plexName: string, resourceName:string, criteria?: string) {
+  public static async generateCacheToken(profile: IProfileLoaded, plexName: string, resourceName:string, criteria?: string, group?: string) {
     try {
       const config: AxiosRequestConfig = {
         baseURL: `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`,
@@ -303,7 +303,7 @@ export class ProfileManagement {
         }
       };
       https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allProgramsResponse = await this.makeRequest(`/${resourceName}/${plexName}`,config);
+      const allProgramsResponse = await this.makeRequest(`/${resourceName}/${plexName}${group?`/${group}`:''}`,config);
       https.globalAgent.options.rejectUnauthorized = undefined;
       if (allProgramsResponse.status === 200) {
         const jsonFromXml = this.cmciResponseXml2Json(allProgramsResponse.data);

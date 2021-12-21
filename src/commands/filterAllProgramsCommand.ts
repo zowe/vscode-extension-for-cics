@@ -65,7 +65,7 @@ export function getFilterAllProgramsCommand(tree: CICSTree) {
         }
         await persistentStorage.addProgramSearchHistory(pattern!);
         node.setFilter(pattern!);
-        await node.loadContents(tree);
+        await node.loadContents(tree, node.getParent().getGroupName());
         tree._onDidChangeTreeData.fire(undefined);
       }
     }

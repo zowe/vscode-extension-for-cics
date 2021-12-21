@@ -134,7 +134,8 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       if (node.element.getActiveFilter()) {
-        node.element.loadContents(treeDataProv);
+        const group = node.element.getParent().getGroupName();
+        node.element.loadContents(treeDataProv, group);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
