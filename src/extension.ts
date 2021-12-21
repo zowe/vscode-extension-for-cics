@@ -49,6 +49,7 @@ import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
 import { getIconPathInResources } from "./utils/getIconPath";
+import { plexExpansionHandler } from "./utils/plexExpansionHandler";
 
 export async function activate(context: ExtensionContext) {
 
@@ -84,88 +85,7 @@ export async function activate(context: ExtensionContext) {
       }
     } else if (node.element.contextValue.includes("cicsplex.")) {
       try {
-        const plexProfile = node.element.getProfile();
-        const combinedProgramTree = new CICSCombinedProgramTree(node.element);
-        const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
-        const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
-        if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          if (!node.element.getGroupName()) {
-            // CICSRegion
-            window.withProgress({
-              title: 'Loading region',
-              location: ProgressLocation.Notification,
-              cancellable: false
-            }, async (_, token) => {
-              token.onCancellationRequested(() => {
-                console.log("Cancelling the loading of the region");
-              });
-              await node.element.loadOnlyRegion();
-              treeDataProv._onDidChangeTreeData.fire(undefined);
-            });
-          } else {
-            // CICSGroup
-            window.withProgress({
-              title: 'Loading region',
-              location: ProgressLocation.Notification,
-              cancellable: false
-            }, async (_, token) => {
-              token.onCancellationRequested(() => {
-                console.log("Cancelling the loading of the region");
-              });
-              await node.element.loadRegionsInCICSGroup(treeDataProv);
-              const regionContainer = node.element.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
-              if (regionContainer.getChildren().length > 1) {
-                const combinedProgramTree = new CICSCombinedProgramTree(node.element);
-                const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
-                const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
-                node.element.addCombinedTree(combinedProgramTree);
-                node.element.addCombinedTree(combinedTransactionTree);
-                node.element.addCombinedTree(combinedLocalFileTree);
-              }
-              treeDataProv._onDidChangeTreeData.fire(undefined);
-            });
-          }
-        } else {
-          window.withProgress({
-            title: 'Loading regions',
-            location: ProgressLocation.Notification,
-            cancellable: false
-          }, async (_, token) => {
-            token.onCancellationRequested(() => {
-              console.log("Cancelling the loading of regions");
-            });
-            const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
-            if (regionInfo) {   
-              node.element.clearChildren();  
-              let activeCount = 0;
-              let totalCount = 0;
-              const regionFilterRegex = node.element.getActiveFilter() ? RegExp(node.element.getActiveFilter()) : undefined;
-              node.element.addRegionContainer();
-              const regionContainer = node.element.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
-              for (const region of regionInfo) {
-                // If region filter exists then match it
-                if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
-                  const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
-                  regionContainer.addRegion(newRegionTree);
-                  totalCount += 1;
-                  if (region.cicsstate === 'ACTIVE') {
-                    activeCount += 1;
-                  }
-                }
-              }
-              if (regionContainer.getChildren().length > 1) {
-                node.element.addCombinedTree(combinedProgramTree);
-                node.element.addCombinedTree(combinedTransactionTree);
-                node.element.addCombinedTree(combinedLocalFileTree);
-              }
-              regionContainer.setLabel(`Regions [${activeCount}/${totalCount}]`);
-              // Keep plex open after label change
-              node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-            }
-            treeDataProv._onDidChangeTreeData.fire(undefined);
-            });
-          }
-        treeDataProv._onDidChangeTreeData.fire(undefined);
+        plexExpansionHandler(node.element, treeDataProv);
       } catch (error) {
         console.log(error);
         const newSessionTree = new CICSSessionTree(node.element.getParent().profile, getIconPathInResources("profile-disconnected-dark.svg","profile-disconnected-light.svg"));
