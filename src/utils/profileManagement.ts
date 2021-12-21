@@ -257,36 +257,6 @@ export class ProfileManagement {
     }
   }
 
-  public static async getAllResourcesInPlex(plex: CICSPlexTree, resourceName:string, criteria?: string) {
-    try {
-      const profile = plex.getProfile();
-      const config: AxiosRequestConfig = {
-        baseURL: `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`,
-        auth: {
-          username: profile!.profile!.user,
-          password: profile!.profile!.password,
-        },
-        params: {
-          OVERRIDEWARNINGCOUNT: 'YES',
-          CRITERIA: criteria
-        }
-      };
-      https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
-      const allItemsResponse = await this.makeRequest(`/${resourceName}/${plex.getPlexName()}`, config);
-      https.globalAgent.options.rejectUnauthorized = undefined;
-      if (allItemsResponse.status === 200) {
-        const jsonFromXml = this.cmciResponseXml2Json(allItemsResponse.data);
-        if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records[resourceName.toLowerCase()]) {
-          const returnedResources = jsonFromXml.response.records[resourceName.toLowerCase()].map((item: { _attributes: any; }) => item._attributes);
-          return returnedResources;
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
-
   public static async generateCacheToken(profile: IProfileLoaded, plexName: string, resourceName:string, criteria?: string, group?: string) {
     try {
       const config: AxiosRequestConfig = {
