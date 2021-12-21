@@ -112,9 +112,18 @@ export async function activate(context: ExtensionContext) {
               token.onCancellationRequested(() => {
                 console.log("Cancelling the loading of the region");
               });
-              node.element.loadRegionsInCICSGroup(treeDataProv);
+              await node.element.loadRegionsInCICSGroup(treeDataProv);
+              const regionContainer = node.element.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
+              if (regionContainer.getChildren().length > 1) {
+                const combinedProgramTree = new CICSCombinedProgramTree(node.element);
+                const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
+                const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
+                node.element.addCombinedTree(combinedProgramTree);
+                node.element.addCombinedTree(combinedTransactionTree);
+                node.element.addCombinedTree(combinedLocalFileTree);
+              }
               treeDataProv._onDidChangeTreeData.fire(undefined);
-          });
+            });
           }
         } else {
           window.withProgress({
