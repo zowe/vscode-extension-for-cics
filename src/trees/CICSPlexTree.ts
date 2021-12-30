@@ -20,7 +20,6 @@ import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
 import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { getIconPathInResources } from "../utils/getIconPath";
-import { CICSTree } from "./CICSTree";
 
 export class CICSPlexTree extends TreeItem {
   children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSRegionsContainer) [] = [];
@@ -65,42 +64,6 @@ export class CICSPlexTree extends TreeItem {
     const newRegionTree = new CICSRegionTree(plexProfile.profile!.regionName, regionsObtained.response.records.cicsregion, this.getParent(), this);
     this.clearChildren(); 
     this.addRegion(newRegionTree);
-  }
-
-  public async loadRegionsInCICSGroup(tree: CICSTree) {
-    const plexProfile = this.getProfile();
-    https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;
-    const session = this.getParent().getSession();
-    const regionsObtained = await getResource(session, {
-        name: "CICSManagedRegion",
-        cicsPlex: plexProfile.profile!.cicsPlex,
-        regionName: plexProfile.profile!.regionName
-    });
-    https.globalAgent.options.rejectUnauthorized = undefined;
-    this.clearChildren(); 
-    this.addRegionContainer();
-    //@ts-ignore
-    const regionContainer: CICSRegionsContainer = this.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
-    const regionsArray = Array.isArray(regionsObtained.response.records.cicsmanagedregion) ? regionsObtained.response.records.cicsmanagedregion : [regionsObtained.response.records.cicsmanagedregion];
-    let activeCount = 0;
-    let totalCount = 0;
-    const regionFilterRegex = this.getActiveFilter() ? RegExp(this.getActiveFilter()!) : undefined;
-    for (const region of regionsArray) {
-      // If region filter exists then match it
-      if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
-        const newRegionTree = new CICSRegionTree(region.cicsname, region, this.getParent(), this);
-        //@ts-ignore
-        regionContainer.addRegion(newRegionTree);
-        totalCount += 1;
-        if (region.cicsstate === 'ACTIVE') {
-          activeCount += 1;
-        }
-      }
-    }
-    regionContainer.setLabel(`Regions [${activeCount}/${totalCount}]`);
-    // Keep plex open after label change
-    this.collapsibleState = TreeItemCollapsibleState.Expanded;
-    tree._onDidChangeTreeData.fire(undefined);
   }
 
   // // Store all filters on children resources
@@ -175,8 +138,10 @@ export class CICSPlexTree extends TreeItem {
     return this.activeFilter;
   }
 
-  public addCombinedTree(combinedTree: (CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree)) {
-    this.children.push(combinedTree);
+  public addNewCombinedTrees(){
+    this.children.push(new CICSCombinedProgramTree(this));
+    this.children.push(new CICSCombinedTransactionsTree(this));
+    this.children.push(new CICSCombinedLocalFileTree(this));
   }
 
   public addRegionContainer() {

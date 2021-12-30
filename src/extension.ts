@@ -39,18 +39,15 @@ import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
 import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
 import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
-import { CICSRegionTree } from "./trees/CICSRegionTree";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
-import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
-import { CICSCombinedTransactionsTree } from "./trees/CICSCombinedTransactionTree";
-import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
 import { getIconPathInResources } from "./utils/getIconPath";
 import { plexExpansionHandler } from "./utils/plexExpansionHandler";
 import { sessionExpansionHandler } from "./utils/sessionExpansionHandler";
+import { regionContainerExpansionHandler } from "./utils/regionContainerExpansionHandler";
 
 export async function activate(context: ExtensionContext) {
 
@@ -151,6 +148,7 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
       node.element.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
+      await regionContainerExpansionHandler(node.element, treeDataProv);
       treeDataProv._onDidChangeTreeData.fire(undefined);
     }
   });
@@ -222,4 +220,3 @@ export async function activate(context: ExtensionContext) {
   );
 }
 
-export function deactivate() { }
