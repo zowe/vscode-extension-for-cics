@@ -61,7 +61,12 @@ export class CICSPlexTree extends TreeItem {
         regionName: plexProfile.profile!.regionName
     });
     https.globalAgent.options.rejectUnauthorized = undefined;
-    const newRegionTree = new CICSRegionTree(plexProfile.profile!.regionName, regionsObtained.response.records.cicsregion, this.getParent(), this);
+    const newRegionTree = new CICSRegionTree(
+      plexProfile.profile!.regionName,
+      regionsObtained.response.records.cicsregion,
+      this.getParent(),
+      this
+      );
     this.clearChildren(); 
     this.addRegion(newRegionTree);
   }

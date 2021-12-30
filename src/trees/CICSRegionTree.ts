@@ -24,14 +24,6 @@ export class CICSRegionTree extends TreeItem {
   parentPlex: CICSPlexTree | undefined;
   isActive: true | false;
 
-  public getRegionName() {
-    return this.region.applid || this.region.cicsname;
-  }
-
-  public getIsActive() {
-    return this.isActive;
-  }
-
   constructor(
     regionName: string,
     region: any,
@@ -64,6 +56,14 @@ export class CICSRegionTree extends TreeItem {
 
   }
 
+  public getRegionName() {
+    return this.region.applid || this.region.cicsname;
+  }
+
+  public getIsActive() {
+    return this.isActive;
+  }
+  
   public getChildren() {
     return this.children;
   }

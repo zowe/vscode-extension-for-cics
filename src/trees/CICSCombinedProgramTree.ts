@@ -133,7 +133,12 @@ export class CICSCombinedProgramTree extends TreeItem {
           if (this.activeFilter) {
             criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
           }
-          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(
+            this.parentPlex.getProfile(),
+            this.parentPlex.getPlexName(),
+            this.constant,
+            criteria
+            );
           if (cacheTokenInfo) {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
@@ -147,7 +152,10 @@ export class CICSCombinedProgramTree extends TreeItem {
               );
             if (allPrograms) {
               // @ts-ignore
-              this.addProgramsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSProgramTreeItem):[], allPrograms, count);
+              this.addProgramsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSProgramTreeItem):[], 
+                allPrograms,
+                count
+                );
               tree._onDidChangeTreeData.fire(undefined);
             }
           }

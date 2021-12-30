@@ -122,7 +122,11 @@ export class CICSCombinedTransactionsTree extends TreeItem {
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant);
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(
+          this.parentPlex.getProfile(),
+          this.parentPlex.getPlexName(),
+          this.constant
+          );
           if (cacheTokenInfo) {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
@@ -136,7 +140,10 @@ export class CICSCombinedTransactionsTree extends TreeItem {
               );
             if (allLocalTransactions) {
               // @ts-ignore
-              this.addLocalTransactionsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSTransactionTreeItem):[], allLocalTransactions, count);
+              this.addLocalTransactionsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSTransactionTreeItem) : [],
+              allLocalTransactions,
+              count
+              );
               tree._onDidChangeTreeData.fire(undefined);
             }
           }
