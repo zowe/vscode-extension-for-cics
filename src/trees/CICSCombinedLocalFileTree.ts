@@ -10,7 +10,6 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
-import { join } from "path";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
