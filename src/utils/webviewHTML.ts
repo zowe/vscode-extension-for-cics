@@ -254,11 +254,11 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
         </div>
         <h3>CICS Details <span style="font-size:20px"><em>(Optional)</em></span></h3>
   
-        <p>Narrow down the search by specifying a plex, or a plex AND a region for profiles that contain plexes. Otherwise specify a region.</p>
+        <p>Narrow down the search by specifying a plex, or a plex AND a region/system group for profiles that contain plexes. Otherwise specify a region/system group.</p>
   
         <div class="two-input-container">
           <div style="width:50%; padding: 0 1.5% 0 0">
-            <label for="region-input" class="bx--label">Region Name</label>
+            <label for="region-input" class="bx--label">Region Name or System Group</label>
             <div class="bx--text-input__field-wrapper">
               <input
                 id="region-input"

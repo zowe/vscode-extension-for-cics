@@ -28,11 +28,13 @@ export class CICSPlexTree extends TreeItem {
   parent: CICSSessionTree;
   resourceFilters: any;
   activeFilter: string | undefined;
+  groupName: string | undefined;
 
   constructor(
     plexName: string,
     profile: IProfileLoaded,
     sessionTree: CICSSessionTree,
+    group?: string,
     public readonly iconPath = getIconPathInResources("cics-plex-dark.svg", "cics-plex-light.svg")
   ) {
     super(plexName, TreeItemCollapsibleState.Collapsed);
@@ -42,6 +44,7 @@ export class CICSPlexTree extends TreeItem {
     this.contextValue = `cicsplex.${plexName}`;
     this.resourceFilters = {};
     this.activeFilter = undefined;
+    this.groupName = group;
   }
 
   public addRegion(region: CICSRegionTree) {
@@ -58,7 +61,12 @@ export class CICSPlexTree extends TreeItem {
         regionName: plexProfile.profile!.regionName
     });
     https.globalAgent.options.rejectUnauthorized = undefined;
-    const newRegionTree = new CICSRegionTree(plexProfile.profile!.regionName, regionsObtained.response.records.cicsregion, this.getParent(), this);
+    const newRegionTree = new CICSRegionTree(
+      plexProfile.profile!.regionName,
+      regionsObtained.response.records.cicsregion,
+      this.getParent(),
+      this
+      );
     this.clearChildren(); 
     this.addRegion(newRegionTree);
   }
@@ -128,18 +136,24 @@ export class CICSPlexTree extends TreeItem {
 
   public setLabel(label: string) {
     this.label = label;
-    this.plexName = label;
+    //this.plexName = label;
   }
 
   public getActiveFilter() {
     return this.activeFilter;
   }
 
-  public addCombinedTree(combinedTree: (CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree)) {
-    this.children.push(combinedTree);
+  public addNewCombinedTrees(){
+    this.children.push(new CICSCombinedProgramTree(this));
+    this.children.push(new CICSCombinedTransactionsTree(this));
+    this.children.push(new CICSCombinedLocalFileTree(this));
   }
 
   public addRegionContainer() {
     this.children.push(new CICSRegionsContainer(this));
+  }
+
+  public getGroupName() {
+    return this.groupName;
   }
 }

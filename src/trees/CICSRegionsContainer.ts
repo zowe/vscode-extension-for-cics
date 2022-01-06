@@ -15,6 +15,8 @@ import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { getIconPathInResources } from "../utils/getIconPath";
+import { getResource } from "@zowe/cics-for-zowe-cli";
+import * as https from "https";
 
 export class CICSRegionsContainer extends TreeItem {
   children: (CICSRegionTree)[];
@@ -82,6 +84,64 @@ export class CICSRegionsContainer extends TreeItem {
   
   }
 
+  public async loadRegionsInCICSGroup(tree: CICSTree) {
+    const parentPlex = this.getParent();
+    const plexProfile = parentPlex.getProfile();
+    https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;
+    const session = parentPlex.getParent().getSession();
+    const regionsObtained = await getResource(session, {
+        name: "CICSManagedRegion",
+        cicsPlex: plexProfile.profile!.cicsPlex,
+        regionName: plexProfile.profile!.regionName
+    });
+    https.globalAgent.options.rejectUnauthorized = undefined;
+    this.clearChildren(); 
+    const regionsArray = Array.isArray(regionsObtained.response.records.cicsmanagedregion) ? regionsObtained.response.records.cicsmanagedregion : [regionsObtained.response.records.cicsmanagedregion];
+    let activeCount = 0;
+    let totalCount = 0;
+    const regionFilterRegex = parentPlex.getActiveFilter() ? RegExp(parentPlex.getActiveFilter()!) : undefined;
+    for (const region of regionsArray) {
+      // If region filter exists then match it
+      if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
+        const newRegionTree = new CICSRegionTree(region.cicsname, region, parentPlex.getParent(), parentPlex);
+        //@ts-ignore
+        this.addRegion(newRegionTree);
+        totalCount += 1;
+        if (region.cicsstate === 'ACTIVE') {
+          activeCount += 1;
+        }
+      }
+    }
+    this.setLabel(`Regions [${activeCount}/${totalCount}]`);
+    // Keep plex open after label change
+    this.collapsibleState = TreeItemCollapsibleState.Expanded;
+    tree._onDidChangeTreeData.fire(undefined);
+  }
+
+  public async loadRegionsInPlex() {
+    const parentPlex = this.getParent();
+    const regionInfo = await ProfileManagement.getRegionInfoInPlex(parentPlex);
+    if (regionInfo) {   
+        let activeCount = 0;
+        let totalCount = 0;
+        const regionFilterRegex = parentPlex.getActiveFilter() ? RegExp(parentPlex.getActiveFilter()!) : undefined;
+        for (const region of regionInfo) {
+            // If region filter exists then match it
+            if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
+                const newRegionTree = new CICSRegionTree(region.cicsname, region, parentPlex.getParent(), parentPlex);
+                this.addRegion(newRegionTree);
+                totalCount += 1;
+                if (region.cicsstate === 'ACTIVE') {
+                    activeCount += 1;
+                }
+            }
+        }
+        this.setLabel(`Regions [${activeCount}/${totalCount}]`);
+        // Keep plex open after label change
+        this.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
+  }
+
   public addRegion(region: CICSRegionTree) {
     this.children.push(region);
   }
@@ -96,5 +156,9 @@ export class CICSRegionsContainer extends TreeItem {
 
   public getParent() {
     return this.parent;
+  }
+
+  public clearChildren() {
+    this.children = [];
   }
 }
