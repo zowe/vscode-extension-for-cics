@@ -12,9 +12,8 @@
 import { commands, TreeItemCollapsibleState, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
-import { isTheia } from "../utils/theiaCheck";
 
 export function getFilterPlexResources(tree: CICSTree) {
   return commands.registerCommand(
@@ -29,70 +28,21 @@ export function getFilterPlexResources(tree: CICSTree) {
         } else {
           resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
         }
-        const filterDescriptorText = `\uFF0B Create New ${resourceToFilter} Filter (use a comma to separate multiple patterns e.g. LG*,I*)`;
-
         const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        let pattern: string;
-        const desc = new FilterDescriptor(filterDescriptorText);
-
-        let items;
+        let resourceHistory;
         if (resourceToFilter === "Programs"){
-            items = persistentStorage.getProgramSearchHistory().map(loadedFilter => {
-                return { label: loadedFilter };
-            });
+          resourceHistory = persistentStorage.getProgramSearchHistory();
         } else if(resourceToFilter === "Local Transactions"){
-            items = persistentStorage.getTransactionSearchHistory().map(loadedFilter => {
-                return { label: loadedFilter };
-            });
+          resourceHistory = persistentStorage.getTransactionSearchHistory();
         } else if (resourceToFilter === "Local Files"){
-            items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
-                return { label: loadedFilter };
-            });
+          resourceHistory = persistentStorage.getLocalFileSearchHistory();
         } else if (resourceToFilter === "Regions") {
-            items = persistentStorage.getRegionSearchHistory().map(loadedFilter => {
-              return { label: loadedFilter };
-            });
+          resourceHistory = persistentStorage.getRegionSearchHistory();
         } else {
             window.showInformationMessage("No Selection Made");
             return;
         }
-        
-        if (isTheia()) {
-          const choice = await window.showQuickPick([desc, ...items]);
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-
-          if (choice === desc) {
-            pattern = await window.showInputBox() || "";
-            if (!pattern) {
-              window.showInformationMessage( "You must enter a pattern.");
-              return;
-          }
-          } else {
-            pattern = choice.label;
-          }
-        } else {
-          const quickpick = window.createQuickPick();
-          quickpick.items = [desc, ...items];
-          quickpick.placeholder = "Select past filter or create new...";
-          quickpick.ignoreFocusOut = true;
-          quickpick.show();
-          const choice = await resolveQuickPickHelper(quickpick);
-          quickpick.hide();
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-          if (choice instanceof FilterDescriptor) {
-            if (quickpick.value) {
-              pattern = quickpick.value.replace(/\s/g, '');;
-            }
-          } else {
-            pattern = choice.label.replace(/\s/g, '');;
-          }
-        }
+        const pattern = await getPatternFromFilter(resourceToFilter.slice(0,-1), resourceHistory);
 
         if (resourceToFilter === "Programs"){
             await persistentStorage.addProgramSearchHistory(pattern!);
@@ -102,7 +52,7 @@ export function getFilterPlexResources(tree: CICSTree) {
             await persistentStorage.addLocalFileSearchHistory(pattern!);
         } else if (resourceToFilter === "Regions"){
             await persistentStorage.addRegionSearchHistory(pattern!);
-      }
+        }
 
         node.collapsibleState = TreeItemCollapsibleState.Expanded;
 
