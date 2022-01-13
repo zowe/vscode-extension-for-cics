@@ -9,7 +9,7 @@
 *
 */
 
-import { QuickPick, QuickPickItem } from "vscode";
+import { QuickPick, QuickPickItem, window } from "vscode";
 
 export async function resolveQuickPickHelper(
     quickpick: QuickPick<QuickPickItem>
@@ -30,4 +30,27 @@ export class FilterDescriptor implements QuickPickItem {
     get alwaysShow(): boolean {
         return true;
     }
+}
+
+export async function getPatternFromFilter(resourceName: string, resourceHistory:string[]) {
+    let pattern: string;
+    const desc = new FilterDescriptor(`\uFF0B Create New ${resourceName} Filter (use a comma to separate multiple patterns e.g. LG*,I*)`);
+    const items = resourceHistory.map(loadedFilter => {
+        return { label: loadedFilter };
+    });
+    const choice = await window.showQuickPick([desc, ...items]);
+    if (!choice) {
+        window.showInformationMessage("No Selection Made");
+        return;
+    }
+    if (choice === desc) {
+        pattern = await window.showInputBox() || "";
+    } else {
+        pattern = await window.showInputBox({value:choice.label}) || "";
+    }
+    if (!pattern) {
+        window.showInformationMessage( "You must enter a pattern");
+        return;
+    }
+    return pattern;
 }
