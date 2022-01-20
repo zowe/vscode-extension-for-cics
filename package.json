@@ -466,9 +466,9 @@
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
-    "@zowe/cics-for-zowe-cli": "^4.0.2",
-    "@zowe/imperative": "^4.8.1",
-    "@zowe/zowe-explorer-api": "^2.0.0-next.202112161700",
+    "@zowe/cics-for-zowe-cli": "5.0.0-next.202107021819",
+    "@zowe/imperative": "5.0.0-next.202109281439",
+    "@zowe/zowe-explorer-api": "2.0.0-next.202112161700",
     "axios": "^0.21.4",
     "https": "^1.0.0",
     "xml-js": "^1.6.11"
