@@ -48,14 +48,21 @@ import { getIconPathInResources } from "./utils/getIconPath";
 import { plexExpansionHandler } from "./utils/plexExpansionHandler";
 import { sessionExpansionHandler } from "./utils/sessionExpansionHandler";
 import { regionContainerExpansionHandler } from "./utils/regionContainerExpansionHandler";
+import { KeytarApi, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
+import cicsProfileMeta from "./utils/profileDefinition";
+import { CredentialManagerFactory, Logger } from "@zowe/imperative";
+import { isTheia } from "./utils/theiaCheck";
 
 export async function activate(context: ExtensionContext) {
-
+  const log = Logger.getAppLogger();
+  const keytarApi = new KeytarApi(log);
+  await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
   if (ProfileManagement.apiDoesExist()) {
     try {
-      await ProfileManagement.registerCICSProfiles();
-      ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
-      await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+      const zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('2.0.0-next.202112161700');
+      await zoweExplorerAPI.getExplorerExtenderApi().initForZowe('cics', cicsProfileMeta);
+      zoweExplorerAPI.getExplorerExtenderApi().getProfilesCache().registerCustomProfilesType('cics');
+      await zoweExplorerAPI.getExplorerExtenderApi().reloadProfiles("cics");
       window.showInformationMessage(
         "Zowe Explorer was modified for the CICS Extension"
       );
