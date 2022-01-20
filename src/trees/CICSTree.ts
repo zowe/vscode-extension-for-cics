@@ -43,8 +43,12 @@ export class CICSTree
     }
 
     async addProfile() {
-        const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
-        if (allCICSProfileNames.length > 0) {
+        try {
+        //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
+        const testing = await ProfileManagement.getProfilesCache().getProfiles('cics');
+        const allCICSProfileNames = testing.map(profile => profile.name!);
+        
+        if (allCICSProfileNames && allCICSProfileNames.length > 0) {
             const profileNameToLoad = await window.showQuickPick(
                 [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.filter((profile) => {
                     for (const loadedProfile of this.loadedProfiles) {
@@ -86,6 +90,9 @@ export class CICSTree
             this.createNewProfile();
 
         }
+    } catch(e) {
+        console.log(e);
+    }
 
     }
 
@@ -115,7 +122,7 @@ export class CICSTree
                         // No plex
 
                         const session = new Session({
-                            type: "basic",
+                            //type: "basic",
                             hostname: profile.profile!.host,
                             port: Number(profile.profile!.port),
                             user: profile.profile!.user,
