@@ -17,6 +17,11 @@ import * as https from "https";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
 
+/**
+ * Performs new copy on selected CICSProgram nodes.
+ * @param tree - tree which contains the node
+ * @param treeview - Tree View of current cics tree
+ */
 export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.newCopyProgram",
@@ -27,6 +32,7 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
         const selectedNodes = selection.filter((selectedNode) => selectedNode !== clickedNode);
         allSelectedNodes = [clickedNode, ...selectedNodes];
       }
+      // executed from command palette
       else if (selection.length) {
         allSelectedNodes = selection.filter((node) => node && node instanceof CICSProgramTreeItem);
       }
