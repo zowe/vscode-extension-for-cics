@@ -34,61 +34,38 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
         window.showErrorMessage("No CICS program selected");
         return;
       }
-      try {
-        let parentRegions: CICSRegionTree[] = [];
-        window.withProgress({
-          title: 'New Copy',
-          location: ProgressLocation.Notification,
-          cancellable: true
-        }, async (progress, token) => {
-          token.onCancellationRequested(() => {
-            console.log("Cancelling the New Copy");
+      let parentRegions: CICSRegionTree[] = [];
+      window.withProgress({
+        title: 'New Copy',
+        location: ProgressLocation.Notification,
+        cancellable: true
+      }, async (progress, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the New Copy");
+        });
+        for (const index in allSelectedNodes) {
+          progress.report({
+            message: `New Copying ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+            increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
-          for (const index in allSelectedNodes) {
-            progress.report({
-              message: `New Copying ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
-              increment: (parseInt(index) / allSelectedNodes.length) * 100,
-            });
-            try {
-              const currentNode = allSelectedNodes[parseInt(index)];
+        try {
+          const currentNode = allSelectedNodes[parseInt(index)];
 
-              https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+          https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
-              await programNewcopy(
-                currentNode.parentRegion.parentSession.session,
-                {
-                  name: currentNode.program.program,
-                  regionName: currentNode.parentRegion.label,
-                  cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
-                }
-              );
-              https.globalAgent.options.rejectUnauthorized = undefined;
-              if (!parentRegions.includes(currentNode.parentRegion)) {
-                parentRegions.push(currentNode.parentRegion);
-              }
-            } catch (err) {
-              https.globalAgent.options.rejectUnauthorized = undefined;
-              // @ts-ignore
-              const mMessageArr = err.mMessage.split(" ").join("").split("\n");
-              let resp;
-              let resp2;
-              let respAlt;
-              let eibfnAlt;
-              for (const val of mMessageArr) {
-                const values = val.split(":");
-                if (values[0] === "resp"){
-                  resp = values[1];
-                } else if (values[0] === "resp2"){
-                  resp2 = values[1];
-                } else if (values[0] === "resp_alt"){
-                  respAlt = values[1];
-                } else if (values[0] === "eibfn_alt"){
-                  eibfnAlt = values[1];
-                }
-              }
-              window.showErrorMessage(`Perform NEWCOPY on Program "${allSelectedNodes[parseInt(index)].program.program}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
+          await programNewcopy(
+            currentNode.parentRegion.parentSession.session,
+            {
+              name: currentNode.program.program,
+              regionName: currentNode.parentRegion.label,
+              cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
             }
+          );
+          https.globalAgent.options.rejectUnauthorized = undefined;
+          if (!parentRegions.includes(currentNode.parentRegion)) {
+            parentRegions.push(currentNode.parentRegion);
           }
+          
           for (const parentRegion of parentRegions) {
             const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
             // Only load contents if the tree is expanded
@@ -106,11 +83,35 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
             }
           }
           tree._onDidChangeTreeData.fire(undefined);
-        });
-      } catch (err) {
-        // @ts-ignore
-        window.showErrorMessage(err);
-      }
+        } catch (error) {
+          https.globalAgent.options.rejectUnauthorized = undefined;
+          // @ts-ignore
+          if (error.mMessage) {
+            // @ts-ignore
+            const mMessageArr = error.mMessage.split(" ").join("").split("\n");
+            let resp;
+            let resp2;
+            let respAlt;
+            let eibfnAlt;
+            for (const val of mMessageArr) {
+              const values = val.split(":");
+              if (values[0] === "resp"){
+                resp = values[1];
+              } else if (values[0] === "resp2"){
+                resp2 = values[1];
+              } else if (values[0] === "resp_alt"){
+                respAlt = values[1];
+              } else if (values[0] === "eibfn_alt"){
+                eibfnAlt = values[1];
+              }
+            }
+            window.showErrorMessage(`Perform NEWCOPY on Program "${allSelectedNodes[parseInt(index)].program.program}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
+          } else {
+            window.showErrorMessage(`Something went wrong when performing a new copy - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          }
+        }
+        }
+      });
     } 
   );
 }
