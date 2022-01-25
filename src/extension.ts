@@ -26,7 +26,7 @@ import { CICSTree } from "./trees/CICSTree";
 import { getShowTransactionAttributesCommand } from "./commands/showTransactionAttributesCommand";
 import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttributesCommand";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
-import { getClearProgramFilterCommand } from "./commands/clearProgramFilterCommand";
+import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
@@ -216,7 +216,7 @@ export async function activate(context: ExtensionContext) {
     
     getFilterPlexResources(treeDataProv),
 
-    getClearProgramFilterCommand(treeDataProv),
+    getClearResourceFilterCommand(treeDataProv, treeview),
     getClearPlexFilterCommand(treeDataProv),
     
     viewMoreCommand(treeDataProv, treeview)
