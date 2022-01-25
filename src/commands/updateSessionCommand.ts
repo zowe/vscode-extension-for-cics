@@ -27,7 +27,7 @@ export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>)
         try {
           await tree.updateSession(sessionTree);
         } catch (error) {
-          window.showErrorMessage(`Something went wrong when updating the session - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          window.showErrorMessage(`Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
         }
       }
     }
