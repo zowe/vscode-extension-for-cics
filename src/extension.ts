@@ -17,7 +17,7 @@ import { getNewCopyCommand } from "./commands/newCopyCommand";
 import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
-  getShowAttributesCommand,
+  getShowProgramAttributesCommand,
   getShowRegionAttributes,
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
@@ -202,10 +202,10 @@ export async function activate(context: ExtensionContext) {
     getCloseLocalFileCommand(treeDataProv, treeview),
     getOpenLocalFileCommand(treeDataProv, treeview),
 
-    getShowRegionAttributes(),
-    getShowAttributesCommand(),
-    getShowTransactionAttributesCommand(),
-    getShowLocalFileAttributesCommand(),
+    getShowRegionAttributes(treeview),
+    getShowProgramAttributesCommand(treeview),
+    getShowTransactionAttributesCommand(treeview),
+    getShowLocalFileAttributesCommand(treeview),
 
     getFilterProgramsCommand(treeDataProv),
     getFilterTransactionCommand(treeDataProv),
