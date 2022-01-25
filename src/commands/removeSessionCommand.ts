@@ -10,42 +10,43 @@
 */
 
 import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSSessionTree } from "../trees/CICSSessionTree";
 import { CICSTree } from "../trees/CICSTree";
+import { findSelectedNodes } from "../utils/commandUtils";
 
 export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.removeSession",
     async (node) => {
-      if (node) {
-          const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
-          const allSelectedNodes = [node, ...selectedNodes];
-          window.withProgress({
-            title: 'Hide Profile',
-            location: ProgressLocation.Notification,
-            cancellable: true
-          }, async (progress, token) => {
-            token.onCancellationRequested(() => {
-              console.log("Cancelling the hide command");
-            });
-            for (const index in allSelectedNodes) {
-              progress.report({
-                message: `Hiding ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
-                increment: (parseInt(index) / allSelectedNodes.length) * 100,
-              });
-              try {
-                const currentNode = allSelectedNodes[parseInt(index)];
-
-                await tree.removeSession(currentNode);
-
-              } catch(err){
-                // @ts-ignore
-                window.showErrorMessage(err);
-              }
-            }
-          });
-      } else {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSSessionTree, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
         window.showErrorMessage("No profile selected to remove");
+        return;
       }
+      window.withProgress({
+        title: 'Hide Profile',
+        location: ProgressLocation.Notification,
+        cancellable: true
+      }, async (progress, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the hide command");
+        });
+        for (const index in allSelectedNodes) {
+          progress.report({
+            message: `Hiding ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+            increment: (parseInt(index) / allSelectedNodes.length) * 100,
+          });
+          try {
+            const currentNode = allSelectedNodes[parseInt(index)];
+
+            await tree.removeSession(currentNode);
+
+          } catch(error){
+            // @ts-ignore
+            window.showErrorMessage(error);
+          }
+        }
+          });
     }
   );
 }
