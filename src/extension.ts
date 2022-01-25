@@ -217,7 +217,7 @@ export async function activate(context: ExtensionContext) {
     getFilterPlexResources(treeDataProv),
 
     getClearResourceFilterCommand(treeDataProv, treeview),
-    getClearPlexFilterCommand(treeDataProv),
+    getClearPlexFilterCommand(treeDataProv, treeview),
     
     viewMoreCommand(treeDataProv, treeview)
   );
