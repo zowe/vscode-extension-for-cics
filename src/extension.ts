@@ -184,7 +184,7 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv, treeview),
-    getUpdateSessionCommand(treeDataProv),
+    getUpdateSessionCommand(treeDataProv, treeview),
     getDeleteSessionCommand(treeDataProv, treeview),
 
     getRefreshCommand(treeDataProv),
