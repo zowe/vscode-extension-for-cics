@@ -41,12 +41,11 @@ export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>)
 
             await tree.removeSession(currentNode);
 
-          } catch(error){
-            // @ts-ignore
-            window.showErrorMessage(error);
+          } catch (error) {
+            window.showErrorMessage(`Something went wrong when hiding the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
-          });
+      });
     }
   );
 }
