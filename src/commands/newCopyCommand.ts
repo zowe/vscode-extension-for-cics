@@ -16,6 +16,7 @@ import { CICSTree } from "../trees/CICSTree";
 import * as https from "https";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
+import { findSelectedNodes } from "../utils/commandUtils";
 
 /**
  * Performs new copy on selected CICSProgram nodes.
@@ -26,16 +27,7 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.newCopyProgram",
     async (clickedNode) => {
-      const selection = treeview.selection;
-      let allSelectedNodes: any;
-      if (clickedNode) {
-        const selectedNodes = selection.filter((selectedNode) => selectedNode !== clickedNode);
-        allSelectedNodes = [clickedNode, ...selectedNodes];
-      }
-      // executed from command palette
-      else if (selection.length) {
-        allSelectedNodes = selection.filter((node) => node && node instanceof CICSProgramTreeItem);
-      }
+      const allSelectedNodes = findSelectedNodes(treeview, CICSProgramTreeItem, clickedNode);
       if (!allSelectedNodes || !allSelectedNodes.length) {
         window.showErrorMessage("No CICS program selected");
         return;
@@ -54,25 +46,55 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
             message: `New Copying ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
             increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
-        try {
           const currentNode = allSelectedNodes[parseInt(index)];
-
-          https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-
-          await programNewcopy(
-            currentNode.parentRegion.parentSession.session,
-            {
-              name: currentNode.program.program,
-              regionName: currentNode.parentRegion.label,
-              cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
-            }
-          );
-          https.globalAgent.options.rejectUnauthorized = undefined;
-          if (!parentRegions.includes(currentNode.parentRegion)) {
-            parentRegions.push(currentNode.parentRegion);
-          }
           
-          for (const parentRegion of parentRegions) {
+          https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
+          
+          try {
+            await programNewcopy(
+              currentNode.parentRegion.parentSession.session,
+              {
+                name: currentNode.program.program,
+                regionName: currentNode.parentRegion.label,
+                cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
+              }
+              );
+            https.globalAgent.options.rejectUnauthorized = undefined;
+            if (!parentRegions.includes(currentNode.parentRegion)) {
+              parentRegions.push(currentNode.parentRegion);
+            }
+          } catch (error) {
+            // CMCI new copy error
+            https.globalAgent.options.rejectUnauthorized = undefined;
+            // @ts-ignore
+            if (error.mMessage) {
+              // @ts-ignore
+              const mMessageArr = error.mMessage.split(" ").join("").split("\n");
+              let resp;
+              let resp2;
+              let respAlt;
+              let eibfnAlt;
+              for (const val of mMessageArr) {
+                const values = val.split(":");
+                if (values[0] === "resp"){
+                  resp = values[1];
+                } else if (values[0] === "resp2"){
+                  resp2 = values[1];
+                } else if (values[0] === "resp_alt"){
+                  respAlt = values[1];
+                } else if (values[0] === "eibfn_alt"){
+                  eibfnAlt = values[1];
+                }
+              }
+              window.showErrorMessage(`Perform NEWCOPY on Program "${allSelectedNodes[parseInt(index)].program.program}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
+            } else {
+              window.showErrorMessage(`Something went wrong when performing a NEWCOPY - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            }
+          }
+        }
+        // Reload contents
+        for (const parentRegion of parentRegions) {
+          try {
             const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
             // Only load contents if the tree is expanded
             if (programTree.collapsibleState === 2) {
@@ -87,36 +109,11 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
                 await allProgramsTree.loadContents(tree);
               }
             }
-          }
-          tree._onDidChangeTreeData.fire(undefined);
-        } catch (error) {
-          https.globalAgent.options.rejectUnauthorized = undefined;
-          // @ts-ignore
-          if (error.mMessage) {
-            // @ts-ignore
-            const mMessageArr = error.mMessage.split(" ").join("").split("\n");
-            let resp;
-            let resp2;
-            let respAlt;
-            let eibfnAlt;
-            for (const val of mMessageArr) {
-              const values = val.split(":");
-              if (values[0] === "resp"){
-                resp = values[1];
-              } else if (values[0] === "resp2"){
-                resp2 = values[1];
-              } else if (values[0] === "resp_alt"){
-                respAlt = values[1];
-              } else if (values[0] === "eibfn_alt"){
-                eibfnAlt = values[1];
-              }
-            }
-            window.showErrorMessage(`Perform NEWCOPY on Program "${allSelectedNodes[parseInt(index)].program.program}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
-          } else {
-            window.showErrorMessage(`Something went wrong when performing a new copy - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          } catch (error) {
+            window.showErrorMessage(`Something went wrong when reloading programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
-        }
+        tree._onDidChangeTreeData.fire(undefined);
       });
     } 
   );
