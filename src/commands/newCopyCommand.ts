@@ -106,7 +106,7 @@ export function getNewCopyCommand(tree: CICSTree, treeview: TreeView<any>) {
               //@ts-ignore
               if (allProgramsTree.collapsibleState === 2 && allProgramsTree.getActiveFilter()) {
                 //@ts-ignore
-                await allProgramsTree.loadContents(tree);
+                await allProgramsTree.loadContents(tree, allProgramsTree.getParent().getGroupName());
               }
             }
           } catch (error) {

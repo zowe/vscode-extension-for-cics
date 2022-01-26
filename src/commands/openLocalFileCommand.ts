@@ -104,7 +104,7 @@ export function getOpenLocalFileCommand(tree: CICSTree, treeview: TreeView<any>)
               //@ts-ignore
               if (allLocalFileTreeTree.collapsibleState === 2 && allLocalFileTreeTree.getActiveFilter()) {
                 //@ts-ignore
-                await allLocalFileTreeTree.loadContents(tree);
+                await allLocalFileTreeTree.loadContents(tree, allLocalFileTreeTree.getParent().getGroupName());
               }
             }
           } catch(error) {
