@@ -9,26 +9,35 @@
 *
 */
 
-import { commands } from "vscode";
+import { commands, TreeView, window } from "vscode";
+import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
-export function getFilterLocalFilesCommand(tree: CICSTree) {
+export function getFilterLocalFilesCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterLocalFiles",
     async (node) => {
+      const selection = treeview.selection;
+      let chosenNode;
       if (node) {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        const pattern = await getPatternFromFilter("Local File", persistentStorage.getLocalFileSearchHistory());
-        if (!pattern) {
-          return;
-        }
-        await persistentStorage.addLocalFileSearchHistory(pattern!);
-        node.setFilter(pattern!);
-        await node.loadContents();
-        tree._onDidChangeTreeData.fire(undefined);
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSLocalFileTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS local file tree selected");
+        return;
       }
+      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const pattern = await getPatternFromFilter("Local File", persistentStorage.getLocalFileSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addLocalFileSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      await chosenNode.loadContents();
+      tree._onDidChangeTreeData.fire(undefined);
     }
   );
 }
