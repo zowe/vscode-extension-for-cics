@@ -11,7 +11,9 @@
 
 import { ProgressLocation, window } from "vscode";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
+import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSTree } from "../trees/CICSTree";
+import { regionContainerExpansionHandler } from "./regionContainerExpansionHandler";
 
 export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
     const plexProfile = plex.getProfile();
@@ -41,6 +43,8 @@ export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
                 });
                 plex.clearChildren();
                 plex.addRegionContainer();
+                const regionsContainer = findRegionsContainerFromPlex(plex);
+                regionContainerExpansionHandler(regionsContainer, tree);
                 plex.addNewCombinedTrees();
                 tree._onDidChangeTreeData.fire(undefined);
             });
@@ -56,9 +60,21 @@ export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
         });
         plex.clearChildren();
         plex.addRegionContainer();
+        const regionsContainer = findRegionsContainerFromPlex(plex);
+        regionContainerExpansionHandler(regionsContainer, tree);
         plex.addNewCombinedTrees();
         tree._onDidChangeTreeData.fire(undefined);
         });
         }
     tree._onDidChangeTreeData.fire(undefined);
+}
+
+function findRegionsContainerFromPlex(plex: CICSPlexTree): CICSRegionsContainer {
+    const regionsContainer = plex.children.filter(child => {
+        if (child instanceof CICSRegionsContainer) {
+            return child;
+        }
+    })[0];
+    //@ts-ignore
+    return regionsContainer;
 }
