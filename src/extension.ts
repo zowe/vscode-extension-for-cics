@@ -207,14 +207,14 @@ export async function activate(context: ExtensionContext) {
     getShowTransactionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
 
-    getFilterProgramsCommand(treeDataProv),
-    getFilterTransactionCommand(treeDataProv),
-    getFilterLocalFilesCommand(treeDataProv),
-    getFilterAllProgramsCommand(treeDataProv),
-    getFilterAllTransactionsCommand(treeDataProv),
-    getFilterAllLocalFilesCommand(treeDataProv),
+    getFilterProgramsCommand(treeDataProv, treeview),
+    getFilterTransactionCommand(treeDataProv, treeview),
+    getFilterLocalFilesCommand(treeDataProv, treeview),
+    getFilterAllProgramsCommand(treeDataProv, treeview),
+    getFilterAllTransactionsCommand(treeDataProv, treeview),
+    getFilterAllLocalFilesCommand(treeDataProv, treeview),
     
-    getFilterPlexResources(treeDataProv),
+    getFilterPlexResources(treeDataProv, treeview),
 
     getClearResourceFilterCommand(treeDataProv, treeview),
     getClearPlexFilterCommand(treeDataProv, treeview),
