@@ -17,7 +17,7 @@ import { getNewCopyCommand } from "./commands/newCopyCommand";
 import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
-  getShowAttributesCommand,
+  getShowProgramAttributesCommand,
   getShowRegionAttributes,
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
@@ -26,7 +26,7 @@ import { CICSTree } from "./trees/CICSTree";
 import { getShowTransactionAttributesCommand } from "./commands/showTransactionAttributesCommand";
 import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttributesCommand";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
-import { getClearProgramFilterCommand } from "./commands/clearProgramFilterCommand";
+import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
@@ -184,7 +184,7 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv, treeview),
-    getUpdateSessionCommand(treeDataProv),
+    getUpdateSessionCommand(treeDataProv, treeview),
     getDeleteSessionCommand(treeDataProv, treeview),
 
     getRefreshCommand(treeDataProv),
@@ -202,22 +202,22 @@ export async function activate(context: ExtensionContext) {
     getCloseLocalFileCommand(treeDataProv, treeview),
     getOpenLocalFileCommand(treeDataProv, treeview),
 
-    getShowRegionAttributes(),
-    getShowAttributesCommand(),
-    getShowTransactionAttributesCommand(),
-    getShowLocalFileAttributesCommand(),
+    getShowRegionAttributes(treeview),
+    getShowProgramAttributesCommand(treeview),
+    getShowTransactionAttributesCommand(treeview),
+    getShowLocalFileAttributesCommand(treeview),
 
-    getFilterProgramsCommand(treeDataProv),
-    getFilterTransactionCommand(treeDataProv),
-    getFilterLocalFilesCommand(treeDataProv),
-    getFilterAllProgramsCommand(treeDataProv),
-    getFilterAllTransactionsCommand(treeDataProv),
-    getFilterAllLocalFilesCommand(treeDataProv),
+    getFilterProgramsCommand(treeDataProv, treeview),
+    getFilterTransactionCommand(treeDataProv, treeview),
+    getFilterLocalFilesCommand(treeDataProv, treeview),
+    getFilterAllProgramsCommand(treeDataProv, treeview),
+    getFilterAllTransactionsCommand(treeDataProv, treeview),
+    getFilterAllLocalFilesCommand(treeDataProv, treeview),
     
-    getFilterPlexResources(treeDataProv),
+    getFilterPlexResources(treeDataProv, treeview),
 
-    getClearProgramFilterCommand(treeDataProv),
-    getClearPlexFilterCommand(treeDataProv),
+    getClearResourceFilterCommand(treeDataProv, treeview),
+    getClearPlexFilterCommand(treeDataProv, treeview),
     
     viewMoreCommand(treeDataProv, treeview)
   );

@@ -9,16 +9,23 @@
 *
 */
 
-import { commands, window, WebviewPanel } from "vscode";
+import { commands, window, WebviewPanel, TreeView } from "vscode";
+import { CICSRegionTree } from "../trees/CICSRegionTree";
+import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
+import { findSelectedNodes } from "../utils/commandUtils";
 import { getAttributesHtml } from "../utils/webviewHTML";
 
-export function getShowAttributesCommand() {
+export function getShowProgramAttributesCommand(treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.showProgramAttributes",
     async (node) => {
-      if (node) {
-        const program = node.program;
-
+      const allSelectedNodes = findSelectedNodes(treeview, CICSProgramTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS program selected");
+        return;
+      }
+      for (const programTreeItem of allSelectedNodes) {
+        const program = programTreeItem.program;
         const attributeHeadings = Object.keys(program);
         let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
         webText += "<tbody>";
@@ -26,31 +33,34 @@ export function getShowAttributesCommand() {
           webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${program[heading]}</td></tr>`;
         }
         webText += "</tbody>";
-
+        
         const webviewHTML = getAttributesHtml(program.program, webText);
         const column = window.activeTextEditor
-          ? window.activeTextEditor.viewColumn
-          : undefined;
+        ? window.activeTextEditor.viewColumn
+        : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
-          `CICS Program ${node.parentRegion.label}(${program.program})`,
+          `CICS Program ${programTreeItem.parentRegion.label}(${program.program})`,
           column || 1,
           { enableScripts: true }
-        );
-        panel.webview.html = webviewHTML;
-      } else {
-        window.showErrorMessage("No CICS program selected");
+          );
+          panel.webview.html = webviewHTML;
+        }
       }
-    }
   );
 }
 
-export function getShowRegionAttributes() {
+export function getShowRegionAttributes(treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.showRegionAttributes",
     async (node) => {
-      if (node) {
-        const region = node.region;
+      const allSelectedNodes = findSelectedNodes(treeview, CICSRegionTree, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS region selected");
+        return;
+      }
+      for (const regionTree of allSelectedNodes) {
+        const region = regionTree.region;
         const attributeHeadings = Object.keys(region);
         let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..." /></th><th class="valueHeading">Value</th></tr></thead>`;
         webText += "<tbody>";
@@ -59,20 +69,18 @@ export function getShowRegionAttributes() {
         }
         webText += "</tbody>";
 
-        const webviewHTML = getAttributesHtml(node.getRegionName(), webText);
+        const webviewHTML = getAttributesHtml(regionTree.getRegionName(), webText);
 
         const column = window.activeTextEditor
           ? window.activeTextEditor.viewColumn
           : undefined;
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
-          `CICS Region ${node.getRegionName()}`,
+          `CICS Region ${regionTree.getRegionName()}`,
           column || 1,
           { enableScripts: true }
         );
         panel.webview.html = webviewHTML;
-      } else {
-        window.showErrorMessage("No CICS region selected");
       }
     }
   );

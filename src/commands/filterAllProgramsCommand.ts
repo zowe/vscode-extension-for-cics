@@ -9,26 +9,35 @@
 *
 */
 
-import { commands } from "vscode";
+import { commands, TreeView, window } from "vscode";
+import { CICSCombinedProgramTree } from "../trees/CICSCombinedProgramTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
-export function getFilterAllProgramsCommand(tree: CICSTree) {
+export function getFilterAllProgramsCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterAllPrograms",
     async (node) => {
+      const selection = treeview.selection;
+      let chosenNode;
       if (node) {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        const pattern = await getPatternFromFilter("Program", persistentStorage.getProgramSearchHistory());
-        if (!pattern) {
-          return;
-        }
-        await persistentStorage.addProgramSearchHistory(pattern!);
-        node.setFilter(pattern!);
-        await node.loadContents(tree, node.getParent().getGroupName());
-        tree._onDidChangeTreeData.fire(undefined);
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSCombinedProgramTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS 'All Programs' tree selected");
+        return;
       }
+      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const pattern = await getPatternFromFilter("Program", persistentStorage.getProgramSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addProgramSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      await chosenNode.loadContents(tree, chosenNode.getParent().getGroupName());
+      tree._onDidChangeTreeData.fire(undefined);
     }
   );
 }
