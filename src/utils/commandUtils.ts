@@ -13,7 +13,7 @@ export function findSelectedNodes(treeview: TreeView<any>, instanceOf:any, click
     if (clickedNode) {
         const selectedNodes = selection.filter((selectedNode) => (selectedNode !== clickedNode));
         allSelectedNodes = [clickedNode, ...selectedNodes];
-        allSelectedNodes = selection.filter(selectedNode => selectedNode instanceof instanceOf);
+        allSelectedNodes = allSelectedNodes.filter((selectedNode) => selectedNode instanceof instanceOf);
     }
     // executed from command palette
     else if (selection.length) {
