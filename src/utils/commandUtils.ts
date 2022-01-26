@@ -9,7 +9,7 @@ import { TreeView } from "vscode";
  */
 export function findSelectedNodes(treeview: TreeView<any>, instanceOf:any, clickedNode?:any){
     const selection = treeview.selection;
-    let allSelectedNodes: any;
+    let allSelectedNodes = [];
     if (clickedNode) {
         const selectedNodes = selection.filter((selectedNode) => (selectedNode !== clickedNode));
         allSelectedNodes = [clickedNode, ...selectedNodes];
