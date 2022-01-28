@@ -9,7 +9,7 @@
 *
 */
 
-import { commands, TreeView, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/FilterUtils";
@@ -20,7 +20,7 @@ export function getFilterTransactionCommand(tree: CICSTree, treeview: TreeView<a
     "cics-extension-for-zowe.filterTransactions",
     async (node) => {
       const selection = treeview.selection;
-      let chosenNode;
+      let chosenNode: CICSTransactionTree;
       if (node) {
         chosenNode = node;
       } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSTransactionTree) {
@@ -36,8 +36,17 @@ export function getFilterTransactionCommand(tree: CICSTree, treeview: TreeView<a
       }
       await persistentStorage.addTransactionSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
-      await chosenNode.loadContents();
-      tree._onDidChangeTreeData.fire(undefined);
+      window.withProgress({
+        title: 'Loading Transactions',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of transactions");
+        });
+        await chosenNode.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
+      });
     }
   );
 }
