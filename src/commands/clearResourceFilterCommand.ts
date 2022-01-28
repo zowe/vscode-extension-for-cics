@@ -9,7 +9,7 @@
 *
 */
 
-import { commands, TreeView, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
@@ -30,8 +30,17 @@ export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView
       }
       for (const node of allSelectedNodes) {
         node.clearFilter();
+        window.withProgress({
+          title: 'Loading Resources',
+          location: ProgressLocation.Notification,
+          cancellable: false
+        }, async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of resources");
+          });
         await node.loadContents();
         tree._onDidChangeTreeData.fire(undefined);
+        });
       }
     }
   );
