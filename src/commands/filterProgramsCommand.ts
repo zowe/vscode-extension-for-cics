@@ -9,7 +9,7 @@
 *
 */
 
-import { commands, TreeView, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/FilterUtils";
@@ -20,7 +20,7 @@ export function getFilterProgramsCommand(tree: CICSTree, treeview: TreeView<any>
     "cics-extension-for-zowe.filterPrograms",
     async (node) => {
       const selection = treeview.selection;
-      let chosenNode;
+      let chosenNode: CICSProgramTree;
       if (node) {
         chosenNode = node;
       } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSProgramTree) {
@@ -36,8 +36,17 @@ export function getFilterProgramsCommand(tree: CICSTree, treeview: TreeView<any>
       }
       await persistentStorage.addProgramSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
+      window.withProgress({
+        title: 'Loading Programs',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of programs");
+        });
       await chosenNode.loadContents();
       tree._onDidChangeTreeData.fire(undefined);
+      });
     }
   );
 }
