@@ -137,7 +137,8 @@ export class CICSCombinedProgramTree extends TreeItem {
             this.parentPlex.getProfile(),
             this.parentPlex.getPlexName(),
             this.constant,
-            criteria
+            criteria,
+            this.getParent().getGroupName()
             );
           if (cacheTokenInfo) {
             // record count may have updated

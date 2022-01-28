@@ -78,7 +78,13 @@ export class CICSCombinedLocalFileTree extends TreeItem {
                   parseInt(recordsCount, 10)
                   );
               } else {
-                allLocalFiles = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+                allLocalFiles = await ProfileManagement.getCachedResources(
+                  this.parentPlex.getProfile(),
+                  cacheTokenInfo.cacheToken,
+                  this.constant,
+                  1,
+                  this.incrementCount
+                  );
                 count = parseInt(recordsCount);
               }
                 this.addLocalFilesUtil([], allLocalFiles, count);
@@ -133,7 +139,12 @@ export class CICSCombinedLocalFileTree extends TreeItem {
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {
-        const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant);
+        const cacheTokenInfo = await ProfileManagement.generateCacheToken(
+          this.parentPlex.getProfile(),
+          this.parentPlex.getPlexName(),
+          this.constant,
+          this.getParent().getGroupName()
+          );
           if (cacheTokenInfo) {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;

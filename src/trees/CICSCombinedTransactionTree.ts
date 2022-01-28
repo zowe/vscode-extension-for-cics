@@ -125,7 +125,8 @@ export class CICSCombinedTransactionsTree extends TreeItem {
         const cacheTokenInfo = await ProfileManagement.generateCacheToken(
           this.parentPlex.getProfile(),
           this.parentPlex.getPlexName(),
-          this.constant
+          this.constant,
+          this.getParent().getGroupName()
           );
           if (cacheTokenInfo) {
             // record count may have updated
