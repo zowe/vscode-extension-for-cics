@@ -9,7 +9,7 @@
 *
 */
 
-import { commands, TreeView, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/FilterUtils";
@@ -20,7 +20,7 @@ export function getFilterLocalFilesCommand(tree: CICSTree, treeview: TreeView<an
     "cics-extension-for-zowe.filterLocalFiles",
     async (node) => {
       const selection = treeview.selection;
-      let chosenNode;
+      let chosenNode: CICSLocalFileTree;
       if (node) {
         chosenNode = node;
       } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSLocalFileTree) {
@@ -36,8 +36,17 @@ export function getFilterLocalFilesCommand(tree: CICSTree, treeview: TreeView<an
       }
       await persistentStorage.addLocalFileSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
-      await chosenNode.loadContents();
-      tree._onDidChangeTreeData.fire(undefined);
+      window.withProgress({
+        title: 'Loading Local Files',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of local files");
+        });
+        await chosenNode.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
+      });
     }
   );
 }
