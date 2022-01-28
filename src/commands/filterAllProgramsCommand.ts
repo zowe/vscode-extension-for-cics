@@ -36,7 +36,7 @@ export function getFilterAllProgramsCommand(tree: CICSTree, treeview: TreeView<a
       }
       await persistentStorage.addProgramSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
-      await chosenNode.loadContents(tree, chosenNode.getParent().getGroupName());
+      await chosenNode.loadContents(tree);
       tree._onDidChangeTreeData.fire(undefined);
     }
   );

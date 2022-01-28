@@ -133,20 +133,17 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       if (node.element.getActiveFilter()) {
-        const group = node.element.getParent().getGroupName();
-        node.element.loadContents(treeDataProv, group);
+        node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
       if (node.element.getActiveFilter()) {
-        const group = node.element.getParent().getGroupName();
-        node.element.loadContents(treeDataProv, group);
+        node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
       if (node.element.getActiveFilter()) {
-        const group = node.element.getParent().getGroupName();
-        node.element.loadContents(treeDataProv, group);
+        node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {

@@ -88,7 +88,7 @@ export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<an
                 //@ts-ignore
                 if (allLocalFileTreeTree.collapsibleState === 2 && allLocalFileTreeTree.getActiveFilter()) {
                   //@ts-ignore
-                  await allLocalFileTreeTree.loadContents(tree, allLocalFileTreeTree.getParent().getGroupName());
+                  await allLocalFileTreeTree.loadContents(tree);
                 }
               }
             } catch(error) {

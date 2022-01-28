@@ -36,7 +36,7 @@ export function getFilterAllLocalFilesCommand(tree: CICSTree, treeview: TreeView
       }
       await persistentStorage.addLocalFileSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
-      await chosenNode.loadContents(tree, chosenNode.getParent().getGroupName());
+      await chosenNode.loadContents(tree);
       tree._onDidChangeTreeData.fire(undefined);
     }
   );

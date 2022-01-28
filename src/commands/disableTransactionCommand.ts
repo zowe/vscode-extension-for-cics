@@ -105,7 +105,7 @@ export function getDisableTransactionCommand(tree: CICSTree, treeview: TreeView<
               //@ts-ignore
               if (allTransactionTree.collapsibleState === 2 && allTransactionTree.getActiveFilter()) {
                 //@ts-ignore
-                await allTransactionTree.loadContents(tree, allTransactionTree.getParent().getGroupName());
+                await allTransactionTree.loadContents(tree);
               }
             }
           } catch(error) {

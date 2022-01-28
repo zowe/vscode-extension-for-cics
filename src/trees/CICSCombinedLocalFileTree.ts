@@ -43,7 +43,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
     this.constant = "CICSLocalFile";
     }
 
-    public async loadContents(tree : CICSTree, group?: string){
+    public async loadContents(tree: CICSTree){
       window.withProgress({
         title: 'Loading Local Files',
         location: ProgressLocation.Notification,
@@ -63,7 +63,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
             this.parentPlex.getPlexName(),
             this.constant,
             criteria,
-            group
+            this.getParent().getGroupName()
             );
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;

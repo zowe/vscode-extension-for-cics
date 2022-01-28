@@ -82,7 +82,7 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
               //@ts-ignore
               if (allTransactionTree.collapsibleState === 2 && allTransactionTree.getActiveFilter()) {
                 //@ts-ignore
-                await allTransactionTree.loadContents(tree, allTransactionTree.getParent().getGroupName());
+                await allTransactionTree.loadContents(tree);
               }
             }
           } catch (error) {

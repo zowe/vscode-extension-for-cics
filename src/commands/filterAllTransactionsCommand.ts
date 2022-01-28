@@ -36,7 +36,7 @@ export function getFilterAllTransactionsCommand(tree: CICSTree, treeview: TreeVi
       }
       await persistentStorage.addTransactionSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
-      await chosenNode.loadContents(tree, chosenNode.getParent().getGroupName());
+      await chosenNode.loadContents(tree);
       tree._onDidChangeTreeData.fire(undefined);
     }
   );
