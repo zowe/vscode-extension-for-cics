@@ -9,64 +9,44 @@
 *
 */
 
-import { commands, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSTree } from "../trees/CICSTree";
-import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
-import { isTheia } from "../utils/theiaCheck";
 
-export function getFilterLocalFilesCommand(tree: CICSTree) {
+export function getFilterLocalFilesCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterLocalFiles",
     async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: CICSLocalFileTree;
       if (node) {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        let pattern: string;
-        const desc = new FilterDescriptor("\uFF0B Create New Local File Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
-        const items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
-          return { label: loadedFilter };
-        });
-        if (isTheia()) {
-          const choice = await window.showQuickPick([desc, ...items]);
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-
-          if (choice === desc) {
-            pattern = await window.showInputBox() || "";
-            if (!pattern) {
-              window.showInformationMessage( "You must enter a pattern.");
-              return;
-          }
-          } else {
-            pattern = choice.label;
-          }
-        } else {
-          const quickpick = window.createQuickPick();
-          quickpick.items = [desc, ...items];
-          quickpick.placeholder = "Select past filter or create new...";
-          quickpick.ignoreFocusOut = true;
-          quickpick.show();
-          const choice = await resolveQuickPickHelper(quickpick);
-          quickpick.hide();
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-          if (choice instanceof FilterDescriptor) {
-            if (quickpick.value) {
-              pattern = quickpick.value.replace(/\s/g, '');
-            }
-          } else {
-            pattern = choice.label.replace(/\s/g, '');
-          }
-        }
-        await persistentStorage.addLocalFileSearchHistory(pattern!);
-        node.setFilter(pattern!);
-        await node.loadContents();
-        tree._onDidChangeTreeData.fire(undefined);
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSLocalFileTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS local file tree selected");
+        return;
       }
+      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const pattern = await getPatternFromFilter("Local File", persistentStorage.getLocalFileSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addLocalFileSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      window.withProgress({
+        title: 'Loading Local Files',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of local files");
+        });
+        await chosenNode.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
+      });
     }
   );
 }

@@ -9,65 +9,44 @@
 *
 */
 
-import { commands, window } from "vscode";
+import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTree } from "../trees/CICSTree";
-import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
-import { isTheia } from "../utils/theiaCheck";
 
-export function getFilterProgramsCommand(tree: CICSTree) {
+export function getFilterProgramsCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterPrograms",
     async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: CICSProgramTree;
       if (node) {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        let pattern: string;
-        const desc = new FilterDescriptor("\uFF0B Create New Program Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
-        const items = persistentStorage.getProgramSearchHistory().map(loadedFilter => {
-          return { label: loadedFilter };
-        });
-
-        if (isTheia()) {
-          const choice = await window.showQuickPick([desc, ...items]);
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-
-          if (choice === desc) {
-            pattern = await window.showInputBox() || "";
-            if (!pattern) {
-              window.showInformationMessage( "You must enter a pattern.");
-              return;
-          }
-          } else {
-            pattern = choice.label;
-          }
-        } else {
-          const quickpick = window.createQuickPick();
-          quickpick.items = [desc, ...items];
-          quickpick.placeholder = "Select past filter or create new...";
-          quickpick.ignoreFocusOut = true;
-          quickpick.show();
-          const choice = await resolveQuickPickHelper(quickpick);
-          quickpick.hide();
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-          if (choice instanceof FilterDescriptor) {
-            if (quickpick.value) {
-              pattern = quickpick.value.replace(/\s/g, '');
-            }
-          } else {
-            pattern = choice.label.replace(/\s/g, '');
-          }
-        }
-        await persistentStorage.addProgramSearchHistory(pattern!);
-        node.setFilter(pattern!);
-        await node.loadContents();
-        tree._onDidChangeTreeData.fire(undefined);
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSProgramTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS program tree selected");
+        return;
       }
+      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const pattern = await getPatternFromFilter("Program", persistentStorage.getProgramSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addProgramSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      window.withProgress({
+        title: 'Loading Programs',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of programs");
+        });
+      await chosenNode.loadContents();
+      tree._onDidChangeTreeData.fire(undefined);
+      });
     }
   );
 }

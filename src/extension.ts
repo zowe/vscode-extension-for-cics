@@ -17,7 +17,7 @@ import { getNewCopyCommand } from "./commands/newCopyCommand";
 import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
-  getShowAttributesCommand,
+  getShowProgramAttributesCommand,
   getShowRegionAttributes,
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
@@ -26,7 +26,7 @@ import { CICSTree } from "./trees/CICSTree";
 import { getShowTransactionAttributesCommand } from "./commands/showTransactionAttributesCommand";
 import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttributesCommand";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
-import { getClearProgramFilterCommand } from "./commands/clearProgramFilterCommand";
+import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
@@ -39,16 +39,15 @@ import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
 import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
 import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
-import { CICSRegionTree } from "./trees/CICSRegionTree";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
-import { CICSCombinedProgramTree } from "./trees/CICSCombinedProgramTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
-import { CICSCombinedTransactionsTree } from "./trees/CICSCombinedTransactionTree";
-import { CICSCombinedLocalFileTree } from "./trees/CICSCombinedLocalFileTree";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
 import { getIconPathInResources } from "./utils/getIconPath";
+import { plexExpansionHandler } from "./utils/plexExpansionHandler";
+import { sessionExpansionHandler } from "./utils/sessionExpansionHandler";
+import { regionContainerExpansionHandler } from "./utils/regionContainerExpansionHandler";
 
 export async function activate(context: ExtensionContext) {
 
@@ -75,75 +74,20 @@ export async function activate(context: ExtensionContext) {
 
   treeview.onDidExpandElement(async (node) => {
     if (node.element.contextValue.includes("cicssession.")) {
-      let profile : any;
       try {
-        profile = await ProfileManagement.getProfilesCache().loadNamedProfile(node.element.label?.toString()!, 'cics');
-        await treeDataProv.loadProfile(profile, treeDataProv.getLoadedProfiles().indexOf(node.element), node.element);
+        await sessionExpansionHandler(node.element, treeDataProv);
       } catch (error) {
         console.log(error);
       }
     } else if (node.element.contextValue.includes("cicsplex.")) {
       try {
-        const plexProfile = node.element.getProfile();
-        const combinedProgramTree = new CICSCombinedProgramTree(node.element);
-        const combinedTransactionTree = new CICSCombinedTransactionsTree(node.element);
-        const combinedLocalFileTree = new CICSCombinedLocalFileTree(node.element);
-        if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          window.withProgress({
-            title: 'Loading region',
-            location: ProgressLocation.Notification,
-            cancellable: false
-          }, async (_, token) => {
-            token.onCancellationRequested(() => {
-              console.log("Cancelling the loading of the region");
-            });
-            await node.element.loadOnlyRegion();
-            treeDataProv._onDidChangeTreeData.fire(undefined);
-          });
-        } else {
-          window.withProgress({
-            title: 'Loading regions',
-            location: ProgressLocation.Notification,
-            cancellable: false
-          }, async (_, token) => {
-            token.onCancellationRequested(() => {
-              console.log("Cancelling the loading of regions");
-            });
-            const regionInfo = await ProfileManagement.getRegionInfoInPlex(node.element);
-            if (regionInfo) {   
-              node.element.clearChildren();  
-              let activeCount = 0;
-              let totalCount = 0;
-              const regionFilterRegex = node.element.getActiveFilter() ? RegExp(node.element.getActiveFilter()) : undefined;
-              node.element.addRegionContainer();
-              const regionContainer = node.element.getChildren().filter((child:any) => child.contextValue.includes("cicsregionscontainer."))[0];
-              for (const region of regionInfo) {
-                // If region filter exists then match it
-                if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
-                  const newRegionTree = new CICSRegionTree(region.cicsname, region, node.element.getParent(), node.element);
-                  regionContainer.addRegion(newRegionTree);
-                  totalCount += 1;
-                  if (region.cicsstate === 'ACTIVE') {
-                    activeCount += 1;
-                  }
-                }
-              }
-              if (regionContainer.getChildren().length > 1) {
-                node.element.addCombinedTree(combinedProgramTree);
-                node.element.addCombinedTree(combinedTransactionTree);
-                node.element.addCombinedTree(combinedLocalFileTree);
-              }
-              regionContainer.setLabel(`Regions [${activeCount}/${totalCount}]`);
-              // Keep plex open after label change
-              node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-            }
-            treeDataProv._onDidChangeTreeData.fire(undefined);
-            });
-          }
-        treeDataProv._onDidChangeTreeData.fire(undefined);
+        await plexExpansionHandler(node.element, treeDataProv);
       } catch (error) {
         console.log(error);
-        const newSessionTree = new CICSSessionTree(node.element.getParent().profile, getIconPathInResources("profile-disconnected-dark.svg","profile-disconnected-light.svg"));
+        const newSessionTree = new CICSSessionTree(
+          node.element.getParent().profile,
+          getIconPathInResources("profile-disconnected-dark.svg","profile-disconnected-light.svg")
+          );
         treeDataProv.loadedProfiles.splice(treeDataProv.getLoadedProfiles().indexOf(node.element.getParent()), 1, newSessionTree);
         treeDataProv._onDidChangeTreeData.fire(undefined);
       }
@@ -204,6 +148,7 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
       node.element.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
+      await regionContainerExpansionHandler(node.element, treeDataProv);
       treeDataProv._onDidChangeTreeData.fire(undefined);
     }
   });
@@ -236,7 +181,7 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
     getRemoveSessionCommand(treeDataProv, treeview),
-    getUpdateSessionCommand(treeDataProv),
+    getUpdateSessionCommand(treeDataProv, treeview),
     getDeleteSessionCommand(treeDataProv, treeview),
 
     getRefreshCommand(treeDataProv),
@@ -254,25 +199,24 @@ export async function activate(context: ExtensionContext) {
     getCloseLocalFileCommand(treeDataProv, treeview),
     getOpenLocalFileCommand(treeDataProv, treeview),
 
-    getShowRegionAttributes(),
-    getShowAttributesCommand(),
-    getShowTransactionAttributesCommand(),
-    getShowLocalFileAttributesCommand(),
+    getShowRegionAttributes(treeview),
+    getShowProgramAttributesCommand(treeview),
+    getShowTransactionAttributesCommand(treeview),
+    getShowLocalFileAttributesCommand(treeview),
 
-    getFilterProgramsCommand(treeDataProv),
-    getFilterTransactionCommand(treeDataProv),
-    getFilterLocalFilesCommand(treeDataProv),
-    getFilterAllProgramsCommand(treeDataProv),
-    getFilterAllTransactionsCommand(treeDataProv),
-    getFilterAllLocalFilesCommand(treeDataProv),
+    getFilterProgramsCommand(treeDataProv, treeview),
+    getFilterTransactionCommand(treeDataProv, treeview),
+    getFilterLocalFilesCommand(treeDataProv, treeview),
+    getFilterAllProgramsCommand(treeDataProv, treeview),
+    getFilterAllTransactionsCommand(treeDataProv, treeview),
+    getFilterAllLocalFilesCommand(treeDataProv, treeview),
     
-    getFilterPlexResources(treeDataProv),
+    getFilterPlexResources(treeDataProv, treeview),
 
-    getClearProgramFilterCommand(treeDataProv),
-    getClearPlexFilterCommand(treeDataProv),
+    getClearResourceFilterCommand(treeDataProv, treeview),
+    getClearPlexFilterCommand(treeDataProv, treeview),
     
     viewMoreCommand(treeDataProv, treeview)
   );
 }
 
-export function deactivate() { }

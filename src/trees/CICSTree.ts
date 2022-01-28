@@ -112,6 +112,7 @@ export class CICSTree
 
                 for (const item of plexInfo) {
                     if (item.plexname === null) {
+                        // No plex
 
                         const session = new Session({
                             type: "basic",
@@ -131,15 +132,27 @@ export class CICSTree
                                 regionName: item.regions[0].applid
                             });
                             https.globalAgent.options.rejectUnauthorized = undefined;
-                            const newRegionTree = new CICSRegionTree(item.regions[0].applid, regionsObtained.response.records.cicsregion, newSessionTree, undefined);
+                            const newRegionTree = new CICSRegionTree(
+                                item.regions[0].applid,
+                                regionsObtained.response.records.cicsregion,
+                                newSessionTree,
+                                undefined
+                                );
                             newSessionTree.addRegion(newRegionTree);
                         } catch (error) {
                             https.globalAgent.options.rejectUnauthorized = undefined;
                             console.log(error);
                         }
                     } else {
-                        const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree);
-                        newSessionTree.addPlex(newPlexTree);
+                        if (item.group) {
+                            const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree, profile!.profile!.regionName);
+                            newPlexTree.setLabel(`${item.plexname} - ${profile!.profile!.regionName}`);
+                            newSessionTree.addPlex(newPlexTree);
+                        } else {
+                            //Plex
+                            const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree);
+                            newSessionTree.addPlex(newPlexTree);
+                        }
                     }
                 }
                 if (sessionTree) {
@@ -155,7 +168,10 @@ export class CICSTree
                 this._onDidChangeTreeData.fire(undefined);
             } catch (error) {
                 https.globalAgent.options.rejectUnauthorized = undefined;
-                newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-disconnected-dark.svg", "profile-disconnected-light.svg"));
+                newSessionTree = new CICSSessionTree(
+                    profile,
+                    getIconPathInResources("profile-disconnected-dark.svg", "profile-disconnected-light.svg")
+                    );
                 if (sessionTree) {
                     this.loadedProfiles.splice(position!, 1, newSessionTree);
                 }

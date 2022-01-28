@@ -9,65 +9,35 @@
 *
 */
 
-import { commands, window } from "vscode";
+import { commands, TreeView, window } from "vscode";
+import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
-import { isTheia } from "../utils/theiaCheck";
 
-export function getFilterAllTransactionsCommand(tree: CICSTree) {
+export function getFilterAllTransactionsCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterAllTransactions",
     async (node) => {
+      const selection = treeview.selection;
+      let chosenNode;
       if (node) {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        let pattern: string;
-        const desc = new FilterDescriptor("\uFF0B Create New Transaction Filter (use a comma to separate multiple patterns e.g. LG*,I*)");
-        const items = persistentStorage.getTransactionSearchHistory().map(loadedFilter => {
-          return { label: loadedFilter };
-        });
-
-        if (isTheia()) {
-          const choice = await window.showQuickPick([desc, ...items]);
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-
-          if (choice === desc) {
-            pattern = await window.showInputBox() || "";
-            if (!pattern) {
-              window.showInformationMessage( "You must enter a pattern.");
-              return;
-          }
-          } else {
-            pattern = choice.label;
-          }
-        } else {
-          const quickpick = window.createQuickPick();
-          quickpick.items = [desc, ...items];
-          quickpick.placeholder = "Select past filter or create new...";
-          quickpick.ignoreFocusOut = true;
-          quickpick.show();
-          const choice = await resolveQuickPickHelper(quickpick);
-          quickpick.hide();
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-          if (choice instanceof FilterDescriptor) {
-            if (quickpick.value) {
-              pattern = quickpick.value.replace(/\s/g, '');
-            }
-          } else {
-            pattern = choice.label.replace(/\s/g, '');
-          }
-        }
-        await persistentStorage.addTransactionSearchHistory(pattern!);
-        node.setFilter(pattern!);
-        await node.loadContents(tree);
-        tree._onDidChangeTreeData.fire(undefined);
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSCombinedTransactionsTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS 'All Transactions' tree selected");
+        return;
       }
+      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const pattern = await getPatternFromFilter("Transaction", persistentStorage.getTransactionSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addTransactionSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      await chosenNode.loadContents(tree);
+      tree._onDidChangeTreeData.fire(undefined);
     }
   );
 }

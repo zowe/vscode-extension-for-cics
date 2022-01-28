@@ -9,107 +9,75 @@
 *
 */
 
-import { commands, TreeItemCollapsibleState, window } from "vscode";
+import { commands, ProgressLocation, TreeItemCollapsibleState, TreeView, window } from "vscode";
+import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { FilterDescriptor, resolveQuickPickHelper } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
-import { isTheia } from "../utils/theiaCheck";
 
-export function getFilterPlexResources(tree: CICSTree) {
+export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterPlexResources",
     async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: any;
       if (node) {
-        const plex = node.getParent();
-        const plexProfile = plex.getProfile();
-        let resourceToFilter;
-        if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
-        } else {
-          resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
-        }
-        const filterDescriptorText = `\uFF0B Create New ${resourceToFilter} Filter (use a comma to separate multiple patterns e.g. LG*,I*)`;
-
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        let pattern: string;
-        const desc = new FilterDescriptor(filterDescriptorText);
-
-        let items;
-        if (resourceToFilter === "Programs"){
-            items = persistentStorage.getProgramSearchHistory().map(loadedFilter => {
-                return { label: loadedFilter };
-            });
-        } else if(resourceToFilter === "Local Transactions"){
-            items = persistentStorage.getTransactionSearchHistory().map(loadedFilter => {
-                return { label: loadedFilter };
-            });
-        } else if (resourceToFilter === "Local Files"){
-            items = persistentStorage.getLocalFileSearchHistory().map(loadedFilter => {
-                return { label: loadedFilter };
-            });
-        } else if (resourceToFilter === "Regions") {
-            items = persistentStorage.getRegionSearchHistory().map(loadedFilter => {
-              return { label: loadedFilter };
-            });
-        } else {
-            window.showInformationMessage("No Selection Made");
-            return;
-        }
-        
-        if (isTheia()) {
-          const choice = await window.showQuickPick([desc, ...items]);
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-
-          if (choice === desc) {
-            pattern = await window.showInputBox() || "";
-            if (!pattern) {
-              window.showInformationMessage( "You must enter a pattern.");
-              return;
-          }
-          } else {
-            pattern = choice.label;
-          }
-        } else {
-          const quickpick = window.createQuickPick();
-          quickpick.items = [desc, ...items];
-          quickpick.placeholder = "Select past filter or create new...";
-          quickpick.ignoreFocusOut = true;
-          quickpick.show();
-          const choice = await resolveQuickPickHelper(quickpick);
-          quickpick.hide();
-          if (!choice) {
-            window.showInformationMessage("No Selection Made");
-            return;
-          }
-          if (choice instanceof FilterDescriptor) {
-            if (quickpick.value) {
-              pattern = quickpick.value.replace(/\s/g, '');;
-            }
-          } else {
-            pattern = choice.label.replace(/\s/g, '');;
-          }
-        }
-
-        if (resourceToFilter === "Programs"){
-            await persistentStorage.addProgramSearchHistory(pattern!);
-        } else if(resourceToFilter === "Local Transactions"){
-            await persistentStorage.addTransactionSearchHistory(pattern!);
-        } else if (resourceToFilter === "Local Files"){
-            await persistentStorage.addLocalFileSearchHistory(pattern!);
-        } else if (resourceToFilter === "Regions"){
-            await persistentStorage.addRegionSearchHistory(pattern!);
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSRegionsContainer) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No 'Regions' node selected");
+        return;
       }
+      const plex = chosenNode.getParent();
+      const plexProfile = plex.getProfile();
+      let resourceToFilter: any;
+      if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
+        resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
+      } else {
+        resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
+      }
+      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      let resourceHistory;
+      if (resourceToFilter === "Programs"){
+        resourceHistory = persistentStorage.getProgramSearchHistory();
+      } else if(resourceToFilter === "Local Transactions"){
+        resourceHistory = persistentStorage.getTransactionSearchHistory();
+      } else if (resourceToFilter === "Local Files"){
+        resourceHistory = persistentStorage.getLocalFileSearchHistory();
+      } else if (resourceToFilter === "Regions") {
+        resourceHistory = persistentStorage.getRegionSearchHistory();
+      } else {
+          window.showInformationMessage("No Selection Made");
+          return;
+      }
+      const pattern = await getPatternFromFilter(resourceToFilter.slice(0,-1), resourceHistory);
+      if (pattern) {
+        if (resourceToFilter === "Programs"){
+            await persistentStorage.addProgramSearchHistory(pattern);
+        } else if(resourceToFilter === "Local Transactions"){
+            await persistentStorage.addTransactionSearchHistory(pattern);
+        } else if (resourceToFilter === "Local Files"){
+            await persistentStorage.addLocalFileSearchHistory(pattern);
+        } else if (resourceToFilter === "Regions"){
+            await persistentStorage.addRegionSearchHistory(pattern);
+        }
 
-        node.collapsibleState = TreeItemCollapsibleState.Expanded;
+        chosenNode.collapsibleState = TreeItemCollapsibleState.Expanded;
 
         if (resourceToFilter === "Regions"){
-          node.filterRegions(pattern!, tree);
+          chosenNode.filterRegions(pattern!, tree);
         } else {
-          for (const region of node.children){
+          window.withProgress({
+            title: 'Loading Resources',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (_, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the loading of resources");
+            });
+          for (const region of chosenNode.children){
             if (region instanceof CICSRegionTree) {
               if (region.getIsActive()) {
                 let treeToFilter;
@@ -129,9 +97,11 @@ export function getFilterPlexResources(tree: CICSTree) {
               }
             }
           }
+          tree._onDidChangeTreeData.fire(undefined);
+          });
         }
         tree._onDidChangeTreeData.fire(undefined);
       }
-    }
+  }
   );
 }

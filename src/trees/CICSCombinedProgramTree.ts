@@ -44,7 +44,7 @@ export class CICSCombinedProgramTree extends TreeItem {
     this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
     }
 
-    public async loadContents(tree : CICSTree){
+    public async loadContents(tree: CICSTree){
       window.withProgress({
         title: 'Loading Programs',
         location: ProgressLocation.Notification,
@@ -59,13 +59,19 @@ export class CICSCombinedProgramTree extends TreeItem {
             criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
           }
           let count;
-          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(
+            this.parentPlex.getProfile(),
+            this.parentPlex.getPlexName(),
+            this.constant,
+            criteria,
+            this.getParent().getGroupName()
+            );
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allPrograms;
               if (recordsCount <= 500) {
-                allPrograms = await ProfileManagement.getAllResourcesInPlex(this.parentPlex, this.constant, criteria);
+                allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
               } else {
                 allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
                 count = parseInt(recordsCount);
@@ -127,7 +133,13 @@ export class CICSCombinedProgramTree extends TreeItem {
           if (this.activeFilter) {
             criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
           }
-          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(),this.parentPlex.getPlexName(),this.constant,criteria);
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(
+            this.parentPlex.getProfile(),
+            this.parentPlex.getPlexName(),
+            this.constant,
+            criteria,
+            this.getParent().getGroupName()
+            );
           if (cacheTokenInfo) {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
@@ -141,7 +153,10 @@ export class CICSCombinedProgramTree extends TreeItem {
               );
             if (allPrograms) {
               // @ts-ignore
-              this.addProgramsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSProgramTreeItem):[], allPrograms, count);
+              this.addProgramsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSProgramTreeItem):[], 
+                allPrograms,
+                count
+                );
               tree._onDidChangeTreeData.fire(undefined);
             }
           }
@@ -168,5 +183,9 @@ export class CICSCombinedProgramTree extends TreeItem {
 
     public getActiveFilter() {
       return this.activeFilter;
+    }
+
+    public getParent() {
+      return this.parentPlex;
     }
 }
