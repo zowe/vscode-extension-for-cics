@@ -52,5 +52,6 @@ export async function getPatternFromFilter(resourceName: string, resourceHistory
         window.showInformationMessage( "You must enter a pattern");
         return;
     }
-    return pattern;
+    // Remove whitespace
+    return pattern.replace(/\s/g, "");
 }
