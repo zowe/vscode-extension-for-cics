@@ -49,7 +49,15 @@ To Install CICS Extension for Zowe Explorer see [Installation](./docs/installati
 
 If you already have a Zowe CICS CLI profile the CICS tree will load the default profile on startup.  
 
-If you don't have an existing CICS profile add one by selecting the + button in the CICS tree and choosing the option `Create New Session ...` to open a panel allowing connection details to be defined.  The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number.  The region can be a WUI server in a CICSPlex, or else a stand-alone Single Management Application Programming (SMSS) region.  
+If you don't have an existing CICS profile add one by selecting the + button in the CICS tree and choosing the option `Create New Session ...` to open a panel allowing connection details to be defined.  The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number.  The region can be a WUI server in a CICSPlex, a stand-alone Single Management Application Programming (SMSS) region, or a CICS system group.
+
+If neither of the fields under 'CICS Details' are specified, the profile will show all CICSPlex for the WUI server.  Specify a Plex Name to just view data for a single CICSPlex. 
+
+For a CICSPlex, all managed regions will be shown unless you specify a specific region name. Instead of a region name, you may also enter a CICS System Group to allow scoping of resources within the CICSPlex.
+
+For a stand-alone CICS region, the Region Name may be entered but is optional.  Do not enter a CICSPlex name for a stand-alone CICS region.
+
+It is recommended to leave these 'CICS Details' fields blank to test the connection, and then add the plex name and region or system group name later to narrow if needed.  If you are intending to use this profile with the Zowe CICS Command Line Interface (CLI) the region name and plex name are required.  
 
 Configuring a CICS region to have a connection is a system programmer task and more details can be found in [Setting up CMCI with CICSPlex SM](https://www.ibm.com/docs/en/cics-ts/5.3?topic=explorer-setting-up-cmci-cicsplex-sm) or 
 [Setting up CMCI in a stand-alone CICS region](https://www.ibm.com/docs/en/cics-ts/5.3?topic=suace-setting-up-cmci-in-stand-alone-cics-region).  If your CMCI connection is configured to use a self-signed certificate that your PC's trust store doesn't recognize, see [Untrusted TLS certificates](#untrusted-tls-certificates)
