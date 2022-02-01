@@ -20,12 +20,12 @@ export function regionContainerExpansionHandler(regionContiner: CICSRegionsConta
         if (parentPlex.getGroupName()) {
             // CICSGroup
             window.withProgress({
-                title: 'Loading region',
+                title: 'Loading regions',
                 location: ProgressLocation.Notification,
                 cancellable: false
             }, async (_, token) => {
                 token.onCancellationRequested(() => {
-                console.log("Cancelling the loading of the region");
+                console.log("Cancelling the loading of the regions");
                 });
                 regionContiner.clearChildren();
                 await regionContiner.loadRegionsInCICSGroup(tree);

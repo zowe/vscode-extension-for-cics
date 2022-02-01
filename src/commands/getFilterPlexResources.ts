@@ -9,57 +9,75 @@
 *
 */
 
-import { commands, TreeItemCollapsibleState, window } from "vscode";
+import { commands, ProgressLocation, TreeItemCollapsibleState, TreeView, window } from "vscode";
+import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/FilterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
-export function getFilterPlexResources(tree: CICSTree) {
+export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterPlexResources",
     async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: any;
       if (node) {
-        const plex = node.getParent();
-        const plexProfile = plex.getProfile();
-        let resourceToFilter;
-        if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
-        } else {
-          resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
-        }
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        let resourceHistory;
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSRegionsContainer) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No 'Regions' node selected");
+        return;
+      }
+      const plex = chosenNode.getParent();
+      const plexProfile = plex.getProfile();
+      let resourceToFilter: any;
+      if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
+        resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
+      } else {
+        resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
+      }
+      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      let resourceHistory;
+      if (resourceToFilter === "Programs"){
+        resourceHistory = persistentStorage.getProgramSearchHistory();
+      } else if(resourceToFilter === "Local Transactions"){
+        resourceHistory = persistentStorage.getTransactionSearchHistory();
+      } else if (resourceToFilter === "Local Files"){
+        resourceHistory = persistentStorage.getLocalFileSearchHistory();
+      } else if (resourceToFilter === "Regions") {
+        resourceHistory = persistentStorage.getRegionSearchHistory();
+      } else {
+          window.showInformationMessage("No Selection Made");
+          return;
+      }
+      const pattern = await getPatternFromFilter(resourceToFilter.slice(0,-1), resourceHistory);
+      if (pattern) {
         if (resourceToFilter === "Programs"){
-          resourceHistory = persistentStorage.getProgramSearchHistory();
+            await persistentStorage.addProgramSearchHistory(pattern);
         } else if(resourceToFilter === "Local Transactions"){
-          resourceHistory = persistentStorage.getTransactionSearchHistory();
+            await persistentStorage.addTransactionSearchHistory(pattern);
         } else if (resourceToFilter === "Local Files"){
-          resourceHistory = persistentStorage.getLocalFileSearchHistory();
-        } else if (resourceToFilter === "Regions") {
-          resourceHistory = persistentStorage.getRegionSearchHistory();
-        } else {
-            window.showInformationMessage("No Selection Made");
-            return;
-        }
-        const pattern = await getPatternFromFilter(resourceToFilter.slice(0,-1), resourceHistory);
-
-        if (resourceToFilter === "Programs"){
-            await persistentStorage.addProgramSearchHistory(pattern!);
-        } else if(resourceToFilter === "Local Transactions"){
-            await persistentStorage.addTransactionSearchHistory(pattern!);
-        } else if (resourceToFilter === "Local Files"){
-            await persistentStorage.addLocalFileSearchHistory(pattern!);
+            await persistentStorage.addLocalFileSearchHistory(pattern);
         } else if (resourceToFilter === "Regions"){
-            await persistentStorage.addRegionSearchHistory(pattern!);
+            await persistentStorage.addRegionSearchHistory(pattern);
         }
 
-        node.collapsibleState = TreeItemCollapsibleState.Expanded;
+        chosenNode.collapsibleState = TreeItemCollapsibleState.Expanded;
 
         if (resourceToFilter === "Regions"){
-          node.filterRegions(pattern!, tree);
+          chosenNode.filterRegions(pattern!, tree);
         } else {
-          for (const region of node.children){
+          window.withProgress({
+            title: 'Loading Resources',
+            location: ProgressLocation.Notification,
+            cancellable: true
+          }, async (_, token) => {
+            token.onCancellationRequested(() => {
+              console.log("Cancelling the loading of resources");
+            });
+          for (const region of chosenNode.children){
             if (region instanceof CICSRegionTree) {
               if (region.getIsActive()) {
                 let treeToFilter;
@@ -79,9 +97,11 @@ export function getFilterPlexResources(tree: CICSTree) {
               }
             }
           }
+          tree._onDidChangeTreeData.fire(undefined);
+          });
         }
         tree._onDidChangeTreeData.fire(undefined);
       }
-    }
+  }
   );
 }

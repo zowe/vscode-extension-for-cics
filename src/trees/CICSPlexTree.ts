@@ -35,7 +35,6 @@ export class CICSPlexTree extends TreeItem {
     profile: IProfileLoaded,
     sessionTree: CICSSessionTree,
     group?: string,
-    public readonly iconPath = getIconPathInResources("cics-plex-dark.svg", "cics-plex-light.svg")
   ) {
     super(plexName, TreeItemCollapsibleState.Collapsed);
     this.plexName = plexName;
@@ -45,6 +44,10 @@ export class CICSPlexTree extends TreeItem {
     this.resourceFilters = {};
     this.activeFilter = undefined;
     this.groupName = group;
+    this.iconPath = 
+      group ? 
+      getIconPathInResources("cics-system-group-dark.svg ", "cics-system-group-light.svg ") : 
+      getIconPathInResources("cics-plex-dark.svg", "cics-plex-light.svg");
   }
 
   public addRegion(region: CICSRegionTree) {

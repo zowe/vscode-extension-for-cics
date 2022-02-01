@@ -44,7 +44,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
     this.constant = CicsCmciConstants.CICS_LOCAL_TRANSACTION;
     }
 
-    public async loadContents(tree: CICSTree, group?: string){
+    public async loadContents(tree: CICSTree){
       window.withProgress({
         title: 'Loading Local Transactions',
         location: ProgressLocation.Notification,
@@ -59,7 +59,12 @@ export class CICSCombinedTransactionsTree extends TreeItem {
             criteria = toEscapedCriteriaString(this.activeFilter, 'tranid');
           }
           let count;
-          const cacheTokenInfo = await ProfileManagement.generateCacheToken(this.parentPlex.getProfile(), this.parentPlex.getPlexName(), this.constant, criteria, group);
+          const cacheTokenInfo = await ProfileManagement.generateCacheToken(
+            this.parentPlex.getProfile(),
+            this.parentPlex.getPlexName(),
+            this.constant, criteria,
+            this.getParent().getGroupName()
+            );
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
@@ -125,7 +130,8 @@ export class CICSCombinedTransactionsTree extends TreeItem {
         const cacheTokenInfo = await ProfileManagement.generateCacheToken(
           this.parentPlex.getProfile(),
           this.parentPlex.getPlexName(),
-          this.constant
+          this.constant,
+          this.getParent().getGroupName()
           );
           if (cacheTokenInfo) {
             // record count may have updated

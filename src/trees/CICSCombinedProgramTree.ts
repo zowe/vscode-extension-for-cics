@@ -44,7 +44,7 @@ export class CICSCombinedProgramTree extends TreeItem {
     this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
     }
 
-    public async loadContents(tree: CICSTree, group?: string){
+    public async loadContents(tree: CICSTree){
       window.withProgress({
         title: 'Loading Programs',
         location: ProgressLocation.Notification,
@@ -64,7 +64,7 @@ export class CICSCombinedProgramTree extends TreeItem {
             this.parentPlex.getPlexName(),
             this.constant,
             criteria,
-            group
+            this.getParent().getGroupName()
             );
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;
@@ -137,7 +137,8 @@ export class CICSCombinedProgramTree extends TreeItem {
             this.parentPlex.getProfile(),
             this.parentPlex.getPlexName(),
             this.constant,
-            criteria
+            criteria,
+            this.getParent().getGroupName()
             );
           if (cacheTokenInfo) {
             // record count may have updated

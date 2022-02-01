@@ -9,15 +9,22 @@
 *
 */
 
-import { commands, window } from "vscode";
+import { commands, TreeView, window } from "vscode";
+import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
+import { findSelectedNodes } from "../utils/commandUtils";
 
-export function getClearPlexFilterCommand(tree: CICSTree) {
+export function getClearPlexFilterCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.clearPlexFilter",
     async (node) => {
-      if (node) {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSRegionsContainer, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICSPlex tree selected");
+        return;
+      }
+      for (const node of allSelectedNodes) {
         const plex = node.getParent();
         const plexProfile = plex.getProfile();
         let resourceToClear;
@@ -25,6 +32,10 @@ export function getClearPlexFilterCommand(tree: CICSTree) {
           resourceToClear = await window.showQuickPick(["Programs", "Local Transactions", "Local Files", "All"]);
         } else {
           resourceToClear = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files", "All"]);
+        }
+        if (!resourceToClear) {
+          window.showInformationMessage("No option selected");
+          return;
         }
         if ((resourceToClear === "Regions" || resourceToClear === "All") && !(plexProfile.profile.regionName && plexProfile.profile.cicsPlex)){
           node.filterRegions("*", tree);
@@ -56,14 +67,9 @@ export function getClearPlexFilterCommand(tree: CICSTree) {
                   }
                 }
               }
-              
+              tree._onDidChangeTreeData.fire(undefined);
           }
         }
-
-        tree._onDidChangeTreeData.fire(undefined);
-
-      } else {
-        window.showErrorMessage("No CICS plex selected");
       }
     }
   );
