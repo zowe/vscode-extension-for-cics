@@ -36,9 +36,9 @@ export class CICSLocalFileTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.LocalFile.Filter')}`;
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.localFile.filter')}`;
     if (!defaultCriteria || defaultCriteria.length === 0) {
-      await workspace.getConfiguration().update('Zowe.CICS.LocalFile.Filter', 'file=*');
+      await workspace.getConfiguration().update('zowe.cics.localFile.filter', 'file=*');
       defaultCriteria = 'file=*';
     }
     let criteria;

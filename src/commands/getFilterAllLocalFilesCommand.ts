@@ -29,7 +29,7 @@ export function getFilterAllLocalFilesCommand(tree: CICSTree, treeview: TreeView
         window.showErrorMessage("No CICS 'All Local Files' tree selected");
         return;
       }
-      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       const pattern = await getPatternFromFilter("Local File", persistentStorage.getLocalFileSearchHistory());
       if (!pattern) {
         return;
