@@ -38,7 +38,7 @@ export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) 
       } else {
         resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
       }
-      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       let resourceHistory;
       if (resourceToFilter === "Programs"){
         resourceHistory = persistentStorage.getProgramSearchHistory();

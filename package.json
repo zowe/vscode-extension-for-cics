@@ -408,8 +408,10 @@
       ]
     },
     "configuration": {
+      "type": "object",
+      "title": "Zowe Explorer for IBM CICS",
       "properties": {
-        "Zowe.CICS.Persistent": {
+        "zowe.cics.persistent": {
           "default": {
             "persistence": true,
             "programSearchHistory": [],
@@ -420,19 +422,19 @@
           "description": "Zowe CICS Extension History",
           "scope": "window"
         },
-        "Zowe.CICS.Program.Filter": {
+        "zowe.cics.program.filter": {
           "type": "string",
           "default": "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
           "description": "Default filter criteria for Programs",
           "scope": "window"
         },
-        "Zowe.CICS.Transaction.Filter": {
+        "zowe.cics.transaction.filter": {
           "type": "string",
           "default": "NOT (program=DFH* OR program=EYU*)",
           "description": "Default filter criteria for Transactions",
           "scope": "window"
         },
-        "Zowe.CICS.LocalFile.Filter": {
+        "zowe.cics.localFile.filter": {
           "type": "string",
           "default": "file=*",
           "description": "Default filter criteria for Local Files",

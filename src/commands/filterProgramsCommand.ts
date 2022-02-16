@@ -29,7 +29,7 @@ export function getFilterProgramsCommand(tree: CICSTree, treeview: TreeView<any>
         window.showErrorMessage("No CICS program tree selected");
         return;
       }
-      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       const pattern = await getPatternFromFilter("Program", persistentStorage.getProgramSearchHistory());
       if (!pattern) {
         return;

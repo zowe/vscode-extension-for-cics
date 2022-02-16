@@ -29,7 +29,7 @@ export function getFilterTransactionCommand(tree: CICSTree, treeview: TreeView<a
         window.showErrorMessage("No CICS transaction tree selected");
         return;
       }
-      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       const pattern = await getPatternFromFilter("Transaction", persistentStorage.getTransactionSearchHistory());
       if (!pattern) {
         return;

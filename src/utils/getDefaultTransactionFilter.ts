@@ -12,9 +12,9 @@
 import { workspace } from "vscode";
 
 export async function getDefaultTransactionFilter() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.Transaction.Filter')}`;
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.transaction.filter')}`;
     if (!defaultCriteria || defaultCriteria.length === 0) {
-      await workspace.getConfiguration().update('Zowe.CICS.Transaction.Filter', 'NOT (program=DFH* OR program=EYU*)');
+      await workspace.getConfiguration().update('zowe.cics.transaction.filter', 'NOT (program=DFH* OR program=EYU*)');
       defaultCriteria = 'NOT (program=DFH* OR program=EYU*)';
     }
     return defaultCriteria;
