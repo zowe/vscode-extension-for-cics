@@ -68,9 +68,22 @@ export class CICSTree
 
             if (profileNameToLoad) {
                 if (profileNameToLoad.label.includes("\uFF0B")) {
-                    //  Create New Profile Form should appear
-
-                    this.createNewProfile();
+                    // const configName = ProfilesCache.getConfigInstance().getTeamConfig().configName;
+                    // let configDir = ProfilesCache.getConfigInstance().getTeamConfig().mHomeDir;
+                    // if (workspace.workspaceFolders) {
+                    //     // Check if config file is present in the workspace
+                    //     const uri = await workspace.findFiles(
+                    //         new RelativePattern(workspace.workspaceFolders[0], configName)
+                    //     );
+                    //     if (uri.length > 0) {
+                    //         configDir = ProfilesCache.getConfigInstance().getTeamConfig().mProjectDir;
+                    //     }
+                    // }
+                    // const filePath = path.join(configDir, configName);
+                    // await openConfigFile(filePath);
+                    window.showInformationMessage("Open and edit your config file to create a new profile");
+                    //  // Old method: Create New Profile Form should appear
+                    //this.createNewProfile();
 
                 } else {
                     const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
