@@ -21,7 +21,7 @@ import { CICSPlexTree } from "../trees/CICSPlexTree";
 
 export class ProfileManagement {
 
-  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('1.18.0');
+  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('2.0.0-next.202112161700');
   private static profilesCache = ProfileManagement.zoweExplorerAPI.getExplorerExtenderApi().getProfilesCache();
 
   constructor() { }
