@@ -48,9 +48,8 @@ import { getIconPathInResources } from "./utils/getIconPath";
 import { plexExpansionHandler } from "./utils/plexExpansionHandler";
 import { sessionExpansionHandler } from "./utils/sessionExpansionHandler";
 import { regionContainerExpansionHandler } from "./utils/regionContainerExpansionHandler";
-import { getSecurityModules, KeytarApi, ProfilesCache, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
-import cicsProfileMeta from "./utils/profileDefinition";
-import { CredentialManagerFactory, Logger, ProfileInfo } from "@zowe/imperative";
+import { KeytarApi } from "@zowe/zowe-explorer-api";
+import { CredentialManagerFactory, Logger } from "@zowe/imperative";
 import { isTheia } from "./utils/theiaCheck";
 
 export async function activate(context: ExtensionContext) {
@@ -59,27 +58,26 @@ export async function activate(context: ExtensionContext) {
   await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
   if (ProfileManagement.apiDoesExist()) {
     try {
-      const zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('2.0.0-next.202112161700');
-      await zoweExplorerAPI.getExplorerExtenderApi().initForZowe('cics', cicsProfileMeta);
-      zoweExplorerAPI.getExplorerExtenderApi().getProfilesCache().registerCustomProfilesType('cics');
-      await zoweExplorerAPI.getExplorerExtenderApi().reloadProfiles("cics");
+      await ProfileManagement.registerCICSProfiles();
+      ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
+      await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
       
-      /**  
-       * 
-       * Testing ProfilesCache config methods 
-       * 
-       * */
-      const mProfileInfo = new ProfileInfo("zowe", {
-        requireKeytar: () => getSecurityModules("keytar", isTheia())!,
-      });
-      //const mProfileInfo = new ProfileInfo("zowe");
-      ProfilesCache.createConfigInstance(mProfileInfo);
-      const configInstance = ProfilesCache.getConfigInstance();
-      /**  
-       * 
-       * End of testing 
-       * 
-       * */
+      // /**  
+      //  * 
+      //  * Testing ProfilesCache config methods 
+      //  * 
+      //  * */
+      // const mProfileInfo = new ProfileInfo("zowe", {
+      //   requireKeytar: () => getSecurityModules("keytar", isTheia())!,
+      // });
+      // //const mProfileInfo = new ProfileInfo("zowe");
+      // ProfilesCache.createConfigInstance(mProfileInfo);
+      // const configInstance = ProfilesCache.getConfigInstance();
+      // /**  
+      //  * 
+      //  * End of testing 
+      //  * 
+      //  * */
       
       window.showInformationMessage(
         "Zowe Explorer was modified for the CICS Extension"
