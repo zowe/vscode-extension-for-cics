@@ -16,10 +16,10 @@ import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
-import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { toEscapedCriteriaString } from "../utils/FilterUtils";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSCombinedLocalFileTree extends TreeItem {
   children: (CICSLocalFileTreeItem | ViewMore) [] | [TextTreeItem] | null;

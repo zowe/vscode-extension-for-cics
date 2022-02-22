@@ -14,9 +14,8 @@ import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
-import { getDefaultProgramFilter } from "../utils/getDefaultProgramFilter";
-import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getDefaultProgramFilter, toEscapedCriteriaString } from "../utils/FilterUtils";
+import { getIconPathInResources } from "../utils/profileUtils";
 export class CICSProgramTree extends TreeItem {
   children: CICSProgramTreeItem[] = [];
   parentRegion: CICSRegionTree;

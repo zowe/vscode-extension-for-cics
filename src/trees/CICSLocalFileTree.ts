@@ -14,8 +14,8 @@ import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { CICSRegionTree } from "./CICSRegionTree";
 import * as https from "https";
-import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { toEscapedCriteriaString } from "../utils/FilterUtils";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSLocalFileTree extends TreeItem {
   children: CICSLocalFileTreeItem[] = [];
