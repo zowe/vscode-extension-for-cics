@@ -12,7 +12,7 @@
 import { commands, TreeView, window } from "vscode";
 import { CICSCombinedProgramTree } from "../trees/CICSCombinedProgramTree";
 import { CICSTree } from "../trees/CICSTree";
-import { getPatternFromFilter } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterAllProgramsCommand(tree: CICSTree, treeview: TreeView<any>) {

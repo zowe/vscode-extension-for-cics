@@ -44,13 +44,13 @@ import { viewMoreCommand } from "./commands/viewMoreCommand";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
-import { getIconPathInResources } from "./utils/getIconPath";
-import { plexExpansionHandler } from "./utils/plexExpansionHandler";
-import { sessionExpansionHandler } from "./utils/sessionExpansionHandler";
-import { regionContainerExpansionHandler } from "./utils/regionContainerExpansionHandler";
+import { getIconPathInResources } from "./utils/profileUtils";
+import { plexExpansionHandler } from "./utils/expansionHandler";
+import { sessionExpansionHandler } from "./utils/expansionHandler";
+import { regionContainerExpansionHandler } from "./utils/expansionHandler";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
 import { CredentialManagerFactory, Logger } from "@zowe/imperative";
-import { isTheia } from "./utils/theiaCheck";
+import { isTheia } from "./utils/workspaceUtils";
 
 export async function activate(context: ExtensionContext) {
   const log = Logger.getAppLogger();

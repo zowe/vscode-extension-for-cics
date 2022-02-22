@@ -19,7 +19,7 @@ import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
 import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
 import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSPlexTree extends TreeItem {
   children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSRegionsContainer) [] = [];

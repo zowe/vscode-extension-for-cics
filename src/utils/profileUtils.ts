@@ -11,6 +11,17 @@
 
 import { join } from "path";
 
+export function missingSessionParameters(profileProfile: any) : (string|undefined)[] {
+    const params = ["host", "port", "user", "password", "rejectUnauthorized", "protocol"];
+    let missing : (string|undefined)[] = [];
+    for (const value of params) {
+        if (profileProfile[value] === undefined) {
+            missing.push(value);
+        }
+    }
+    return missing;
+}
+
 export function getIconPathInResources(iconFileNameLight: string, iconFileNameDark: string) {
     return {
         light: join(

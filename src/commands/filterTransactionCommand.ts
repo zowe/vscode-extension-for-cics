@@ -12,7 +12,7 @@
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { getPatternFromFilter } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterTransactionCommand(tree: CICSTree, treeview: TreeView<any>) {

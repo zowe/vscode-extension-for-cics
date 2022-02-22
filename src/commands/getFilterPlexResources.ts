@@ -13,7 +13,7 @@ import { commands, ProgressLocation, TreeItemCollapsibleState, TreeView, window 
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { getPatternFromFilter } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) {

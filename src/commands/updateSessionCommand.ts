@@ -13,7 +13,8 @@ import { IProfAttrs } from "@zowe/imperative";
 import { commands, TreeView, window } from "vscode";
 import { CICSSessionTree } from "../trees/CICSSessionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { findSelectedNodes, openConfigFile } from "../utils/commandUtils";
+import { findSelectedNodes } from "../utils/commandUtils";
+import { openConfigFile } from "../utils/workspaceUtils";
 import { ProfileManagement } from "../utils/profileManagement";
 
 export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>) {

@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeView, window, workspace } from "vscode";
+import { TreeView } from "vscode";
 
 /** 
  * Returns an array of selected nodes in the current treeview.
@@ -32,8 +32,3 @@ export function findSelectedNodes(treeview: TreeView<any>, instanceOf:any, click
     }
     return allSelectedNodes;
 }
-
-export async function openConfigFile(filePath: string) {
-    const document = await workspace.openTextDocument(filePath);
-    await window.showTextDocument(document);
-  }

@@ -12,8 +12,53 @@
 import { ProgressLocation, window } from "vscode";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
+import { CICSSessionTree } from "../trees/CICSSessionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { regionContainerExpansionHandler } from "./regionContainerExpansionHandler";
+import { ProfileManagement } from "./profileManagement";
+
+export async function sessionExpansionHandler(session: CICSSessionTree, tree:CICSTree) {
+    const profile = await ProfileManagement.getProfilesCache().loadNamedProfile(session.label?.toString()!, 'cics');
+    await tree.loadProfile(profile, tree.getLoadedProfiles().indexOf(session), session);
+}
+
+export function regionContainerExpansionHandler(regionContiner: CICSRegionsContainer, tree:CICSTree) {
+    const parentPlex = regionContiner.getParent();
+    const plexProfile = parentPlex.getProfile();
+    if (plexProfile.profile!.regionName && plexProfile.profile!.cicsPlex) {
+        if (parentPlex.getGroupName()) {
+            // CICSGroup
+            window.withProgress({
+                title: 'Loading regions',
+                location: ProgressLocation.Notification,
+                cancellable: false
+            }, async (_, token) => {
+                token.onCancellationRequested(() => {
+                console.log("Cancelling the loading of the regions");
+                });
+                regionContiner.clearChildren();
+                await regionContiner.loadRegionsInCICSGroup(tree);
+                tree._onDidChangeTreeData.fire(undefined);
+            });
+        }
+    } else {
+        window.withProgress({
+        title: 'Loading regions',
+        location: ProgressLocation.Notification,
+        cancellable: false
+        }, async (_, token) => {
+        token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of regions");
+        });
+        regionContiner.clearChildren();
+        await regionContiner.loadRegionsInPlex();
+        if (!regionContiner.getChildren().length) {
+            window.showInformationMessage(`No regions found for plex ${parentPlex.getPlexName()}`);
+        }
+        tree._onDidChangeTreeData.fire(undefined);
+        });
+    }
+    tree._onDidChangeTreeData.fire(undefined);
+}
 
 export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
     const plexProfile = plex.getProfile();

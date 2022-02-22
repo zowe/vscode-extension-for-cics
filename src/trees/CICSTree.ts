@@ -14,13 +14,13 @@ import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
 import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
-import { isTheia } from "../utils/theiaCheck";
+import { isTheia } from "../utils/workspaceUtils";
 import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
