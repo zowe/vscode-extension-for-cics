@@ -20,8 +20,8 @@ import * as https from "https";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
 
 export class ProfileManagement {
-
-  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('2.0.0-next.202112161700');
+  // TODO: Doesn't seem to be working with specific version '2.0.0-next.202202221200' 
+  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
   private static profilesCache = ProfileManagement.zoweExplorerAPI.getExplorerExtenderApi().getProfilesCache();
 
   constructor() { }

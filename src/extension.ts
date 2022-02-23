@@ -84,6 +84,7 @@ export async function activate(context: ExtensionContext) {
       );
     } catch (error) {
       console.log(error);
+      window.showInformationMessage("Zowe Explorer was not found: either it is not installed or you are using an older version without extensibility API.");
     }
   }
 

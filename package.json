@@ -6,7 +6,7 @@
   "repository": {
     "url": "https://github.com/zowe/vscode-extension-for-cics"
   },
-  "version": "1.3.0",
+  "version": "2.0.0-next.20220217",
   "engines": {
     "vscode": "^1.50.0"
   },
@@ -470,7 +470,7 @@
     "@types/axios": "^0.14.0",
     "@zowe/cics-for-zowe-cli": "5.0.0-next.202107021819",
     "@zowe/imperative": "5.0.0-next.202109281439",
-    "@zowe/zowe-explorer-api": "2.0.0-next.202112161700",
+    "@zowe/zowe-explorer-api": "2.0.0-next.202202221200",
     "axios": "^0.21.4",
     "https": "^1.0.0",
     "xml-js": "^1.6.11"
