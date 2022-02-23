@@ -34,11 +34,15 @@ export class CICSTree
     }
 
     public async loadStoredProfileNames() {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+        const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         for (const profilename of persistentStorage.getLoadedCICSProfile()) {
-            const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
-            const newSessionTree = new CICSSessionTree(profileToLoad);
-            this.loadedProfiles.push(newSessionTree);
+            try {
+                const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
+                const newSessionTree = new CICSSessionTree(profileToLoad);
+                this.loadedProfiles.push(newSessionTree);
+            } catch {
+                continue;
+            }
         }
     }
 
