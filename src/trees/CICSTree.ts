@@ -95,6 +95,11 @@ export class CICSTree
 
                 } else {
                     const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
+                    const missingParamters = missingSessionParameters(profileToLoad.profile);
+                    if (missingParamters.length){
+                        window.showInformationMessage(`The following fields are missing from ${profileToLoad.name}: ${missingParamters.join(", ")}`);
+                        return;
+                    }
                     const newSessionTree = new CICSSessionTree(profileToLoad);
                     this.loadedProfiles.push(newSessionTree);
                     const persistentStorage = new PersistentStorage("zowe.cics.persistent");
@@ -136,7 +141,11 @@ export class CICSTree
             });
             try {
                 const plexInfo = await ProfileManagement.getPlexInfo(profile);
-                
+                const missingParamters = missingSessionParameters(profile.profile);
+                if (missingParamters.length){
+                    window.showInformationMessage(`The following fields are missing from ${profile.name}: ${missingParamters.join(", ")}`);
+                    return;
+                }
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
 
                 for (const item of plexInfo) {
