@@ -20,7 +20,7 @@ import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
-import { getIconPathInResources } from "../utils/profileUtils";
+import { getIconPathInResources, missingSessionParameters } from "../utils/profileUtils";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
@@ -42,11 +42,19 @@ export class CICSTree
         }
     }
 
+    /**
+     * 
+     * Provides user with prompts and allows them to add a profile after clicking the '+' button
+     */
     async addProfile() {
         try {
         //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
-        const testing = await ProfileManagement.getProfilesCache().getProfiles('cics');
-        const allCICSProfileNames = testing.map(profile => profile.name!);
+        const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
+        if (!allCICSProfiles) {
+            window.showErrorMessage(`Could not find any CICS profiles. Please ensure that the CICS profile metadata has been added to zowe.schema.json`);
+            return;
+        }
+        const allCICSProfileNames = allCICSProfiles.map(profile => profile.name!);
         
         if (allCICSProfileNames && allCICSProfileNames.length > 0) {
             const profileNameToLoad = await window.showQuickPick(
@@ -103,8 +111,9 @@ export class CICSTree
             this.createNewProfile();
 
         }
-    } catch(e) {
-        console.log(e);
+    } catch(error) {
+        console.log(error);
+        window.showErrorMessage(JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," "));
     }
 
     }
