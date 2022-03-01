@@ -62,15 +62,6 @@
         }
       },
       {
-        "command": "cics-extension-for-zowe.refreshTree",
-        "title": "Refresh",
-        "category": "Zowe Explorer for IBM CICS",
-        "icon": {
-          "light": "resources/imgs/refresh-dark.svg",
-          "dark": "resources/imgs/refresh-light.svg"
-        }
-      },
-      {
         "command": "cics-extension-for-zowe.filterPrograms",
         "title": "Filter Programs",
         "category": "Zowe Explorer for IBM CICS",
@@ -238,11 +229,6 @@
     ],
     "menus": {
       "view/title": [
-        {
-          "command": "cics-extension-for-zowe.refreshTree",
-          "when": "view == cics-view",
-          "group": "navigation"
-        },
         {
           "command": "cics-extension-for-zowe.addSession",
           "when": "view == cics-view",
@@ -468,7 +454,7 @@
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
-    "@zowe/cics-for-zowe-cli": "5.0.0-next.202107021819",
+    "@zowe/cics-for-zowe-cli": "5.0.0-next.202202071745",
     "@zowe/imperative": "5.0.0-next.202201251614",
     "@zowe/zowe-explorer-api": "2.0.0-next.202202221200",
     "axios": "^0.21.4",

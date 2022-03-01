@@ -208,7 +208,7 @@ export async function activate(context: ExtensionContext) {
     getUpdateSessionCommand(treeDataProv, treeview),
     getDeleteSessionCommand(treeDataProv, treeview),
 
-    getRefreshCommand(treeDataProv),
+    //getRefreshCommand(treeDataProv),
 
     getNewCopyCommand(treeDataProv, treeview),
     getPhaseInCommand(treeDataProv, treeview),
