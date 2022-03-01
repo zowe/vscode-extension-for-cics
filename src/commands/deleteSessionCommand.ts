@@ -9,10 +9,13 @@
 *
 */
 
+import { IProfAttrs } from "@zowe/imperative";
 import { commands, TreeView, window } from "vscode";
 import { CICSSessionTree } from "../trees/CICSSessionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
+import { ProfileManagement } from "../utils/profileManagement";
+import { openConfigFile } from "../utils/workspaceUtils";
 
 export function getDeleteSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -24,8 +27,16 @@ export function getDeleteSessionCommand(tree: CICSTree, treeview: TreeView<any>)
         return;
       }
       try {
-        const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
-        await tree.deleteSession(selectedNodes);
+        const profilesCache = ProfileManagement.getProfilesCache();
+        const currentProfile: IProfAttrs = profilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
+        if (currentProfile) {
+          //@ts-ignore
+          const filePath = currentProfile.profLoc.osLoc[0];
+          await openConfigFile(filePath);
+        }
+        // OLD METHOD:
+        // const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
+        // await tree.deleteSession(selectedNodes);
       } catch (error) {
         window.showErrorMessage(`Something went wrong when deleting the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
