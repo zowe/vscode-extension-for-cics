@@ -10,6 +10,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 
 ## Contents
 - [Features](#features)
+- [Early Access Features](#early-access-features)
 - [Getting Started](#getting-started)
     - [Create Profile](#create-profile)
     - [Update Profile](#update-profile)
@@ -42,6 +43,13 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 - View and interact with all resources under a plex.
 
 To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md)
+
+# Early Access Features
+This version may receive breaking changes and is intended to gather early feedback on what may become a future LTS release.
+
+The following sections below describe v1 features, but they have now changed in terms of functionality for the vNext release: [Create Profile](#create-profile), [Update Profile](#update-profile), [Deleting Profiles](#deleting-profiles). They will be updated in the near future.
+
+To find details on what's changed and how to work with the technical preview release of the Zowe Explorer for IBM CICS extension, please refer to the [Early access - Using Team Configuration.md](https://github.com/zowe/vscode-extension-for-cics/blob/vNext-compatibility/docs/Early%20access%20-%20Using%20Team%20Configuration.md) file.
 
 ## Getting Started
 
