@@ -11,6 +11,8 @@
 4. Select the .vsix file to install.
 5. Reload your Visual Studio Code window.
 
+**Important:** Please use `Zowe Explorer v2.0.0-next.202202221200` or higher with this extension.
+
 ### Load a Profile
 
 **Follow these steps**:
@@ -198,4 +200,10 @@ To add it manually:
 
 **Q:** Do I need the Zowe CLI installed?
 
-**A** No. However, the CICS extension requires the CICS schema entry in `zowe.schema.json` which is automatically added when the Zowe CLI CICS plugin is added to Zowe CLI or when a Team Configuration file is added via the Zowe Explorer's `+` icon. See [Adding a CICS Entry to the Schema File](#adding-a-cics-entry-to-the-schema-file) for more details.
+**A:** No. However, the CICS extension requires the CICS schema entry in `zowe.schema.json` which is automatically added when the Zowe CLI CICS plugin is added to Zowe CLI or when a Team Configuration file is added via the Zowe Explorer's `+` icon. See [Adding a CICS Entry to the Schema File](#adding-a-cics-entry-to-the-schema-file) for more details.
+
+<br/>
+
+**Q:** Can I use any version of Zowe Explorer with the Zowe Explorer for IBM CICS vNext release?
+
+**A:** Please use Zowe Explorer `v2.0.0-next.202202221200` or higher with this extension. Previous versions can result in unexpected behaviour.
