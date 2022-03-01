@@ -45,6 +45,9 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md)
 
 # Early Access Features
+
+> Please use Zowe Explorer `v2.0.0-next.202202221200` or higher with this extension. Previous versions can result in unexpected behaviour.
+
 This version may receive breaking changes and is intended to gather early feedback on what may become a future LTS release.
 
 The following sections below describe v1 features, but they have now changed in terms of functionality for the vNext release: [Create Profile](#create-profile), [Update Profile](#update-profile), [Deleting Profiles](#deleting-profiles). They will be updated in the near future.
