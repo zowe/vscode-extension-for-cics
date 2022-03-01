@@ -432,7 +432,7 @@ export class CICSTree
     }
 
     async removeSession(session: CICSSessionTree, profile?: IProfileLoaded, position?: number) {
-        const persistentStorage = new PersistentStorage("zowe.cics.persistentt");
+        const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile.profile.name !== session.label?.toString());
         if (profile && position !== undefined) {
