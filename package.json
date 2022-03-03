@@ -6,7 +6,7 @@
   "repository": {
     "url": "https://github.com/zowe/vscode-extension-for-cics"
   },
-  "version": "2.0.0-next.20220217",
+  "version": "2.0.0-next.202203031100",
   "engines": {
     "vscode": "^1.50.0"
   },
