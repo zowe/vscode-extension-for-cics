@@ -70,9 +70,11 @@ export async function activate(context: ExtensionContext) {
       // const mProfileInfo = new ProfileInfo("zowe", {
       //   requireKeytar: () => getSecurityModules("keytar", isTheia())!,
       // });
-      // //const mProfileInfo = new ProfileInfo("zowe");
+      //const mProfileInfo = new ProfileInfo("zowe");
+      // mProfileInfo.readProfilesFromDisk(); // You must call ProfileInfo.readProfilesFromDisk() before calling usingTeamConfig function.
       // ProfilesCache.createConfigInstance(mProfileInfo);
       // const configInstance = ProfilesCache.getConfigInstance();
+      // const hmm = configInstance.usingTeamConfig;
       // /**  
       //  * 
       //  * End of testing 
@@ -80,12 +82,14 @@ export async function activate(context: ExtensionContext) {
       //  * */
       
       window.showInformationMessage(
-        "Zowe Explorer was modified for the CICS Extension"
+        "Zowe Explorer was modified for the CICS Extension."
       );
     } catch (error) {
       console.log(error);
-      window.showInformationMessage("Zowe Explorer was not found: either it is not installed or you are using an older version without extensibility API.");
+      window.showErrorMessage("Zowe Explorer for IBM CICS was not initiliaized correctly");
     }
+  } else {
+    window.showErrorMessage("Zowe Explorer was not found: either it is not installed or you are using an older version without extensibility API. Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed");
   }
 
   const treeDataProv = new CICSTree();
