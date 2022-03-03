@@ -101,7 +101,7 @@ export class CICSTree
                     const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
                     const missingParamters = missingSessionParameters(profileToLoad.profile);
                     if (missingParamters.length){
-                        window.showInformationMessage(`The following fields are missing from ${profileToLoad.name}: ${missingParamters.join(", ")}`);
+                        window.showInformationMessage(`The following fields are missing from ${profileToLoad.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
                         return;
                     }
                     const newSessionTree = new CICSSessionTree(profileToLoad);
@@ -147,7 +147,7 @@ export class CICSTree
                 const plexInfo = await ProfileManagement.getPlexInfo(profile);
                 const missingParamters = missingSessionParameters(profile.profile);
                 if (missingParamters.length){
-                    window.showInformationMessage(`The following fields are missing from ${profile.name}: ${missingParamters.join(", ")}`);
+                    window.showInformationMessage(`The following fields are missing from ${profile.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
                     return;
                 }
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
