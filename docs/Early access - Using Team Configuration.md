@@ -75,9 +75,14 @@ To add, delete, or update a profile, you must edit the team configuration file d
 
    **Tip**: Use the Intellisense prompts if you need assistance with filling parameters in the .json file.
 
-3. Refresh the view by clicking the refresh icon in the Data Sets, USS, or Jobs view.
+3. a. **If the profile you want to modify has been loaded into the CICS view**:
 
-   Alternatively, press F1 to open the command palette, type and execute the **Zowe Explorer: Refresh Zowe Explorer** option.
+      - Refresh the view by clicking the refresh icon in the Data Sets, USS, or Jobs view.
+
+      - Alternatively, press F1 to open the command palette, type and execute the **Zowe Explorer: Refresh Zowe Explorer** option.
+   
+   b. **Otherwise**:
+   -  Press F1 to open the command palette, then select and execute the `Reload Window` command to reload Visual Studio Code.
 
 ### Creating a Team Configuration File
 
@@ -182,7 +187,7 @@ To add it manually:
 ## FAQs
 **Q:** Will the CICS extension support my v1 profiles?
 
-**A:** v1 profiles will **not** be supported with the first techical preview release. Please set up a Team configuration file either by using the Zowe CLI or the Zowe Explorer `+` icon.
+**A:** v1 profiles are **not** intended to be fully supported with the **first** techical preview release. You may still be able to load v1 profiles, but commands including delete profile and adding a new connection will not work. This will be addressed in a future release. Please set up a Team configuration file either by using the Zowe CLI or the Zowe Explorer `+` icon.
 
 <br/>
 
