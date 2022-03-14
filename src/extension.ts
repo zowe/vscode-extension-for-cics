@@ -48,38 +48,16 @@ import { getIconPathInResources } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
 import { regionContainerExpansionHandler } from "./utils/expansionHandler";
-import { KeytarApi } from "@zowe/zowe-explorer-api";
-import { CredentialManagerFactory, Logger } from "@zowe/imperative";
-import { isTheia } from "./utils/workspaceUtils";
 
 export async function activate(context: ExtensionContext) {
-  const log = Logger.getAppLogger();
-  const keytarApi = new KeytarApi(log);
-  await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
+  // const log = Logger.getAppLogger();
+  // const keytarApi = new KeytarApi(log);
+  // await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
   if (ProfileManagement.apiDoesExist()) {
     try {
       await ProfileManagement.registerCICSProfiles();
       ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
       await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
-      
-      // /**  
-      //  * 
-      //  * Testing ProfilesCache config methods 
-      //  * 
-      //  * */
-      // const mProfileInfo = new ProfileInfo("zowe", {
-      //   requireKeytar: () => getSecurityModules("keytar", isTheia())!,
-      // });
-      //const mProfileInfo = new ProfileInfo("zowe");
-      // mProfileInfo.readProfilesFromDisk(); // You must call ProfileInfo.readProfilesFromDisk() before calling usingTeamConfig function.
-      // ProfilesCache.createConfigInstance(mProfileInfo);
-      // const configInstance = ProfilesCache.getConfigInstance();
-      // const hmm = configInstance.usingTeamConfig;
-      // /**  
-      //  * 
-      //  * End of testing 
-      //  * 
-      //  * */
       
       window.showInformationMessage(
         "Zowe Explorer was modified for the CICS Extension."
@@ -212,7 +190,7 @@ export async function activate(context: ExtensionContext) {
     getUpdateSessionCommand(treeDataProv, treeview),
     getDeleteSessionCommand(treeDataProv, treeview),
 
-    //getRefreshCommand(treeDataProv),
+    getRefreshCommand(treeDataProv),
 
     getNewCopyCommand(treeDataProv, treeview),
     getPhaseInCommand(treeDataProv, treeview),
