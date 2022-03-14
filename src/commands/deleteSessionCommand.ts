@@ -27,16 +27,18 @@ export function getDeleteSessionCommand(tree: CICSTree, treeview: TreeView<any>)
         return;
       }
       try {
-        const profilesCache = ProfileManagement.getProfilesCache();
-        const currentProfile: IProfAttrs = profilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
-        if (currentProfile) {
-          //@ts-ignore
-          const filePath = currentProfile.profLoc.osLoc[0];
-          await openConfigFile(filePath);
+        const configInstance = await ProfileManagement.getConfigInstance();
+        if (configInstance.usingTeamConfig) {
+          const profilesCache = ProfileManagement.getProfilesCache();
+          const currentProfile: IProfAttrs = profilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
+          if (currentProfile) {
+            const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+            await openConfigFile(filePath);
+          }
+        } else {
+          const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
+          await tree.deleteSession(selectedNodes);
         }
-        // OLD METHOD:
-        // const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
-        // await tree.deleteSession(selectedNodes);
       } catch (error) {
         window.showErrorMessage(`Something went wrong when deleting the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
