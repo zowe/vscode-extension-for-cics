@@ -28,7 +28,6 @@ const cicsProfileMeta = [
                         aliases: ["H"],
                         description: "The CMCI server host name",
                         type: "string",
-                        required: true,
                     },
                 },
                 port: {
@@ -50,7 +49,6 @@ const cicsProfileMeta = [
                         description: "Your username to connect to CICS",
                         type: "string",
                         implies: ["password"],
-                        required: true,
                     },
                 },
                 password: {
@@ -62,7 +60,6 @@ const cicsProfileMeta = [
                         description: "Your password to connect to CICS",
                         type: "string",
                         implies: ["user"],
-                        required: true,
                     },
                 },
                 regionName: {
@@ -89,7 +86,6 @@ const cicsProfileMeta = [
                         description: "Reject self-signed certificates.",
                         type: "boolean",
                         defaultValue: true,
-                        required: false,
                         group: "Cics Connection Options"
                     }
                 },
@@ -101,13 +97,12 @@ const cicsProfileMeta = [
                         description: "Specifies CMCI protocol (http or https).",
                         type: "string",
                         defaultValue: "https",
-                        required: true,
                         allowableValues: { values: ["http", "https"], caseSensitive: false },
                         group: "Cics Connection Options"
                     }
                 }
             },
-            required: ["host"],
+            required: [],
         },
         createProfileExamples: [
             {
