@@ -11,7 +11,7 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
-import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
+import { Event, EventEmitter, ProgressLocation, ProviderResult, RelativePattern, TreeDataProvider, TreeItem, WebviewPanel, window, workspace } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
 import { isTheia } from "../utils/workspaceUtils";
@@ -80,23 +80,12 @@ export class CICSTree
 
             if (profileNameToLoad) {
                 if (profileNameToLoad.label.includes("\uFF0B")) {
-                    // const configName = ProfilesCache.getConfigInstance().getTeamConfig().configName;
-                    // let configDir = ProfilesCache.getConfigInstance().getTeamConfig().mHomeDir;
-                    // if (workspace.workspaceFolders) {
-                    //     // Check if config file is present in the workspace
-                    //     const uri = await workspace.findFiles(
-                    //         new RelativePattern(workspace.workspaceFolders[0], configName)
-                    //     );
-                    //     if (uri.length > 0) {
-                    //         configDir = ProfilesCache.getConfigInstance().getTeamConfig().mProjectDir;
-                    //     }
-                    // }
-                    // const filePath = path.join(configDir, configName);
-                    // await openConfigFile(filePath);
-                    window.showInformationMessage("Open and edit your config file to create a new profile");
-                    //  // Old method: Create New Profile Form should appear
-                    //this.createNewProfile();
-
+                    const configInstance = await ProfileManagement.getConfigInstance();
+                    if (configInstance.usingTeamConfig) {
+                        window.showInformationMessage("Open and edit your config file to create a new profile");
+                    } else {
+                        this.createNewProfile();
+                    }
                 } else {
                     const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
                     const missingParamters = missingSessionParameters(profileToLoad.profile);

@@ -26,25 +26,29 @@ export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>)
         window.showErrorMessage("No profile selected to update");
         return;
       }
-      try {
-        const profilesCache = ProfileManagement.getProfilesCache();
-        const currentProfile: IProfAttrs = profilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
-        if (currentProfile) {
-          //@ts-ignore
-          const filePath = currentProfile.profLoc.osLoc[0];
-          await openConfigFile(filePath);
+      const configInstance = await ProfileManagement.getConfigInstance();
+      if (configInstance.usingTeamConfig) {
+        try {
+          const profilesCache = ProfileManagement.getProfilesCache();
+          const currentProfile: IProfAttrs = profilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
+          if (currentProfile) {
+            const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+            await openConfigFile(filePath);
+          }
+        } catch (error) {
+          window.showErrorMessage(`Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          return;
         }
-      } catch (error) {
-        window.showErrorMessage(`Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+      } else {
+        for (const sessionTree of allSelectedNodes) {
+          try {
+            await tree.updateSession(sessionTree);
+          } catch (error) {
+            window.showErrorMessage(`Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            return;
+          }
+        }
       }
-      // // Previous Method:
-      // for (const sessionTree of allSelectedNodes) {
-      //   try {
-      //     await tree.updateSession(sessionTree);
-      //   } catch (error) {
-      //     window.showErrorMessage(`Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
-      //   }
-      // }
     }
   );
 }
