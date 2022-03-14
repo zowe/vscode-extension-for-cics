@@ -10,14 +10,15 @@
 *
 */
 
-import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile } from "@zowe/imperative";
-import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
+import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, ProfileInfo } from "@zowe/imperative";
+import { getSecurityModules, ProfilesCache, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import axios, { AxiosRequestConfig } from "axios";
 import { window } from "vscode";
 import { xml2json } from "xml-js";
 import cicsProfileMeta from "./profileDefinition";
 import * as https from "https";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
+import { isTheia } from "./workspaceUtils";
 
 export class ProfileManagement {
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi("2.0.0-next.202202221200");
@@ -56,6 +57,16 @@ export class ProfileManagement {
   public static async deleteProfile(formResponse: IDeleteProfile) {
     await ProfileManagement.profilesCache.getCliProfileManager('cics').delete(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+  }
+
+  public static async getConfigInstance() : Promise<ProfileInfo> {
+    const mProfileInfo = new ProfileInfo("zowe", {
+      requireKeytar: () => getSecurityModules("keytar", isTheia())!,
+    });
+    await mProfileInfo.readProfilesFromDisk();
+    ProfilesCache.createConfigInstance(mProfileInfo);
+    const configInstance = ProfilesCache.getConfigInstance();
+    return configInstance;
   }
 
   public static async makeRequest(path:string, config:AxiosRequestConfig) {
