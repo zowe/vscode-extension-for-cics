@@ -48,11 +48,19 @@ import { getIconPathInResources } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
 import { regionContainerExpansionHandler } from "./utils/expansionHandler";
-
+import { getZoweExplorerVersion } from "./utils/workspaceUtils";
 export async function activate(context: ExtensionContext) {
   // const log = Logger.getAppLogger();
   // const keytarApi = new KeytarApi(log);
   // await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
+  const zeVersion = getZoweExplorerVersion();
+  if (!zeVersion){
+    window.showErrorMessage("Zowe Explorer was not found: Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed");
+    return;
+  } else if (zeVersion[0] !== "2"){
+    window.showErrorMessage(`Current version of Zowe Explorer is ${zeVersion}. Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed`);
+    return;
+  }
   if (ProfileManagement.apiDoesExist()) {
     try {
       await ProfileManagement.registerCICSProfiles();
@@ -65,9 +73,11 @@ export async function activate(context: ExtensionContext) {
     } catch (error) {
       console.log(error);
       window.showErrorMessage("Zowe Explorer for IBM CICS was not initiliaized correctly");
+      return;
     }
   } else {
     window.showErrorMessage("Zowe Explorer was not found: either it is not installed or you are using an older version without extensibility API. Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed");
+    return;
   }
 
   const treeDataProv = new CICSTree();
