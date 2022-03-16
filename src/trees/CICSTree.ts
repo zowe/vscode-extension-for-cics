@@ -11,10 +11,10 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
-import { Event, EventEmitter, ProgressLocation, ProviderResult, RelativePattern, TreeDataProvider, TreeItem, WebviewPanel, window, workspace } from "vscode";
+import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
-import { isTheia } from "../utils/workspaceUtils";
+import { isTheia, openConfigFile } from "../utils/workspaceUtils";
 import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
@@ -54,13 +54,17 @@ export class CICSTree
         try {
         //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
         const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
+        const configInstance = await ProfileManagement.getConfigInstance();
         if (!allCICSProfiles) {
-            window.showErrorMessage(`Could not find any CICS profiles. Please ensure that the CICS profile metadata has been added to zowe.schema.json`);
-            return;
+            if (!configInstance.usingTeamConfig) {
+                window.showErrorMessage(`Could not find any CICS profiles`);
+                return;
+            }
+            window.showInformationMessage(`Could not find any CICS profiles`);
         }
-        const allCICSProfileNames = allCICSProfiles.map(profile => profile.name!);
-        
-        if (allCICSProfileNames && allCICSProfileNames.length > 0) {
+        const allCICSProfileNames = allCICSProfiles ? allCICSProfiles.map(profile => profile.name!) : [];
+        // No cics profiles needed beforhand for team config method
+        if (configInstance.usingTeamConfig || allCICSProfileNames.length > 0) {
             const profileNameToLoad = await window.showQuickPick(
                 [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.filter((profile) => {
                     for (const loadedProfile of this.loadedProfiles) {
@@ -77,12 +81,17 @@ export class CICSTree
                     placeHolder: "Load Profile or Create New Profile",
                 }
             );
-
             if (profileNameToLoad) {
                 if (profileNameToLoad.label.includes("\uFF0B")) {
-                    const configInstance = await ProfileManagement.getConfigInstance();
                     if (configInstance.usingTeamConfig) {
-                        window.showInformationMessage("Open and edit your config file to create a new profile");
+                        const profiles = configInstance.getAllProfiles();
+                        if (!profiles.length) {
+                            window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
+                        }
+                        const profilesCache = ProfileManagement.getProfilesCache();
+                        const currentProfile = profilesCache.getProfileFromConfig(profiles[0].profName);
+                        const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+                        await openConfigFile(filePath);
                     } else {
                         this.createNewProfile();
                     }
@@ -105,7 +114,6 @@ export class CICSTree
                 "No Profiles Found... Opening Profile Creation Form"
             );
             //  Create New Profile Form should appear
-
             this.createNewProfile();
 
         }
