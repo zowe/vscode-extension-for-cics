@@ -9,7 +9,7 @@
 *
 */
 
-import { env, window, workspace } from "vscode";
+import { env, extensions, window, workspace } from "vscode";
 
 
 export function isTheia(): boolean {
@@ -24,4 +24,9 @@ export function isTheia(): boolean {
 export async function openConfigFile(filePath: string) {
     const document = await workspace.openTextDocument(filePath);
     await window.showTextDocument(document);
+}
+
+export function getZoweExplorerVersion(): string | undefined {
+    const extension = extensions.getExtension('zowe.vscode-extension-for-zowe');
+    return extension?.packageJSON?.version;
 }
