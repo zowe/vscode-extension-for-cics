@@ -17,7 +17,7 @@ import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
-import { toEscapedCriteriaString } from "../utils/FilterUtils";
+import { toEscapedCriteriaString } from "../utils/filterUtils";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
 import { getIconPathInResources } from "../utils/profileUtils";
