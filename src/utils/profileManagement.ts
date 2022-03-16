@@ -21,9 +21,9 @@ import { CICSPlexTree } from "../trees/CICSPlexTree";
 import { isTheia } from "./workspaceUtils";
 
 export class ProfileManagement {
-  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi("2.0.0-next.202202221200");
+  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi("2.0.0-next.202202281000");
   private static profilesCache = ProfileManagement.zoweExplorerAPI?.getExplorerExtenderApi().getProfilesCache();
-
+  
   constructor() { }
 
   public static apiDoesExist() {
