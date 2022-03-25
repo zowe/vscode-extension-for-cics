@@ -431,7 +431,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "build": "rm -rf out && npm run lint && npm run licenses && tsc -p ./",
+    "build": "run-script-os",
+    "build:win32": "rd /s /q out && npm run lint && npm run licenses && tsc -p ./",
+    "build:default": "rm -rf out && npm run lint && npm run licenses && tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run build && npm run lint",
@@ -459,6 +461,7 @@
     "@zowe/zowe-explorer-api": "2.0.0-next.202202221200",
     "axios": "^0.21.4",
     "https": "^1.0.0",
+    "run-script-os": "^1.1.6",
     "xml-js": "^1.6.11"
   }
 }
