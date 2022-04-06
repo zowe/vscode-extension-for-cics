@@ -48,11 +48,14 @@ import { getIconPathInResources } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
 import { regionContainerExpansionHandler } from "./utils/expansionHandler";
-import { getZoweExplorerVersion } from "./utils/workspaceUtils";
+import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
+import { CredentialManagerFactory, Logger } from "@zowe/imperative";
+import { KeytarApi } from "@zowe/zowe-explorer-api";
+
 export async function activate(context: ExtensionContext) {
-  // const log = Logger.getAppLogger();
-  // const keytarApi = new KeytarApi(log);
-  // await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
+  const log = Logger.getAppLogger();
+  const keytarApi = new KeytarApi(log);
+  await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
   const zeVersion = getZoweExplorerVersion();
   if (!zeVersion){
     window.showErrorMessage("Zowe Explorer was not found: Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed");
@@ -66,7 +69,8 @@ export async function activate(context: ExtensionContext) {
       await ProfileManagement.registerCICSProfiles();
       ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
       await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
-      
+      // Create profilesCache config instance
+      await ProfileManagement.createConfigInstance();
       window.showInformationMessage(
         "Zowe Explorer was modified for the CICS Extension."
       );
