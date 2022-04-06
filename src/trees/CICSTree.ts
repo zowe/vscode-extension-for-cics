@@ -11,7 +11,7 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
-import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
+import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, TreeItemCollapsibleState, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
 import { isTheia, openConfigFile } from "../utils/workspaceUtils";
@@ -21,6 +21,7 @@ import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
 import { getIconPathInResources, missingSessionParameters } from "../utils/profileUtils";
+import { ProfilesCache } from "@zowe/zowe-explorer-api";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
@@ -31,6 +32,10 @@ export class CICSTree
     }
     public getLoadedProfiles() {
         return this.loadedProfiles;
+    }
+
+    public clearLoadedProfiles() {
+        this.loadedProfiles = [];
     }
 
     public async loadStoredProfileNames() {
