@@ -42,7 +42,7 @@ export class CICSTree
         const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         for (const profilename of persistentStorage.getLoadedCICSProfile()) {
             try {
-                const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
+                const profileToLoad = await ProfilesCache.getLoadedProfConfig(profilename);
                 const newSessionTree = new CICSSessionTree(profileToLoad);
                 this.loadedProfiles.push(newSessionTree);
             } catch {
