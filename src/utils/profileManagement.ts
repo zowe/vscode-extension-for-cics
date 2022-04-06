@@ -21,7 +21,7 @@ import { CICSPlexTree } from "../trees/CICSPlexTree";
 import { isTheia } from "./workspaceUtils";
 
 export class ProfileManagement {
-  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi("2.0.0-next.202202281000");
+  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
   private static profilesCache = ProfileManagement.zoweExplorerAPI?.getExplorerExtenderApi().getProfilesCache();
   
   constructor() { }
@@ -59,12 +59,15 @@ export class ProfileManagement {
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
-  public static async getConfigInstance() : Promise<ProfileInfo> {
+  public static async createConfigInstance() : Promise<void> {
     const mProfileInfo = new ProfileInfo("zowe", {
       requireKeytar: () => getSecurityModules("keytar", isTheia())!,
     });
     await mProfileInfo.readProfilesFromDisk();
     ProfilesCache.createConfigInstance(mProfileInfo);
+  }
+
+  public static async getConfigInstance() : Promise<ProfileInfo> {
     const configInstance = ProfilesCache.getConfigInstance();
     return configInstance;
   }
