@@ -10,32 +10,21 @@
 */
 
 ;
-import { ProfileInfo } from "@zowe/imperative";
-import { getSecurityModules, ZoweExplorerApi, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
-import { commands, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
-import { CICSPlexTree } from "../trees/CICSPlexTree";
-import { CICSProgramTree } from "../trees/CICSProgramTree";
+import { ZoweExplorerApi } from "@zowe/zowe-explorer-api";
+import { commands, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
-import { isTheia } from "../utils/workspaceUtils";
 
 export function getRefreshCommand(tree: CICSTree) {
   return commands.registerCommand(
     "cics-extension-for-zowe.refreshTree",
     async () => {
       try {
-        const mProfileInfo = new ProfileInfo("zowe", {
-          requireKeytar: () => getSecurityModules("keytar", isTheia())!,
-        });
-        await mProfileInfo.readProfilesFromDisk();
-        // const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ProfileManagement.getExplorerApis();
-        const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ZoweVsCodeExtension.getZoweExplorerApi("2.0.0-next.202202281000");
-        //await ProfileManagement.getProfilesCache().refresh(apiRegiser);
-        await ZoweVsCodeExtension.getZoweExplorerApi("2.0.0-next.202202281000").getExplorerExtenderApi().getProfilesCache().refresh(apiRegiser);
-        //const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
-        const allCICSProfiles = await ZoweVsCodeExtension.getZoweExplorerApi("2.0.0-next.202202281000").getExplorerExtenderApi().getProfilesCache().getProfiles('cics');
-        console.log(allCICSProfiles);
-        // await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+        const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ProfileManagement.getExplorerApis();
+        await ProfileManagement.getProfilesCache().refresh(apiRegiser);
+        await ProfileManagement.createConfigInstance();
+        tree.clearLoadedProfiles();
+        await tree.loadStoredProfileNames();
       } catch (error) {
         console.log(error);
       }
