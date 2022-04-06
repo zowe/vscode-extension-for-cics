@@ -53,6 +53,15 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.refreshTree",
+        "title": "Refresh",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/refresh-dark.svg",
+          "dark": "resources/imgs/refresh-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.newCopyProgram",
         "title": "New Copy",
         "category": "Zowe Explorer for IBM CICS",
@@ -229,6 +238,11 @@
     ],
     "menus": {
       "view/title": [
+        {
+          "command": "cics-extension-for-zowe.refreshTree",
+          "when": "view == cics-view",
+          "group": "navigation"
+        },
         {
           "command": "cics-extension-for-zowe.addSession",
           "when": "view == cics-view",
@@ -451,14 +465,15 @@
     "glob": "^7.1.6",
     "mocha": "^8.1.3",
     "shebang-regex": "^3.0.0",
-    "typescript": "^4.0.2",
+    "typescript": "^4.6.2",
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
     "@zowe/cics-for-zowe-cli": "5.0.0-next.202202071745",
-    "@zowe/imperative": "5.0.0-next.202201251614",
-    "@zowe/zowe-explorer-api": "2.0.0-next.202202221200",
+    "@zowe/cli": "7.0.0-next.202203211751",
+    "@zowe/imperative": "5.0.0-next.202203311701",
+    "@zowe/zowe-explorer-api": "2.0.0-next.202204041200",
     "axios": "^0.21.4",
     "https": "^1.0.0",
     "run-script-os": "^1.1.6",

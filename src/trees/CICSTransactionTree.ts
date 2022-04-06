@@ -14,7 +14,7 @@ import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
-import { getDefaultTransactionFilter, toEscapedCriteriaString } from "../utils/FilterUtils";
+import { getDefaultTransactionFilter, toEscapedCriteriaString } from "../utils/filterUtils";
 import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSTransactionTree extends TreeItem {
