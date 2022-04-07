@@ -55,11 +55,12 @@ export class CICSTree
      * 
      * Provides user with prompts and allows them to add a profile after clicking the '+' button
      */
-     async addProfile() {
+    async addProfile() {
         try {
         //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
-        const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
         const configInstance = await ProfileManagement.getConfigInstance();
+        const allCICSProfiles = configInstance.getAllProfiles("cics");
+        // const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
         if (!allCICSProfiles) {
             if (!configInstance.usingTeamConfig) {
                 window.showErrorMessage(`Could not find any CICS profiles`);
@@ -67,13 +68,13 @@ export class CICSTree
             }
             window.showInformationMessage(`Could not find any CICS profiles`);
         }
-        const allCICSProfileNames = allCICSProfiles ? allCICSProfiles.map(profile => profile.name!) : [];
+        const allCICSProfileNames: [string]|[] = allCICSProfiles ? allCICSProfiles.map((profile) => profile.profName) as unknown as [string] : [];
         // No cics profiles needed beforhand for team config method
         if (configInstance.usingTeamConfig || allCICSProfileNames.length > 0) {
             const profileNameToLoad = await window.showQuickPick(
-                [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.filter((profile) => {
+                [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.filter((name) => {
                     for (const loadedProfile of this.loadedProfiles) {
-                        if (loadedProfile.label === profile) {
+                        if (loadedProfile.label === name) {
                             return false;
                         }
                     }
@@ -87,25 +88,27 @@ export class CICSTree
                 }
             );
             if (profileNameToLoad) {
+                // If Create New CICS Profile option chosen
                 if (profileNameToLoad.label.includes("\uFF0B")) {
                     if (configInstance.usingTeamConfig) {
+                        // get all profiles of all types including zosmf
                         const profiles = configInstance.getAllProfiles();
                         if (!profiles.length) {
                             window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
                         }
-                        const profilesCache = ProfileManagement.getProfilesCache();
-                        const currentProfile = profilesCache.getProfileFromConfig(profiles[0].profName);
+                        const currentProfile = ProfilesCache.getProfileFromConfig(profiles[0].profName);
                         const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
                         await openConfigFile(filePath);
                     } else {
                         this.createNewProfile();
                     }
                 } else {
-                    const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
-                    const missingParamters = missingSessionParameters(profileToLoad.profile);
-                    if (missingParamters.length){
-                        window.showInformationMessage(`The following fields are missing from ${profileToLoad.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
-                        return;
+                    let profileToLoad;
+                    // TODO: Just use loadNamedProfile once the method is configured to v2 profiles
+                    if (configInstance.usingTeamConfig){
+                        profileToLoad = ProfilesCache.getLoadedProfConfig(profileNameToLoad.label); //ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
+                    } else {
+                        ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
                     }
                     const newSessionTree = new CICSSessionTree(profileToLoad);
                     this.loadedProfiles.push(newSessionTree);
