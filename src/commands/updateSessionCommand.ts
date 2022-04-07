@@ -16,6 +16,7 @@ import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { openConfigFile } from "../utils/workspaceUtils";
 import { ProfileManagement } from "../utils/profileManagement";
+import { ProfilesCache } from "@zowe/zowe-explorer-api";
 
 export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -29,8 +30,7 @@ export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>)
       const configInstance = await ProfileManagement.getConfigInstance();
       if (configInstance.usingTeamConfig) {
         try {
-          const profilesCache = ProfileManagement.getProfilesCache();
-          const currentProfile: IProfAttrs = profilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
+          const currentProfile: IProfAttrs = ProfilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
           if (currentProfile) {
             const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
             await openConfigFile(filePath);
