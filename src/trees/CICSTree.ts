@@ -301,6 +301,13 @@ export class CICSTree
                         if (error.response !== 'undefined' && error.response.status){
                             //@ts-ignore
                             switch(error.response.status) {
+                                case 401:
+                                    window.showErrorMessage(`Error: Request failed with status code 401 for Profile '${profile.name}'`);
+                                    // set the unauthorized flag to true for reprompting of credentials.
+                                    newSessionTree.setUnauthorized();
+                                    // Replace old profile tree with new disconnected profile tree item
+                                    this.loadedProfiles.splice(position!, 1, newSessionTree);
+                                    break;
                                 case 404:
                                     window.showErrorMessage(`Error: Request failed with status code 404 for Profile '${profile.name}' - Not Found`);
                                     break;
