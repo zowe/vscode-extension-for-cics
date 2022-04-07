@@ -9,7 +9,9 @@
 *
 */
 
+import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import { join } from "path";
+import { window } from "vscode";
 
 export function missingSessionParameters(profileProfile: any) : (string|undefined)[] {
     const params = ["host", "port", "user", "password", "rejectUnauthorized", "protocol"];
@@ -41,4 +43,20 @@ export function getIconPathInResources(iconFileNameLight: string, iconFileNameDa
           iconFileNameDark
         ),
       };
+}
+
+export async function promptCredentials(sessionName: string, rePrompt?: boolean){
+  // const mProfileInfo = new ProfileInfo("zowe", {
+  //   requireKeytar: () => getSecurityModules("keytar", isTheia())!,
+  // });
+  // await mProfileInfo.readProfilesFromDisk();
+  // ProfilesCache.createConfigInstance(mProfileInfo);
+  const promptInfo = await ZoweVsCodeExtension.promptCredentials({
+    sessionName,
+    rePrompt
+  });
+  if (!promptInfo) {
+    window.showInformationMessage("Input credentials operation Cancelled");
+  }
+  return promptInfo;
 }
