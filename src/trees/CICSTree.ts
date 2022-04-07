@@ -20,7 +20,7 @@ import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
-import { getIconPathInResources, missingSessionParameters } from "../utils/profileUtils";
+import { getIconPathInResources, missingSessionParameters, promptCredentials } from "../utils/profileUtils";
 import { ProfilesCache } from "@zowe/zowe-explorer-api";
 
 export class CICSTree
@@ -55,7 +55,7 @@ export class CICSTree
      * 
      * Provides user with prompts and allows them to add a profile after clicking the '+' button
      */
-    async addProfile() {
+     async addProfile() {
         try {
         //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
         const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
@@ -146,18 +146,39 @@ export class CICSTree
             message: `Loading ${profile.name}`
             });
             try {
-                const plexInfo = await ProfileManagement.getPlexInfo(profile);
-                const missingParamters = missingSessionParameters(profile.profile);
-                if (missingParamters.length){
-                    window.showInformationMessage(`The following fields are missing from ${profile.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
-                    return;
+                const configInstance = await ProfileManagement.getConfigInstance();
+                if (configInstance.usingTeamConfig){
+                    let missingParamters = missingSessionParameters(profile.profile);
+                    if (missingParamters.length) {
+                        const userPass = ["user", "password"];
+                        if (missingParamters.includes(userPass[0]) || missingParamters.includes(userPass[1])){
+                            const updatedProfile = await promptCredentials(profile.name!, true);
+                            if (!updatedProfile) {
+                                return;
+                            }
+                            profile = updatedProfile;
+                            // Remove "user" and "password" from missing params array
+                            missingParamters = missingParamters.filter(param => (userPass.indexOf(param!) === -1) || (userPass.indexOf(param!) === -1));
+                        }
+                        if (missingParamters.length) {
+                            window.showInformationMessage(`The following fields are missing from ${profile.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
+                            return;
+                        }
+                    // If profile is expanded and it previously had 401 error code
+                    } else if (sessionTree && sessionTree.getIsUnauthorized()) {
+                        const updatedProfile = await promptCredentials(profile.name!, true);
+                        if (!updatedProfile) {
+                            return;
+                        }
+                        profile = updatedProfile;
+                    }
                 }
+                const plexInfo = await ProfileManagement.getPlexInfo(profile);
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
 
                 for (const item of plexInfo) {
                     if (item.plexname === null) {
                         // No plex
-
                         const session = new Session({
                             //type: "basic",
                             hostname: profile.profile!.host,
@@ -175,6 +196,8 @@ export class CICSTree
                                 name: "CICSRegion",
                                 regionName: item.regions[0].applid
                             });
+                            // 200 OK received
+                            newSessionTree.setAuthorized();
                             https.globalAgent.options.rejectUnauthorized = undefined;
                             const newRegionTree = new CICSRegionTree(
                                 item.regions[0].applid,
@@ -280,8 +303,10 @@ export class CICSTree
                             switch(error.response.status) {
                                 case 404:
                                     window.showErrorMessage(`Error: Request failed with status code 404 for Profile '${profile.name}' - Not Found`);
+                                    break;
                                 case 500:
                                     window.showErrorMessage(`Error: Request failed with status code 500 for Profile '${profile.name}'`);
+                                    break;
                                 default:
                                     //@ts-ignore
                                     window.showErrorMessage(`Error: Request failed with status code ${error.response.status} for Profile '${profile.name}'`);
@@ -292,8 +317,6 @@ export class CICSTree
                     }
                 }
                 console.log(error);
-
-                
             }
             }
         );
