@@ -68,7 +68,7 @@ export class CICSTree
             }
             window.showInformationMessage(`Could not find any CICS profiles`);
         }
-        const allCICSProfileNames: [string]|[] = allCICSProfiles ? allCICSProfiles.map((profile) => profile.profName) as unknown as [string] : [];
+        const allCICSProfileNames: string[] = allCICSProfiles ? allCICSProfiles.map((profile) => profile.profName) as unknown as [string] : [];
         // No cics profiles needed beforhand for team config method
         if (configInstance.usingTeamConfig || allCICSProfileNames.length > 0) {
             const profileNameToLoad = await window.showQuickPick(
@@ -280,15 +280,23 @@ export class CICSTree
                                         ...["Yes", "No"]);
                                     if (busyDecision) {
                                         if (busyDecision === "Yes") {
-                                            const message = {
-                                                name: profile.name,
-                                                profile: {
-                                                    ...profile.profile, 
-                                                    rejectUnauthorized: false
-                                                }
-                                            };
-                                            const newProfile = await ProfileManagement.updateProfile(message);
-                                            const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.name!, 'cics');
+                                            const configInstance = await ProfileManagement.getConfigInstance();
+                                            let updatedProfile;
+                                            if (configInstance.usingTeamConfig) {
+                                                const upd = { profileName: profile.name!, profileType: 'cics' };
+                                                await ProfilesCache.getConfigInstance().updateProperty({ ...upd, property: "rejectUnauthorized", value: false });
+                                                updatedProfile = ProfilesCache.getLoadedProfConfig(profile.name!);
+                                            } else {
+                                                const message = {
+                                                    name: profile.name,
+                                                    profile: {
+                                                        ...profile.profile, 
+                                                        rejectUnauthorized: false
+                                                    }
+                                                };
+                                                const newProfile = await ProfileManagement.updateProfile(message);
+                                                updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.name!, 'cics');
+                                            }
                                             await this.removeSession(sessionTree, updatedProfile, position);
                                         }
                                         
