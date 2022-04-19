@@ -69,8 +69,6 @@ export async function activate(context: ExtensionContext) {
       await ProfileManagement.registerCICSProfiles();
       ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
       await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
-      // Create profilesCache config instance
-      await ProfileManagement.createConfigInstance();
       window.showInformationMessage(
         "Zowe Explorer was modified for the CICS Extension."
       );
