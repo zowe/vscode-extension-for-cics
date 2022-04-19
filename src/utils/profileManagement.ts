@@ -10,7 +10,7 @@
 *
 */
 
-import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, ProfileInfo } from "@zowe/imperative";
+import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, Logger, ProfileInfo } from "@zowe/imperative";
 import { getSecurityModules, ProfilesCache, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import axios, { AxiosRequestConfig } from "axios";
 import { window } from "vscode";
@@ -22,7 +22,7 @@ import { isTheia } from "./workspaceUtils";
 
 export class ProfileManagement {
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
-  private static profilesCache = ProfileManagement.zoweExplorerAPI?.getExplorerExtenderApi().getProfilesCache();
+  private static ProfilesCache = new ProfilesCache(Logger.getAppLogger());
   
   constructor() { }
 
@@ -40,7 +40,7 @@ export class ProfileManagement {
   }
 
   public static getProfilesCache() {
-    return ProfileManagement.profilesCache;
+    return ProfileManagement.ProfilesCache;
   }
 
   public static async createNewProfile(formResponse: ISaveProfile) {
