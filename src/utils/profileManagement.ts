@@ -59,14 +59,6 @@ export class ProfileManagement {
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
-  public static async createConfigInstance() : Promise<void> {
-    const mProfileInfo = new ProfileInfo("zowe", {
-      requireKeytar: () => getSecurityModules("keytar", isTheia())!,
-    });
-    await mProfileInfo.readProfilesFromDisk();
-    ProfilesCache.createConfigInstance(mProfileInfo);
-  }
-
   public static async getConfigInstance() : Promise<ProfileInfo> {
     const mProfileInfo = await ProfileManagement.getProfilesCache().getProfileInfo();
     return mProfileInfo;
