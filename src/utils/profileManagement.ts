@@ -44,18 +44,18 @@ export class ProfileManagement {
   }
 
   public static async createNewProfile(formResponse: ISaveProfile) {
-    await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').save(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
   public static async updateProfile(formResponse: IUpdateProfile) {
-    const profile = await ProfileManagement.profilesCache.getCliProfileManager('cics').update(formResponse);
+    const profile = await ProfileManagement.ProfilesCache.getCliProfileManager('cics').update(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
     return profile;
   }
 
   public static async deleteProfile(formResponse: IDeleteProfile) {
-    await ProfileManagement.profilesCache.getCliProfileManager('cics').delete(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').delete(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
@@ -68,8 +68,8 @@ export class ProfileManagement {
   }
 
   public static async getConfigInstance() : Promise<ProfileInfo> {
-    const configInstance = ProfilesCache.getConfigInstance();
-    return configInstance;
+    const mProfileInfo = await ProfileManagement.getProfilesCache().getProfileInfo();
+    return mProfileInfo;
   }
 
   public static async makeRequest(path:string, config:AxiosRequestConfig) {
