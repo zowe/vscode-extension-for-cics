@@ -30,7 +30,7 @@ export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>)
       const configInstance = await ProfileManagement.getConfigInstance();
       if (configInstance.usingTeamConfig) {
         try {
-          const currentProfile: IProfAttrs = ProfilesCache.getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
+          const currentProfile: IProfAttrs = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
           if (currentProfile) {
             const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
             await openConfigFile(filePath);
