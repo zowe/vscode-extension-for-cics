@@ -9,9 +9,9 @@
 
 ### From VSIX File 
 
-1. Download [cics-extension-for-zowe-0.0.1.vsix](https://github.com/zowe/vscode-extension-for-cics/raw/main/cics-extension-for-zowe-0.0.1.vsix) to your PC that has VS Code already installed.
+1. Download Zowe.cics-extension-for-zowe-2.x.x.vsix to your PC that has VS Code already installed.
 
-2. Open the Extensions icon in the side bar, navigate to the ... menu, press **Install from VSIX ...** and select the downloaded `cics-extension-for-zowe-0.0.1.vsix` file.
+2. Open the Extensions icon in the side bar, navigate to the ... menu, press **Install from VSIX ...** and select the downloaded `Zowe.cics-extension-for-zowe-2.x.x.vsix` file.
 
 <p align="center">
 <img src="./images/zowe-cics-explorer-install.gif" alt="Installing Zowe CICS Explorer" width="700px"/> 
