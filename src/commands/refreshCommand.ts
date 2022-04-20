@@ -22,7 +22,6 @@ export function getRefreshCommand(tree: CICSTree) {
       try {
         const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ProfileManagement.getExplorerApis();
         await ProfileManagement.getProfilesCache().refresh(apiRegiser);
-        await ProfileManagement.createConfigInstance();
         tree.clearLoadedProfiles();
         await tree.loadStoredProfileNames();
       } catch (error) {
