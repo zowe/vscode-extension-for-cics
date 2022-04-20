@@ -1,6 +1,6 @@
 # Zowe Explorer for IBM CICS extension Troubleshooting
 
-Check that the [source of the error](https://github.com/zowe/vscode-extension-for-cics#checking-the-source-of-an-error) is from the Zowe Explorer for IBM CICS before refering to the troubleshooting documentation.
+Check that the [source of the error](https://github.com/zowe/vscode-extension-for-cics#checking-the-source-of-an-error) is from the Zowe Explorer for IBM CICS extension before refering to the troubleshooting documentation.
 
 ## `Socket is closed` error
 
