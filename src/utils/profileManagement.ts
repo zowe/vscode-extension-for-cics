@@ -10,7 +10,7 @@
 *
 */
 
-import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, ProfileInfo } from "@zowe/imperative";
+import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, Logger, ProfileInfo } from "@zowe/imperative";
 import { getSecurityModules, ProfilesCache, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import axios, { AxiosRequestConfig } from "axios";
 import { window } from "vscode";
@@ -22,7 +22,7 @@ import { isTheia } from "./workspaceUtils";
 
 export class ProfileManagement {
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
-  private static profilesCache = ProfileManagement.zoweExplorerAPI?.getExplorerExtenderApi().getProfilesCache();
+  private static ProfilesCache = new ProfilesCache(Logger.getAppLogger());
   
   constructor() { }
 
@@ -40,36 +40,28 @@ export class ProfileManagement {
   }
 
   public static getProfilesCache() {
-    return ProfileManagement.profilesCache;
+    return ProfileManagement.ProfilesCache;
   }
 
   public static async createNewProfile(formResponse: ISaveProfile) {
-    await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').save(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
   public static async updateProfile(formResponse: IUpdateProfile) {
-    const profile = await ProfileManagement.profilesCache.getCliProfileManager('cics').update(formResponse);
+    const profile = await ProfileManagement.ProfilesCache.getCliProfileManager('cics').update(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
     return profile;
   }
 
   public static async deleteProfile(formResponse: IDeleteProfile) {
-    await ProfileManagement.profilesCache.getCliProfileManager('cics').delete(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').delete(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
-  public static async createConfigInstance() : Promise<void> {
-    const mProfileInfo = new ProfileInfo("zowe", {
-      requireKeytar: () => getSecurityModules("keytar", isTheia())!,
-    });
-    await mProfileInfo.readProfilesFromDisk();
-    ProfilesCache.createConfigInstance(mProfileInfo);
-  }
-
   public static async getConfigInstance() : Promise<ProfileInfo> {
-    const configInstance = ProfilesCache.getConfigInstance();
-    return configInstance;
+    const mProfileInfo = await ProfileManagement.getProfilesCache().getProfileInfo();
+    return mProfileInfo;
   }
 
   public static async makeRequest(path:string, config:AxiosRequestConfig) {

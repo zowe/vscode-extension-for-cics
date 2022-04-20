@@ -21,7 +21,6 @@ import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
 import { getIconPathInResources, missingSessionParameters, promptCredentials } from "../utils/profileUtils";
-import { ProfilesCache } from "@zowe/zowe-explorer-api";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
@@ -42,13 +41,14 @@ export class CICSTree
         const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         for (const profilename of persistentStorage.getLoadedCICSProfile()) {
             try {
-                const profileToLoad = await ProfilesCache.getLoadedProfConfig(profilename);
+                const profileToLoad = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profilename);
                 const newSessionTree = new CICSSessionTree(profileToLoad);
                 this.loadedProfiles.push(newSessionTree);
             } catch {
                 continue;
             }
         }
+        this._onDidChangeTreeData.fire(undefined);
     }
 
     /**
@@ -59,7 +59,8 @@ export class CICSTree
         try {
         //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
         const configInstance = await ProfileManagement.getConfigInstance();
-        const allCICSProfiles = configInstance.getAllProfiles("cics");
+        const allCICSProfiles = (await ProfileManagement.getProfilesCache().getProfileInfo()).getAllProfiles("cics");
+        //const allCICSProfiles = configInstance.getAllProfiles("cics");
         // const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
         if (!allCICSProfiles) {
             if (!configInstance.usingTeamConfig) {
@@ -96,7 +97,7 @@ export class CICSTree
                         if (!profiles.length) {
                             window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
                         }
-                        const currentProfile = ProfilesCache.getProfileFromConfig(profiles[0].profName);
+                        const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(profiles[0].profName);
                         const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
                         await openConfigFile(filePath);
                     } else {
@@ -106,7 +107,7 @@ export class CICSTree
                     let profileToLoad;
                     // TODO: Just use loadNamedProfile once the method is configured to v2 profiles
                     if (configInstance.usingTeamConfig){
-                        profileToLoad = ProfilesCache.getLoadedProfConfig(profileNameToLoad.label); //ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
+                        profileToLoad = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profileNameToLoad.label); //ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
                     } else {
                         ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
                     }
@@ -284,8 +285,9 @@ export class CICSTree
                                             let updatedProfile;
                                             if (configInstance.usingTeamConfig) {
                                                 const upd = { profileName: profile.name!, profileType: 'cics' };
-                                                await ProfilesCache.getConfigInstance().updateProperty({ ...upd, property: "rejectUnauthorized", value: false });
-                                                updatedProfile = ProfilesCache.getLoadedProfConfig(profile.name!);
+                                                const configInstance = await ProfileManagement.getConfigInstance();
+                                                await configInstance.updateProperty({ ...upd, property: "rejectUnauthorized", value: false });
+                                                updatedProfile = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profile.name!);
                                             } else {
                                                 const message = {
                                                     name: profile.name,

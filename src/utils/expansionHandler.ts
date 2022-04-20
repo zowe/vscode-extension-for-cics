@@ -9,15 +9,15 @@
 *
 */
 
-import { ProfilesCache } from "@zowe/zowe-explorer-api";
 import { ProgressLocation, window } from "vscode";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSSessionTree } from "../trees/CICSSessionTree";
 import { CICSTree } from "../trees/CICSTree";
+import { ProfileManagement } from "./profileManagement";
 
 export async function sessionExpansionHandler(session: CICSSessionTree, tree:CICSTree) {
-    const profile = await ProfilesCache.getLoadedProfConfig(session.label?.toString()!);
+    const profile = await ProfileManagement.getProfilesCache().getLoadedProfConfig(session.label?.toString()!);
     await tree.loadProfile(profile, tree.getLoadedProfiles().indexOf(session), session);
 }
 
