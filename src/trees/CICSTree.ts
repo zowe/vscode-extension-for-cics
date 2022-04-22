@@ -260,8 +260,7 @@ export class CICSTree
 
                 if (typeof(error) === 'object') {
                     if ("code" in error!){
-                        //@ts-ignore
-                        switch(error.code) {
+                        switch((error as any).code) {
                             case 'ETIMEDOUT':
                                 window.showErrorMessage(`Error: connect ETIMEDOUT ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
                                 break;
@@ -281,8 +280,7 @@ export class CICSTree
                                 if (sessionTree){
                                         // If expanding a profile
                                     const busyDecision = await window.showInformationMessage(
-                                        //@ts-ignore
-                                        `Warning: Your connection is not private (${error.code}) - would you still like to proceed to ${profile!.profile!.host} (unsafe)?`,
+                                        `Warning: Your connection is not private (${(error as any).code}) - would you still like to proceed to ${profile!.profile!.host} (unsafe)?`,
                                         ...["Yes", "No"]);
                                     if (busyDecision) {
                                         if (busyDecision === "Yes") {
@@ -316,10 +314,8 @@ export class CICSTree
                         }
 
                     } else if ("response" in error!) {
-                        //@ts-ignore
-                        if (error.response !== 'undefined' && error.response.status){
-                            //@ts-ignore
-                            switch(error.response.status) {
+                        if ((error as any).response !== 'undefined' && (error as any).response.status){
+                            switch((error as any).response.status) {
                                 case 401:
                                     window.showErrorMessage(`Error: Request failed with status code 401 for Profile '${profile.name}'`);
                                     // set the unauthorized flag to true for reprompting of credentials.
@@ -334,8 +330,7 @@ export class CICSTree
                                     window.showErrorMessage(`Error: Request failed with status code 500 for Profile '${profile.name}'`);
                                     break;
                                 default:
-                                    //@ts-ignore
-                                    window.showErrorMessage(`Error: Request failed with status code ${error.response.status} for Profile '${profile.name}'`);
+                                    window.showErrorMessage(`Error: Request failed with status code ${(error as any).response.status} for Profile '${profile.name}'`);
                             }
                         } else {
                             window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);

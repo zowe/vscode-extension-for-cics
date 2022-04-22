@@ -101,13 +101,11 @@ export class CICSCombinedProgramTree extends TreeItem {
             return child;
           }
         })[0];
-        //@ts-ignore
-        const parentRegion = regionsContainer.getChildren().filter(child => {
+        const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === program.eyu_cicsname;
           }
-        })[0];
-        //@ts-ignore
+        })[0] as CICSRegionTree;
         const progamTree = new CICSProgramTreeItem(program,parentRegion);
         progamTree.setLabel(progamTree.label!.toString().replace(program.program, `${program.program} (${program.eyu_cicsname})`));
         newChildren.push(progamTree);

@@ -58,17 +58,14 @@ export class CICSProgramTree extends TreeItem {
       this.label = `Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[${programsArray.length}]`;
       for (const program of programsArray) {
         const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
-        //@ts-ignore
         this.addProgram(newProgramItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
-      // @ts-ignore
-      if (error!.mMessage!.includes('exceeded a resource limit')) {
+      if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);
-        // @ts-ignore
-      } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
+      } else if ((error as any).mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No programs found`);
       } else {
         window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);

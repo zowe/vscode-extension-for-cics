@@ -111,14 +111,12 @@ export class CICSCombinedLocalFileTree extends TreeItem {
             return child;
           }
         })[0];
-        //@ts-ignore
-        const parentRegion = regionsContainer.getChildren().filter(child => {
+        const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === localfile.eyu_cicsname;
           }
-        })[0];
-        //@ts-ignore
-        const localFileTree = new CICSLocalFileTreeItem(localfile,parentRegion);
+        })[0] as CICSRegionTree;
+        const localFileTree = new CICSLocalFileTreeItem(localfile, parentRegion);
         localFileTree.setLabel(localFileTree.label!.toString().replace(localfile.file, `${localfile.file} (${localfile.eyu_cicsname})`));
         newChildren.push(localFileTree);
       }
