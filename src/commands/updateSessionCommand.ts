@@ -16,7 +16,6 @@ import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { openConfigFile } from "../utils/workspaceUtils";
 import { ProfileManagement } from "../utils/profileManagement";
-import { ProfilesCache } from "@zowe/zowe-explorer-api";
 
 export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
