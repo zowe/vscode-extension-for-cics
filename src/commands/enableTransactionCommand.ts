@@ -22,6 +22,7 @@ import * as https from "https";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
+import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTransactionTree";
 
 export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -78,10 +79,8 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
             }
             // if node is in a plex and the plex contains the region container tree
             if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
-              const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0];
-              //@ts-ignore
+              const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0] as CICSCombinedTransactionsTree;
               if (allTransactionTree.collapsibleState === 2 && allTransactionTree.getActiveFilter()) {
-                //@ts-ignore
                 await allTransactionTree.loadContents(tree);
               }
             }

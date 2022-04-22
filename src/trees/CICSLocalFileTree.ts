@@ -63,7 +63,6 @@ export class CICSLocalFileTree extends TreeItem {
       this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[${localFileArray.length}]`;
       for (const localFile of localFileArray) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
-        //@ts-ignore
         this.addLocalFile(newLocalFileItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");

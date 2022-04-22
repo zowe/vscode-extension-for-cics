@@ -22,6 +22,7 @@ import * as https from "https";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem";
 import { findSelectedNodes } from "../utils/commandUtils";
+import { CICSCombinedLocalFileTree } from "../trees/CICSCombinedLocalFileTree";
 
 export function getEnableLocalFileCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -78,10 +79,8 @@ export function getEnableLocalFileCommand(tree: CICSTree, treeview: TreeView<any
             }
             // if node is in a plex and the plex contains the region container tree
             if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
-              const allLocalFileTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0];
-              //@ts-ignore
+              const allLocalFileTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0] as CICSCombinedLocalFileTree;
               if (allLocalFileTreeTree.collapsibleState === 2 && allLocalFileTreeTree.getActiveFilter()) {
-                //@ts-ignore
                 await allLocalFileTreeTree.loadContents(tree);
               }
             }

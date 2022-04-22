@@ -102,7 +102,6 @@ function findRegionsContainerFromPlex(plex: CICSPlexTree): CICSRegionsContainer 
         if (child instanceof CICSRegionsContainer) {
             return child;
         }
-    })[0];
-    //@ts-ignore
+    })[0] as CICSRegionsContainer;
     return regionsContainer;
 }

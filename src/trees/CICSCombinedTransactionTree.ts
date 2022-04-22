@@ -99,13 +99,11 @@ export class CICSCombinedTransactionsTree extends TreeItem {
             return child;
           }
         })[0];
-        //@ts-ignore
-        const parentRegion = regionsContainer.getChildren().filter(child => {
+        const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === transaction.eyu_cicsname;
           }
-        })[0];
-        //@ts-ignore
+        })[0] as CICSRegionTree;
         const transactionTree = new CICSTransactionTreeItem(transaction,parentRegion);
         transactionTree.setLabel(transactionTree.label!.toString().replace(transaction.tranid, `${transaction.tranid} (${transaction.eyu_cicsname})`));
         newChildren.push(transactionTree);
