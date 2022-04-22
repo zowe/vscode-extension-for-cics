@@ -471,9 +471,9 @@
   "dependencies": {
     "@types/axios": "^0.14.0",
     "@zowe/cics-for-zowe-cli": "5.0.0-next.202202071745",
-    "@zowe/cli": "7.0.0-next.202204142300",
-    "@zowe/imperative": "5.0.0-next.202204142147",
-    "@zowe/zowe-explorer-api": "v2.0.0-next.202204180940",
+    "@zowe/cli": "7.0.1",
+    "@zowe/imperative": "5.0.1",
+    "@zowe/zowe-explorer-api": "2.0.0",
     "axios": "^0.21.4",
     "https": "^1.0.0",
     "run-script-os": "^1.1.6",
