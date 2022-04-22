@@ -11,14 +11,13 @@
 */
 
 import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, Logger, ProfileInfo } from "@zowe/imperative";
-import { getSecurityModules, ProfilesCache, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
+import { ProfilesCache, ZoweExplorerApi, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import axios, { AxiosRequestConfig } from "axios";
 import { window } from "vscode";
 import { xml2json } from "xml-js";
 import cicsProfileMeta from "./profileDefinition";
 import * as https from "https";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
-import { isTheia } from "./workspaceUtils";
 
 export class ProfileManagement {
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
@@ -41,6 +40,11 @@ export class ProfileManagement {
 
   public static getProfilesCache() {
     return ProfileManagement.ProfilesCache;
+  }
+
+  public static async profilesCacheRefresh() {
+    const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ProfileManagement.getExplorerApis();
+    await ProfileManagement.getProfilesCache().refresh(apiRegiser);
   }
 
   public static async createNewProfile(formResponse: ISaveProfile) {

@@ -35,8 +35,7 @@ export function getDeleteSessionCommand(tree: CICSTree, treeview: TreeView<any>)
             await openConfigFile(filePath);
           }
         } else {
-          const selectedNodes = treeview.selection.filter((selectedNode) => selectedNode !== node);
-          await tree.deleteSession(selectedNodes);
+          await tree.deleteSession(allSelectedNodes);
         }
       } catch (error) {
         window.showErrorMessage(`Something went wrong when deleting the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);

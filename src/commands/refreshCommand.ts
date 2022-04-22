@@ -10,8 +10,7 @@
 */
 
 ;
-import { ZoweExplorerApi } from "@zowe/zowe-explorer-api";
-import { commands, window } from "vscode";
+import { commands, ProgressLocation, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 
@@ -20,10 +19,15 @@ export function getRefreshCommand(tree: CICSTree) {
     "cics-extension-for-zowe.refreshTree",
     async () => {
       try {
-        const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ProfileManagement.getExplorerApis();
-        await ProfileManagement.getProfilesCache().refresh(apiRegiser);
-        tree.clearLoadedProfiles();
-        await tree.loadStoredProfileNames();
+       await window.withProgress({
+          title: 'Refreshing',
+          location: ProgressLocation.Notification,
+          cancellable: false
+        }, async () => {
+          tree.clearLoadedProfiles();
+          await ProfileManagement.profilesCacheRefresh();
+          await tree.loadStoredProfileNames();
+        });
       } catch (error) {
         console.log(error);
       }
@@ -64,8 +68,10 @@ export function getRefreshCommand(tree: CICSTree) {
       //     }
       //   }
       // });
-      tree._onDidChangeTreeData.fire(undefined);
-      window.showInformationMessage("Refreshed");
+      finally {
+        tree._onDidChangeTreeData.fire(undefined);
+        window.showInformationMessage("Refreshed");
+      }
     }
   );
 }
