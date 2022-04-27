@@ -22,6 +22,7 @@ import * as https from "https";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
+import { CICSCombinedProgramTree } from "../trees/CICSCombinedProgramTree";
 
 /**
  * Performs disable on selected CICSProgram nodes.
@@ -84,10 +85,8 @@ export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>
             }
             // if node is in a plex and the plex contains the region container tree
             if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
-              const allProgramsTree = parentRegion.parentPlex!.children!.filter((child: any) => child.contextValue.includes("cicscombinedprogramtree."))[0];
-              //@ts-ignore
+              const allProgramsTree = parentRegion.parentPlex!.children!.filter((child: any) => child.contextValue.includes("cicscombinedprogramtree."))[0] as CICSCombinedProgramTree;
               if (allProgramsTree.collapsibleState === 2 && allProgramsTree.getActiveFilter()) {
-                //@ts-ignore
                 await allProgramsTree.loadContents(tree);
               }
             }

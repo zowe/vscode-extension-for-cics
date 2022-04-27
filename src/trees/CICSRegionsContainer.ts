@@ -14,7 +14,7 @@ import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources } from "../utils/profileUtils";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 

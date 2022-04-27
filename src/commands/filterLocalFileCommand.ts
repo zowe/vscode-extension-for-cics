@@ -12,7 +12,7 @@
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSTree } from "../trees/CICSTree";
-import { getPatternFromFilter } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterLocalFilesCommand(tree: CICSTree, treeview: TreeView<any>) {
@@ -29,7 +29,7 @@ export function getFilterLocalFilesCommand(tree: CICSTree, treeview: TreeView<an
         window.showErrorMessage("No CICS local file tree selected");
         return;
       }
-      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       const pattern = await getPatternFromFilter("Local File", persistentStorage.getLocalFileSearchHistory());
       if (!pattern) {
         return;

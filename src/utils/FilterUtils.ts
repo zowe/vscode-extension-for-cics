@@ -9,7 +9,7 @@
 *
 */
 
-import { QuickPick, QuickPickItem, window } from "vscode";
+import { QuickPick, QuickPickItem, window, workspace } from "vscode";
 
 export async function resolveQuickPickHelper(
     quickpick: QuickPick<QuickPickItem>
@@ -54,4 +54,38 @@ export async function getPatternFromFilter(resourceName: string, resourceHistory
     }
     // Remove whitespace
     return pattern.replace(/\s/g, "");
+}
+
+export async function getDefaultProgramFilter() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.program.filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+        await workspace.getConfiguration().update('zowe.cics.program.filter', 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)');
+        defaultCriteria = 'NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)';
+    }
+    return defaultCriteria;
+}
+
+export async function getDefaultTransactionFilter() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.transaction.filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('zowe.cics.transaction.filter', 'NOT (program=DFH* OR program=EYU*)');
+      defaultCriteria = 'NOT (program=DFH* OR program=EYU*)';
+    }
+    return defaultCriteria;
+}
+
+export function toEscapedCriteriaString(activeFilter:string, attribute:string): string {
+    // returns a string as an escaped_criteria_string suitable for the criteria 
+    // query parameter for a CMCI request.
+    let criteria;
+    const splitActiveFilter = activeFilter.split(",");
+    criteria = "(";
+    for (const index in splitActiveFilter!) {
+        criteria += `${attribute}=${splitActiveFilter[parseInt(index)]}`;
+        if (parseInt(index) !== splitActiveFilter.length-1){
+            criteria += " OR ";
+        }
+    }
+    criteria += ")";
+    return criteria;
 }

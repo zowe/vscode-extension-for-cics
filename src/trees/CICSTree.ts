@@ -11,16 +11,16 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
-import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
+import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, TreeItemCollapsibleState, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { ProfileManagement } from "../utils/profileManagement";
-import { isTheia } from "../utils/theiaCheck";
+import { isTheia, openConfigFile } from "../utils/workspaceUtils";
 import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources, missingSessionParameters, promptCredentials } from "../utils/profileUtils";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
@@ -33,22 +33,53 @@ export class CICSTree
         return this.loadedProfiles;
     }
 
-    public async loadStoredProfileNames() {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
-        for (const profilename of persistentStorage.getLoadedCICSProfile()) {
-            const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
-            const newSessionTree = new CICSSessionTree(profileToLoad);
-            this.loadedProfiles.push(newSessionTree);
-        }
+    public clearLoadedProfiles() {
+        this.loadedProfiles = [];
     }
 
+    public async loadStoredProfileNames() {
+        const persistentStorage = new PersistentStorage("zowe.cics.persistent");
+        await ProfileManagement.profilesCacheRefresh();
+        for (const profilename of persistentStorage.getLoadedCICSProfile()) {
+            try {
+                const profileToLoad = await ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
+                // avoid accidental repeats
+                if (!this.loadedProfiles.filter(sessionTree => sessionTree.label === profilename).length) {
+                    const newSessionTree = new CICSSessionTree(profileToLoad);
+                    this.loadedProfiles.push(newSessionTree);
+                }
+            } catch {
+                continue;
+            }
+        }
+        this._onDidChangeTreeData.fire(undefined);
+    }
+
+    /**
+     * 
+     * Provides user with prompts and allows them to add a profile after clicking the '+' button
+     */
     async addProfile() {
-        const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
-        if (allCICSProfileNames.length > 0) {
+        try {
+        //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
+        const configInstance = await ProfileManagement.getConfigInstance();
+        const allCICSProfiles = (await ProfileManagement.getProfilesCache().getProfileInfo()).getAllProfiles("cics");
+        //const allCICSProfiles = configInstance.getAllProfiles("cics");
+        // const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
+        if (!allCICSProfiles) {
+            if (!configInstance.usingTeamConfig) {
+                window.showErrorMessage(`Could not find any CICS profiles`);
+                return;
+            }
+            window.showInformationMessage(`Could not find any CICS profiles`);
+        }
+        const allCICSProfileNames: string[] = allCICSProfiles ? allCICSProfiles.map((profile) => profile.profName) as unknown as [string] : [];
+        // No cics profiles needed beforhand for team config method
+        if (configInstance.usingTeamConfig || allCICSProfileNames.length > 0) {
             const profileNameToLoad = await window.showQuickPick(
-                [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.filter((profile) => {
+                [{ label: "\uFF0B Create New CICS Profile..." }].concat(allCICSProfileNames.filter((name) => {
                     for (const loadedProfile of this.loadedProfiles) {
-                        if (loadedProfile.label === profile) {
+                        if (loadedProfile.label === name) {
                             return false;
                         }
                     }
@@ -61,18 +92,33 @@ export class CICSTree
                     placeHolder: "Load Profile or Create New Profile",
                 }
             );
-
             if (profileNameToLoad) {
+                // If Create New CICS Profile option chosen
                 if (profileNameToLoad.label.includes("\uFF0B")) {
-                    //  Create New Profile Form should appear
-
-                    this.createNewProfile();
-
+                    if (configInstance.usingTeamConfig) {
+                        // get all profiles of all types including zosmf
+                        const profiles = configInstance.getAllProfiles();
+                        if (!profiles.length) {
+                            window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
+                        }
+                        const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(profiles[0].profName);
+                        const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+                        await openConfigFile(filePath);
+                    } else {
+                        await this.createNewProfile();
+                    }
                 } else {
-                    const profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
+                    let profileToLoad;
+                    // TODO: Just use loadNamedProfile once the method is configured to v2 profiles
+                    if (configInstance.usingTeamConfig){
+                        profileToLoad = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profileNameToLoad.label); //ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
+                    } else {
+                        await ProfileManagement.profilesCacheRefresh();
+                        profileToLoad = ProfileManagement.getProfilesCache().loadNamedProfile(profileNameToLoad.label, 'cics');
+                    }
                     const newSessionTree = new CICSSessionTree(profileToLoad);
                     this.loadedProfiles.push(newSessionTree);
-                    const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+                    const persistentStorage = new PersistentStorage("zowe.cics.persistent");
                     await persistentStorage.addLoadedCICSProfile(profileNameToLoad.label);
                     this._onDidChangeTreeData.fire(undefined);
                 }
@@ -82,15 +128,18 @@ export class CICSTree
                 "No Profiles Found... Opening Profile Creation Form"
             );
             //  Create New Profile Form should appear
-
             this.createNewProfile();
 
         }
+    } catch(error) {
+        console.log(error);
+        window.showErrorMessage(JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," "));
+    }
 
     }
 
     async loadProfile(profile: IProfileLoaded, position?: number | undefined, sessionTree?: CICSSessionTree) {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+        const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         await persistentStorage.addLoadedCICSProfile(profile.name!);
         let newSessionTree : CICSSessionTree;
         window.withProgress({
@@ -106,16 +155,41 @@ export class CICSTree
             message: `Loading ${profile.name}`
             });
             try {
+                const configInstance = await ProfileManagement.getConfigInstance();
+                if (configInstance.usingTeamConfig){
+                    let missingParamters = missingSessionParameters(profile.profile);
+                    if (missingParamters.length) {
+                        const userPass = ["user", "password"];
+                        if (missingParamters.includes(userPass[0]) || missingParamters.includes(userPass[1])){
+                            const updatedProfile = await promptCredentials(profile.name!, true);
+                            if (!updatedProfile) {
+                                return;
+                            }
+                            profile = updatedProfile;
+                            // Remove "user" and "password" from missing params array
+                            missingParamters = missingParamters.filter(param => (userPass.indexOf(param!) === -1) || (userPass.indexOf(param!) === -1));
+                        }
+                        if (missingParamters.length) {
+                            window.showInformationMessage(`The following fields are missing from ${profile.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
+                            return;
+                        }
+                    // If profile is expanded and it previously had 401 error code
+                    } else if (sessionTree && sessionTree.getIsUnauthorized()) {
+                        const updatedProfile = await promptCredentials(profile.name!, true);
+                        if (!updatedProfile) {
+                            return;
+                        }
+                        profile = updatedProfile;
+                    }
+                }
                 const plexInfo = await ProfileManagement.getPlexInfo(profile);
-                
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
 
                 for (const item of plexInfo) {
                     if (item.plexname === null) {
                         // No plex
-
                         const session = new Session({
-                            type: "basic",
+                            //type: "basic",
                             hostname: profile.profile!.host,
                             port: Number(profile.profile!.port),
                             user: profile.profile!.user,
@@ -131,6 +205,8 @@ export class CICSTree
                                 name: "CICSRegion",
                                 regionName: item.regions[0].applid
                             });
+                            // 200 OK received
+                            newSessionTree.setAuthorized();
                             https.globalAgent.options.rejectUnauthorized = undefined;
                             const newRegionTree = new CICSRegionTree(
                                 item.regions[0].applid,
@@ -184,8 +260,7 @@ export class CICSTree
 
                 if (typeof(error) === 'object') {
                     if ("code" in error!){
-                        //@ts-ignore
-                        switch(error.code) {
+                        switch((error as any).code) {
                             case 'ETIMEDOUT':
                                 window.showErrorMessage(`Error: connect ETIMEDOUT ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
                                 break;
@@ -205,20 +280,29 @@ export class CICSTree
                                 if (sessionTree){
                                         // If expanding a profile
                                     const busyDecision = await window.showInformationMessage(
-                                        //@ts-ignore
-                                        `Warning: Your connection is not private (${error.code}) - would you still like to proceed to ${profile!.profile!.host} (unsafe)?`,
+                                        `Warning: Your connection is not private (${(error as any).code}) - would you still like to proceed to ${profile!.profile!.host} (unsafe)?`,
                                         ...["Yes", "No"]);
                                     if (busyDecision) {
                                         if (busyDecision === "Yes") {
-                                            const message = {
-                                                name: profile.name,
-                                                profile: {
-                                                    ...profile.profile, 
-                                                    rejectUnauthorized: false
-                                                }
-                                            };
-                                            const newProfile = await ProfileManagement.updateProfile(message);
-                                            const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.name!, 'cics');
+                                            const configInstance = await ProfileManagement.getConfigInstance();
+                                            let updatedProfile;
+                                            if (configInstance.usingTeamConfig) {
+                                                const upd = { profileName: profile.name!, profileType: 'cics' };
+                                                const configInstance = await ProfileManagement.getConfigInstance();
+                                                await configInstance.updateProperty({ ...upd, property: "rejectUnauthorized", value: false });
+                                                updatedProfile = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profile.name!);
+                                            } else {
+                                                const message = {
+                                                    name: profile.name,
+                                                    profile: {
+                                                        ...profile.profile, 
+                                                        rejectUnauthorized: false
+                                                    }
+                                                };
+                                                const newProfile = await ProfileManagement.updateProfile(message);
+                                                await ProfileManagement.profilesCacheRefresh();
+                                                updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.name!, 'cics');
+                                            }
                                             await this.removeSession(sessionTree, updatedProfile, position);
                                         }
                                         
@@ -230,17 +314,23 @@ export class CICSTree
                         }
 
                     } else if ("response" in error!) {
-                        //@ts-ignore
-                        if (error.response !== 'undefined' && error.response.status){
-                            //@ts-ignore
-                            switch(error.response.status) {
+                        if ((error as any).response !== 'undefined' && (error as any).response.status){
+                            switch((error as any).response.status) {
+                                case 401:
+                                    window.showErrorMessage(`Error: Request failed with status code 401 for Profile '${profile.name}'`);
+                                    // set the unauthorized flag to true for reprompting of credentials.
+                                    newSessionTree.setUnauthorized();
+                                    // Replace old profile tree with new disconnected profile tree item
+                                    this.loadedProfiles.splice(position!, 1, newSessionTree);
+                                    break;
                                 case 404:
                                     window.showErrorMessage(`Error: Request failed with status code 404 for Profile '${profile.name}' - Not Found`);
+                                    break;
                                 case 500:
                                     window.showErrorMessage(`Error: Request failed with status code 500 for Profile '${profile.name}'`);
+                                    break;
                                 default:
-                                    //@ts-ignore
-                                    window.showErrorMessage(`Error: Request failed with status code ${error.response.status} for Profile '${profile.name}'`);
+                                    window.showErrorMessage(`Error: Request failed with status code ${(error as any).response.status} for Profile '${profile.name}'`);
                             }
                         } else {
                             window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
@@ -248,8 +338,6 @@ export class CICSTree
                     }
                 }
                 console.log(error);
-
-                
             }
             }
         );
@@ -351,6 +439,7 @@ export class CICSTree
 
             try {
                 await ProfileManagement.createNewProfile(message);
+                await ProfileManagement.profilesCacheRefresh();
                 await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
             } catch (error) {
                 // @ts-ignore
@@ -370,12 +459,13 @@ export class CICSTree
             panel.webview.onDidReceiveMessage(async (message) => {
                 try {
                     panel.dispose();
-                    const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
+                    const allCICSProfileNames = (await ProfileManagement.getProfilesCache().getProfileInfo()).getAllProfiles("cics").map((profile) => profile.profName);//await ProfileManagement.getProfilesCache().getNamesForType('cics');
                     if (allCICSProfileNames.includes(message.name)) {
                         window.showErrorMessage(`Profile "${message.name}" already exists`);
                         return;
                     }
                     await ProfileManagement.createNewProfile(message);
+                    await ProfileManagement.profilesCacheRefresh();
                     await this.loadProfile(ProfileManagement.getProfilesCache().loadNamedProfile(message.name, 'cics'));
                 } catch (error) {
                     console.log(error);
@@ -390,7 +480,7 @@ export class CICSTree
     }
 
     async removeSession(session: CICSSessionTree, profile?: IProfileLoaded, position?: number) {
-        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+        const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile.profile.name !== session.label?.toString());
         if (profile && position !== undefined) {
@@ -431,7 +521,7 @@ export class CICSTree
                             name: sessions[parseInt(index)].label?.toString()!,
                             rejectIfDependency: true
                         });
-                        const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+                        const persistentStorage = new PersistentStorage("zowe.cics.persistent");
                         await persistentStorage.removeLoadedCICSProfile(sessions[parseInt(index)].label!.toString());
 
                         this.loadedProfiles = this.loadedProfiles.filter(profile => profile !== sessions[parseInt(index)]);
@@ -451,6 +541,7 @@ export class CICSTree
     }
 
     async updateSession(session: CICSSessionTree) {
+        await ProfileManagement.profilesCacheRefresh();
         const profileToUpdate = await ProfileManagement.getProfilesCache().loadNamedProfile(session.label?.toString()!, 'cics');
 
         const message = {
@@ -479,6 +570,7 @@ export class CICSTree
                 panel.dispose();
                 const profile = await ProfileManagement.updateProfile(message);
                 const position = this.loadedProfiles.indexOf(session);
+                await ProfileManagement.profilesCacheRefresh();
                 const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.profile!.name, 'cics');
                 await this.removeSession(session, updatedProfile, position);
 

@@ -1,6 +1,14 @@
 # Change Log
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
+## `2.0.0`
+- **Major**: Introduced the ability to access Team Profiles.
+- Added v1 backwards compatibility [#180](https://github.com/zowe/vscode-extension-for-cics/pull/180) & [#212](https://github.com/zowe/vscode-extension-for-cics/pull/212).
+- Added error message on activation if compatible Zowe Explorer extension is not found [#162](https://github.com/zowe/vscode-extension-for-cics/issues/162).
+- Added ability to open the config file to add a new CICS profile [#157](https://github.com/zowe/vscode-extension-for-cics/issues/157).
+- Added ability to open the config file to update a CICS profile [#150](https://github.com/zowe/vscode-extension-for-cics/issues/150).
+- Fixed build script to work on Windows [#160](https://github.com/zowe/vscode-extension-for-cics/issues/160).
+- Added a progress bar and fixed the refresh command [#210](https://github.com/zowe/vscode-extension-for-cics/issues/210).
 
 ## `1.3.0`
 - Added the option to specify CICS System Groups instead of a region name when creating a profile [#146](https://github.com/zowe/vscode-extension-for-cics/pull/146).

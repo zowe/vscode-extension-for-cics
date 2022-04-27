@@ -6,7 +6,7 @@
   "repository": {
     "url": "https://github.com/zowe/vscode-extension-for-cics"
   },
-  "version": "1.3.0",
+  "version": "2.0.0",
   "engines": {
     "vscode": "^1.50.0"
   },
@@ -53,21 +53,21 @@
         }
       },
       {
-        "command": "cics-extension-for-zowe.newCopyProgram",
-        "title": "New Copy",
-        "category": "Zowe Explorer for IBM CICS",
-        "icon": {
-          "light": "resources/imgs/newcopy-dark.svg",
-          "dark": "resources/imgs/newcopy-light.svg"
-        }
-      },
-      {
         "command": "cics-extension-for-zowe.refreshTree",
         "title": "Refresh",
         "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/refresh-dark.svg",
           "dark": "resources/imgs/refresh-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.newCopyProgram",
+        "title": "New Copy",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/newcopy-dark.svg",
+          "dark": "resources/imgs/newcopy-light.svg"
         }
       },
       {
@@ -408,8 +408,10 @@
       ]
     },
     "configuration": {
+      "type": "object",
+      "title": "Zowe Explorer for IBM CICS",
       "properties": {
-        "Zowe.CICS.Persistent": {
+        "zowe.cics.persistent": {
           "default": {
             "persistence": true,
             "programSearchHistory": [],
@@ -420,19 +422,19 @@
           "description": "Zowe CICS Extension History",
           "scope": "window"
         },
-        "Zowe.CICS.Program.Filter": {
+        "zowe.cics.program.filter": {
           "type": "string",
           "default": "NOT (PROGRAM=CEE* OR PROGRAM=DFH* OR PROGRAM=CJ* OR PROGRAM=EYU* OR PROGRAM=CSQ* OR PROGRAM=CEL* OR PROGRAM=IGZ*)",
           "description": "Default filter criteria for Programs",
           "scope": "window"
         },
-        "Zowe.CICS.Transaction.Filter": {
+        "zowe.cics.transaction.filter": {
           "type": "string",
           "default": "NOT (program=DFH* OR program=EYU*)",
           "description": "Default filter criteria for Transactions",
           "scope": "window"
         },
-        "Zowe.CICS.LocalFile.Filter": {
+        "zowe.cics.localFile.filter": {
           "type": "string",
           "default": "file=*",
           "description": "Default filter criteria for Local Files",
@@ -443,7 +445,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "build": "rm -rf out && npm run lint && npm run licenses && tsc -p ./",
+    "build": "run-script-os",
+    "build:win32": "rd /s /q out && npm run lint && npm run licenses && tsc -p ./",
+    "build:default": "rm -rf out && npm run lint && npm run licenses && tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run build && npm run lint",
@@ -461,16 +465,18 @@
     "glob": "^7.1.6",
     "mocha": "^8.1.3",
     "shebang-regex": "^3.0.0",
-    "typescript": "^4.0.2",
+    "typescript": "^4.6.2",
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
-    "@zowe/cics-for-zowe-cli": "^4.0.2",
-    "@zowe/imperative": "^4.8.1",
-    "@zowe/zowe-explorer-api": "^1.18.1",
+    "@zowe/cics-for-zowe-cli": "5.0.0",
+    "@zowe/cli": "7.0.1",
+    "@zowe/imperative": "5.0.1",
+    "@zowe/zowe-explorer-api": "2.0.0",
     "axios": "^0.21.4",
     "https": "^1.0.0",
+    "run-script-os": "^1.1.6",
     "xml-js": "^1.6.11"
   }
 }

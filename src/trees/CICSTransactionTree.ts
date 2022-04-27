@@ -14,9 +14,8 @@ import { CICSTransactionTreeItem } from "./treeItems/CICSTransactionTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
-import { getDefaultTransactionFilter } from "../utils/getDefaultTransactionFilter";
-import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getDefaultTransactionFilter, toEscapedCriteriaString } from "../utils/filterUtils";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSTransactionTree extends TreeItem {
   children: CICSTransactionTreeItem[] = [];
@@ -60,7 +59,6 @@ export class CICSTransactionTree extends TreeItem {
       this.label = `Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[${transactionArray.length}]`;
       for (const transaction of transactionArray) {
         const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
-        //@ts-ignore
         this.addTransaction(newTransactionItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");

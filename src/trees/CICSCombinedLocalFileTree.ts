@@ -16,10 +16,10 @@ import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
-import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { toEscapedCriteriaString } from "../utils/filterUtils";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSCombinedLocalFileTree extends TreeItem {
   children: (CICSLocalFileTreeItem | ViewMore) [] | [TextTreeItem] | null;
@@ -111,14 +111,12 @@ export class CICSCombinedLocalFileTree extends TreeItem {
             return child;
           }
         })[0];
-        //@ts-ignore
-        const parentRegion = regionsContainer.getChildren().filter(child => {
+        const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === localfile.eyu_cicsname;
           }
-        })[0];
-        //@ts-ignore
-        const localFileTree = new CICSLocalFileTreeItem(localfile,parentRegion);
+        })[0] as CICSRegionTree;
+        const localFileTree = new CICSLocalFileTreeItem(localfile, parentRegion);
         localFileTree.setLabel(localFileTree.label!.toString().replace(localfile.file, `${localfile.file} (${localfile.eyu_cicsname})`));
         newChildren.push(localFileTree);
       }

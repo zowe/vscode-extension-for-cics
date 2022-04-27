@@ -10,8 +10,8 @@
 *
 */
 
-import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile } from "@zowe/imperative";
-import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
+import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, Logger, ProfileInfo } from "@zowe/imperative";
+import { ProfilesCache, ZoweExplorerApi, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import axios, { AxiosRequestConfig } from "axios";
 import { window } from "vscode";
 import { xml2json } from "xml-js";
@@ -20,10 +20,9 @@ import * as https from "https";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
 
 export class ProfileManagement {
-
-  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi('1.18.0');
-  private static profilesCache = ProfileManagement.zoweExplorerAPI.getExplorerExtenderApi().getProfilesCache();
-
+  private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
+  private static ProfilesCache = new ProfilesCache(Logger.getAppLogger());
+  
   constructor() { }
 
   public static apiDoesExist() {
@@ -40,23 +39,33 @@ export class ProfileManagement {
   }
 
   public static getProfilesCache() {
-    return ProfileManagement.profilesCache;
+    return ProfileManagement.ProfilesCache;
+  }
+
+  public static async profilesCacheRefresh() {
+    const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ProfileManagement.getExplorerApis();
+    await ProfileManagement.getProfilesCache().refresh(apiRegiser);
   }
 
   public static async createNewProfile(formResponse: ISaveProfile) {
-    await ProfileManagement.profilesCache.getCliProfileManager('cics').save(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').save(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
   public static async updateProfile(formResponse: IUpdateProfile) {
-    const profile = await ProfileManagement.profilesCache.getCliProfileManager('cics').update(formResponse);
+    const profile = await ProfileManagement.ProfilesCache.getCliProfileManager('cics').update(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
     return profile;
   }
 
   public static async deleteProfile(formResponse: IDeleteProfile) {
-    await ProfileManagement.profilesCache.getCliProfileManager('cics').delete(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').delete(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+  }
+
+  public static async getConfigInstance() : Promise<ProfileInfo> {
+    const mProfileInfo = await ProfileManagement.getProfilesCache().getProfileInfo();
+    return mProfileInfo;
   }
 
   public static async makeRequest(path:string, config:AxiosRequestConfig) {

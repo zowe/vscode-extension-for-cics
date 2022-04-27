@@ -17,10 +17,10 @@ import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
-import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
+import { toEscapedCriteriaString } from "../utils/filterUtils";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSCombinedProgramTree extends TreeItem {
   children: (CICSProgramTreeItem | ViewMore ) [] | [TextTreeItem] | null;
@@ -101,13 +101,11 @@ export class CICSCombinedProgramTree extends TreeItem {
             return child;
           }
         })[0];
-        //@ts-ignore
-        const parentRegion = regionsContainer.getChildren().filter(child => {
+        const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
             return child.getRegionName() === program.eyu_cicsname;
           }
-        })[0];
-        //@ts-ignore
+        })[0] as CICSRegionTree;
         const progamTree = new CICSProgramTreeItem(program,parentRegion);
         progamTree.setLabel(progamTree.label!.toString().replace(program.program, `${program.program} (${program.eyu_cicsname})`));
         newChildren.push(progamTree);

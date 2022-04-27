@@ -12,7 +12,7 @@
 import { commands, TreeView, window } from "vscode";
 import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
-import { getPatternFromFilter } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterAllTransactionsCommand(tree: CICSTree, treeview: TreeView<any>) {
@@ -29,7 +29,7 @@ export function getFilterAllTransactionsCommand(tree: CICSTree, treeview: TreeVi
         window.showErrorMessage("No CICS 'All Transactions' tree selected");
         return;
       }
-      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       const pattern = await getPatternFromFilter("Transaction", persistentStorage.getTransactionSearchHistory());
       if (!pattern) {
         return;

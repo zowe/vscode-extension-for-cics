@@ -12,7 +12,7 @@
 import { commands, TreeView, window } from "vscode";
 import { CICSCombinedProgramTree } from "../trees/CICSCombinedProgramTree";
 import { CICSTree } from "../trees/CICSTree";
-import { getPatternFromFilter } from "../utils/FilterUtils";
+import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
 export function getFilterAllProgramsCommand(tree: CICSTree, treeview: TreeView<any>) {
@@ -29,7 +29,7 @@ export function getFilterAllProgramsCommand(tree: CICSTree, treeview: TreeView<a
         window.showErrorMessage("No CICS 'All Programs' tree selected");
         return;
       }
-      const persistentStorage = new PersistentStorage("Zowe.CICS.Persistent");
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       const pattern = await getPatternFromFilter("Program", persistentStorage.getProgramSearchHistory());
       if (!pattern) {
         return;

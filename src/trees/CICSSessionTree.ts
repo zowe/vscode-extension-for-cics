@@ -13,12 +13,13 @@ import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { Session } from "@zowe/imperative";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSSessionTree extends TreeItem {
   children: (CICSPlexTree | CICSRegionTree)[];
   session: Session;
   profile: any;
+  isUnauthorized: boolean | undefined;
 
   constructor(
     profile: any,
@@ -31,12 +32,13 @@ export class CICSSessionTree extends TreeItem {
       type: "basic",
       hostname: profile.profile!.host,
       port: Number(profile.profile!.port),
-      user: profile.profile!.user,
-      password: profile.profile!.password,
+      user: profile.profile!.user || "",
+      password: profile.profile!.password || "",
       rejectUnauthorized: profile.profile!.rejectUnauthorized,
       protocol: profile.profile!.protocol,
     });
     this.profile = profile;
+    this.isUnauthorized = undefined;
   }
 
   public addRegion(region: CICSRegionTree) {
@@ -53,5 +55,17 @@ export class CICSSessionTree extends TreeItem {
 
   public getChildren() {
     return this.children;
+  }
+
+  public setUnauthorized() {
+    this.isUnauthorized = true;
+  }
+
+  public setAuthorized() {
+    this.isUnauthorized = false;
+  }
+
+  public getIsUnauthorized() {
+    return this.isUnauthorized;
   }
 }

@@ -9,6 +9,7 @@
 This CICS Extension for Zowe Explorer adds additional functionality to the popular VSCode extension, [Zowe Explorer](https://github.com/zowe/vscode-extension-for-zowe). This extension allows interactions with CICS regions and programs, and the ability to run commands against them.
 
 ## Contents
+- [Software Requirements](#software-requirements)
 - [Features](#features)
 - [Getting Started](#getting-started)
     - [Create Profile](#create-profile)
@@ -29,6 +30,12 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
     - [Checking the source of an error](#checking-the-source-of-an-error)
     - [Filing an issue](#filing-an-issue)
 
+## Software Requirements
+Ensure that you meet the following prerequisites before you use the extension:
+
+- Install VSCode
+
+- Install Zowe Explorer v2
 ## Features
 
 - Load profiles directly from Zowe instance locally installed.
@@ -41,38 +48,110 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
 - Apply multiple filters to regions, programs, local transactions and/or local files.
 - View and interact with all resources under a plex.
 
-To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md)
+To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md).
 
 ## Getting Started
 
 ### Create Profile
 
-If you already have a Zowe CICS CLI profile the CICS tree will load the default profile on startup.  
+If you already have a Zowe CICS CLI profile, the CICS tree will load the default profile on startup.  
 
-If you don't have an existing CICS profile add one by selecting the + button in the CICS tree and choosing the option `Create New Session ...` to open a panel allowing connection details to be defined.  The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number.  The region can be a WUI server in a CICSPlex, a stand-alone Single Management Application Programming (SMSS) region, or a CICS system group.
+If you don't have an existing Zowe CICS CLI profile, follow these steps to create one:
 
-If neither of the fields under 'CICS Details' are specified, the profile will show all CICSPlex for the WUI server.  Specify a Plex Name to just view data for a single CICSPlex. 
+#### Using Zowe Team Configuration
+
+1. Select the **+** button in the CICS tree.
+
+2. Select the **Create New CICS profile** option to open your config file.
+
+3. Edit the config file to add a CICS profile.
+
+4. Refresh the Zowe Explorer for IBM CICS extension by either clicking the button at the top level of the CICS view, or the `Zowe Explorer for IBM CICS: Refresh` command palette option.
+
+5. Select the **+** button in the CICS tree and click the newly created profile to load it into view.
+
+<p align="center">
+<img src="./docs/images/create-config-profile.gif" alt="Zowe CICS Explorer config profiles" width="700px"/> 
+</p>
+
+Here's an example of a CICS profile entry in the config file:
+
+```
+"profiles": {
+   ...
+   "cics_example": {
+      "type": "cics",
+      "properties": {
+            "host": "replace-with-host-name",
+            "port": replace-with-port-number,
+            "rejectUnauthorized": true,
+            "protocol": "http",
+            "cicsPlex": "replace-with-plex-name",
+            "regionName": "replace-with-region-name"
+      }
+   },
+   ...
+}
+```
+**Tip**: Create a profile without the "user" and "password" properties and expand the profile after loading it into the CICS view. The CICS extension will then prompt you for the "user" and "password" fields to be stored in the secure array.
+
+#### Using Zowe v1 profiles
+
+1. Select the **+** button in the CICS tree.
+
+2. Select the **Create New CICS profile** option to open a panel that defines connection details.
+
+**Note**: The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number. The region can be a WUI server in a CICSPlex, or else a stand-alone Single Management Application Programming (SMSS) region.  
+
+Configuring a CICS region to have a connection is a system programmer task and more details can be found in [Setting up CMCI with CICSPlex SM](https://www.ibm.com/docs/en/cics-ts/5.3?topic=explorer-setting-up-cmci-cicsplex-sm) or [Setting up CMCI in a stand-alone CICS region](https://www.ibm.com/docs/en/cics-ts/5.3?topic=suace-setting-up-cmci-in-stand-alone-cics-region). If your CMCI connection is configured to use a self-signed certificate that your PC's trust store doesn't recognize, see [Untrusted TLS certificates](#untrusted-tls-certificates).
+
+<p align="center">
+<img src="./docs/images/create-profile.gif" alt="Zowe CICS Explorer profiles" width="700px"/> 
+</p>
+
+To show more than one CICS profiles in the tree, select the **+** button and choose from the list of profiles. Only profiles that not already included in the CICS tree will be shown.
+
+#### Addtional details for making the connection
+
+The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number.  The region can be a WUI server in a CICSPlex, a stand-alone Single Management Application Programming (SMSS) region, or a CICS system group.
+
+If neither of the fields under 'CICS Details' (for users using v1 profiles) or neither the 'cicsPlex' or 'regionName' properties (for users using team configuration) are specified, the profile will show all CICSPlex for the WUI server.  Specify a Plex Name to just view data for a single CICSPlex. 
 
 For a CICSPlex, all managed regions will be shown unless you specify a specific region name. Instead of a region name, you may also enter a CICS System Group to allow scoping of resources within the CICSPlex.
 
 For a stand-alone CICS region, the Region Name may be entered but is optional.  Do not enter a CICSPlex name for a stand-alone CICS region.
 
-It is recommended to leave these 'CICS Details' fields blank to test the connection, and then add the plex name and region or system group name later to narrow if needed.  If you are intending to use this profile with the Zowe CICS Command Line Interface (CLI) the region name and plex name are required.  
 
 Configuring a CICS region to have a connection is a system programmer task and more details can be found in [Setting up CMCI with CICSPlex SM](https://www.ibm.com/docs/en/cics-ts/5.3?topic=explorer-setting-up-cmci-cicsplex-sm) or 
 [Setting up CMCI in a stand-alone CICS region](https://www.ibm.com/docs/en/cics-ts/5.3?topic=suace-setting-up-cmci-in-stand-alone-cics-region).  If your CMCI connection is configured to use a self-signed certificate that your PC's trust store doesn't recognize, see [Untrusted TLS certificates](#untrusted-tls-certificates)
 
 To show more than one CICS profile in the tree, select the + button and choose from the list of profiles.  Only profiles not already included in the CICS tree will be shown.  To view all Zowe CICS CLI profiles use the command `zowe profiles list cics` from a terminal.  
 
-<p align="center">
-<img src="./docs/images/create-profile.gif" alt="Zowe CICS Explorer profiles" width="700px"/> 
-</p>
-
 ### Update Profile
 
-Right-click against a profile to open up the profile menu actions and select the `Update Profile` command to update the session details. This will open a panel with fields containing the details used to create the connection. All fields apart from the 'Profile Name' can be modified.
+#### Using Zowe Team Configuration
 
-Once the details have been updated, click the `Update Profile` button to apply the changes to the profile.
+1. Right-click a profile to open up the profile menu actions.
+
+2. Select the **Update Profile** button to open the config file.
+
+3. Edit the config file to update the profile(s).
+
+4. Refresh the Zowe Explorer for IBM CICS extension by either clicking the button at the top level of the CICS view, or the `Zowe Explorer for IBM CICS: Refresh` command palette option.
+
+<p align="center">
+<img src="./docs/images/update-config-profile.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+</p>
+
+#### Using Zowe v1 profiles
+
+1. Right-click a profile to open up the profile menu actions.
+
+2. Select the **Update Profile** button to update the session details.
+
+    This will open a panel with fields containing the details that are used to create the connection. You can modify all fields apart from the **Profile Name**.
+
+3. Once the details are updated, click the **Update Profile** button to apply the changes to the profile.
 
 <p align="center">
 <img src="./docs/images/update-profile.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
@@ -88,7 +167,25 @@ Open the menu actions for a profile by right-clicking a profile and select `Hide
 
 ### Deleting Profiles
 
-Right-click a chosen profile, select `Delete Profile` and click the `Yes` button when prompted to confirm the action of permanently deleting the profile. The functionality deletes the CICS profile from the persistant storage directory `~/.zowe/profiles/cics`.
+#### Using Zowe Team Configuration
+
+1. Right-click a chosen profile.
+
+2. Select **Delete Profile** which opens the config file.
+
+3. Edit the config file to remove the cics profile entry.
+
+4. Refresh the Zowe Explorer for IBM CICS extension by either clicking the button at the top level of the CICS view, or the `Zowe Explorer for IBM CICS: Refresh` command palette option.
+
+<p align="center">
+<img src="./docs/images/delete-config-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+</p>
+
+#### Using Zowe v1 profiles
+
+1. Right-click a chosen profile.
+
+2. Select **Delete Profile** and click the **Yes** button when prompted to confirm the action of permanently deleting the profile. The functionality deletes the CICS profile from the persistent storage directory `~/.zowe/profiles/cics`.
 
 <p align="center">
 <img src="./docs/images/delete-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 

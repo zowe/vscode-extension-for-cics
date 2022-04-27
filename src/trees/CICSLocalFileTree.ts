@@ -14,8 +14,8 @@ import { CICSLocalFileTreeItem } from "./treeItems/CICSLocalFileTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { CICSRegionTree } from "./CICSRegionTree";
 import * as https from "https";
-import { toEscapedCriteriaString } from "../utils/toEscapedCriteriaString";
-import { getIconPathInResources } from "../utils/getIconPath";
+import { toEscapedCriteriaString } from "../utils/filterUtils";
+import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSLocalFileTree extends TreeItem {
   children: CICSLocalFileTreeItem[] = [];
@@ -36,9 +36,9 @@ export class CICSLocalFileTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('Zowe.CICS.LocalFile.Filter')}`;
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.localFile.filter')}`;
     if (!defaultCriteria || defaultCriteria.length === 0) {
-      await workspace.getConfiguration().update('Zowe.CICS.LocalFile.Filter', 'file=*');
+      await workspace.getConfiguration().update('zowe.cics.localFile.filter', 'file=*');
       defaultCriteria = 'file=*';
     }
     let criteria;
@@ -63,7 +63,6 @@ export class CICSLocalFileTree extends TreeItem {
       this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[${localFileArray.length}]`;
       for (const localFile of localFileArray) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
-        //@ts-ignore
         this.addLocalFile(newLocalFileItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
