@@ -167,6 +167,11 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
+        "command": "cics-extension-for-zowe.showTaskAttributes",
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
         "command": "cics-extension-for-zowe.showRegionAttributes",
         "title": "Show Attributes",
         "category": "Zowe Explorer for IBM CICS"
@@ -233,6 +238,16 @@
       {
         "command": "cics-extension-for-zowe.deleteSession",
         "title": "Delete Profile",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
+        "command": "cics-extension-for-zowe.revealTransaction",
+        "title": "Show Transaction",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
+        "command": "cics-extension-for-zowe.purgeTask",
+        "title": "Purge Task",
         "category": "Zowe Explorer for IBM CICS"
       }
     ],
@@ -346,6 +361,11 @@
           "group": ""
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicstask.*/",
+          "command": "cics-extension-for-zowe.showTaskAttributes",
+          "group": "000_zowecics_main@0"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicsprogram.disabled.*/",
           "command": "cics-extension-for-zowe.enableProgram",
           "group": ""
@@ -404,6 +424,16 @@
           "when": "view == cics-view && viewItem =~ /^cicssession.*/",
           "command": "cics-extension-for-zowe.deleteSession",
           "title": "Delete Session"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstask.*/",
+          "command": "cics-extension-for-zowe.revealTransaction",
+          "group": "001_zowecics_reveal@0"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstask.*/",
+          "command": "cics-extension-for-zowe.purgeTask",
+          "group": "000_zowecics_main@1"
         }
       ]
     },
