@@ -33,8 +33,8 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
       }
       let parentRegions: CICSRegionTree[] = [];
       let purgeType = await window.showInformationMessage(
-        `Choose one of the following for the file busy condition`,
-        ...["Purge", "Force Purge"]);
+        `Choose one of the following options for Purge`,
+        ...["Purge", "Force Purge", "Kill"]);
       if (purgeType){
         purgeType =  purgeType.replace(" ","").toUpperCase();
 
