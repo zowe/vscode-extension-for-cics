@@ -16,11 +16,13 @@ import { getIconPathInResources } from "../../utils/profileUtils";
 export class CICSTransactionTreeItem extends TreeItem {
   transaction: any;
   parentRegion: CICSRegionTree;
+  directParent: any;
   transactionName: string;
 
   constructor(
     transaction: any,
     parentRegion: CICSRegionTree,
+    directParent: any,
     public readonly iconPath = getIconPathInResources("local-transaction-dark.svg", "local-transaction-light.svg")
   ) {
 
@@ -31,10 +33,15 @@ export class CICSTransactionTreeItem extends TreeItem {
     this.transaction = transaction;
     this.contextValue = `cicstransaction.${transaction.status.toLowerCase()}.${transaction.tranid}`;
     this.parentRegion = parentRegion;
+    this.directParent = directParent;
     this.transactionName = transaction.tranid;
   }
 
   public setLabel(newLabel: string) {
     this.label = newLabel;
+  }
+
+  public getParent() {
+    return this.directParent;
   }
 }

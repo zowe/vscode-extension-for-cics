@@ -57,7 +57,7 @@ export class CICSProgramTree extends TreeItem {
       const programsArray = Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram];
       this.label = `Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[${programsArray.length}]`;
       for (const program of programsArray) {
-        const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion);
+        const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion, this);
         this.addProgram(newProgramItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
@@ -87,5 +87,9 @@ export class CICSProgramTree extends TreeItem {
 
   public getFilter() {
     return this.activeFilter;
+  }
+  
+  public getParent() {
+    return this.parentRegion;
   }
 }

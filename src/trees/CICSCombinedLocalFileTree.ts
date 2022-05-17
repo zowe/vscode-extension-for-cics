@@ -116,7 +116,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
             return child.getRegionName() === localfile.eyu_cicsname;
           }
         })[0] as CICSRegionTree;
-        const localFileTree = new CICSLocalFileTreeItem(localfile, parentRegion);
+        const localFileTree = new CICSLocalFileTreeItem(localfile, parentRegion, this);
         localFileTree.setLabel(localFileTree.label!.toString().replace(localfile.file, `${localfile.file} (${localfile.eyu_cicsname})`));
         newChildren.push(localFileTree);
       }

@@ -58,7 +58,7 @@ export class CICSTransactionTree extends TreeItem {
       const transactionArray = Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction];
       this.label = `Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[${transactionArray.length}]`;
       for (const transaction of transactionArray) {
-        const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion);
+        const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion, this);
         this.addTransaction(newTransactionItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
@@ -90,5 +90,9 @@ export class CICSTransactionTree extends TreeItem {
 
   public getFilter() {
     return this.activeFilter;
+  }
+
+  public getParent() {
+    return this.parentRegion;
   }
 }

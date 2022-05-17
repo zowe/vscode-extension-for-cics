@@ -62,7 +62,7 @@ export class CICSLocalFileTree extends TreeItem {
       const localFileArray = Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile];
       this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[${localFileArray.length}]`;
       for (const localFile of localFileArray) {
-        const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion);
+        const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion, this);
         this.addLocalFile(newLocalFileItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
@@ -96,4 +96,7 @@ export class CICSLocalFileTree extends TreeItem {
     return this.activeFilter;
   }
 
+  public getParent() {
+    return this.parentRegion;
+  }
 }

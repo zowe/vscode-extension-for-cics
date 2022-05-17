@@ -23,6 +23,7 @@ export class CICSRegionTree extends TreeItem {
   region: any;
   parentSession: CICSSessionTree;
   parentPlex: CICSPlexTree | undefined;
+  directParent: any;
   isActive: true | false;
 
   constructor(
@@ -30,13 +31,14 @@ export class CICSRegionTree extends TreeItem {
     region: any,
     parentSession: CICSSessionTree,
     parentPlex: CICSPlexTree | undefined,
+    directParent: any,
     public iconPath = getIconPathInResources("region-dark.svg", "region-light.svg")
   ) {
     super(regionName, TreeItemCollapsibleState.Collapsed);
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-
     this.parentSession = parentSession;
+    this.directParent = directParent;
     if (parentPlex) {
       this.parentPlex = parentPlex;
     }
@@ -67,5 +69,9 @@ export class CICSRegionTree extends TreeItem {
   
   public getChildren() {
     return this.children;
+  }
+
+  public getParent() {
+    return this.directParent;
   }
 }

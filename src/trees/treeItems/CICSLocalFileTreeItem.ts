@@ -16,11 +16,13 @@ import { getIconPathInResources } from "../../utils/profileUtils";
 export class CICSLocalFileTreeItem extends TreeItem {
   localFile: any;
   parentRegion: CICSRegionTree;
+  directParent: any;
   localFileName: string;
 
   constructor(
     localFile: any,
     parentRegion: CICSRegionTree,
+    directParent: any,
     public readonly iconPath = getIconPathInResources("local-file-dark.svg", "local-file-light.svg")
   ) {
 
@@ -37,6 +39,7 @@ export class CICSLocalFileTreeItem extends TreeItem {
     this.localFile = localFile;
     this.contextValue = `cicslocalfile.${localFile.enablestatus.toLowerCase()}.${localFile.openstatus.toLowerCase()}.${localFile.file}`;
     this.parentRegion = parentRegion;
+    this.directParent = directParent;
     this.localFileName = localFile.file;
   }
 
@@ -44,4 +47,7 @@ export class CICSLocalFileTreeItem extends TreeItem {
     this.label = newLabel;
   }
   
+  public getParent() {
+    return this.directParent;
+  }
 }
