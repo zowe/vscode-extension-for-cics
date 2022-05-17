@@ -50,10 +50,12 @@ import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
 import { regionContainerExpansionHandler } from "./utils/expansionHandler";
 import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
-import { CredentialManagerFactory, Logger } from "@zowe/imperative";
+import { CredentialManagerFactory, ICommandProfileTypeConfiguration, Logger } from "@zowe/imperative";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
 import { getRevealTransactionCommand } from "./commands/revealTransaction";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
+import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
+import { getFilterTasksCommand } from "./commands/filterTasksCommand";
 
 export async function activate(context: ExtensionContext) {
   const log = Logger.getAppLogger();
@@ -166,6 +168,7 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
+      // Children only loaded if filter has been applied
       if (node.element.getActiveFilter()) {
         node.element.loadContents(treeDataProv);
       }
@@ -176,6 +179,11 @@ export async function activate(context: ExtensionContext) {
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
+      if (node.element.getActiveFilter()) {
+        node.element.loadContents(treeDataProv);
+      }
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicscombinedtasktree.")) {
       if (node.element.getActiveFilter()) {
         node.element.loadContents(treeDataProv);
       }
@@ -244,9 +252,11 @@ export async function activate(context: ExtensionContext) {
     getFilterProgramsCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
     getFilterLocalFilesCommand(treeDataProv, treeview),
+    getFilterTasksCommand(treeDataProv, treeview),
     getFilterAllProgramsCommand(treeDataProv, treeview),
     getFilterAllTransactionsCommand(treeDataProv, treeview),
     getFilterAllLocalFilesCommand(treeDataProv, treeview),
+    getFilterAllTasksCommand(treeDataProv, treeview),
     
     getFilterPlexResources(treeDataProv, treeview),
 
