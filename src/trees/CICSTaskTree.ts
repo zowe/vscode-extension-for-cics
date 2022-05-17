@@ -20,26 +20,26 @@ import { CICSTaskTreeItem } from "./treeItems/CICSTaskTreeItem";
 export class CICSTaskTree extends TreeItem {
   children: CICSTaskTreeItem[] = [];
   parentRegion: CICSRegionTree;
-  activeFilter: string | undefined = undefined;
+  activeTransactionFilter: string | undefined = undefined;
 
   constructor(
     parentRegion: CICSRegionTree,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('Tasks', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreetask.${this.activeFilter ? 'filtered' : 'unfiltered'}.tasks`;
+    this.contextValue = `cicstreetask.${this.activeTransactionFilter ? 'filtered' : 'unfiltered'}.tasks`;
     this.parentRegion = parentRegion;
   }
 
-  public addProgram(task: CICSTaskTreeItem) {
+  public addTask(task: CICSTaskTreeItem) {
     this.children.push(task);
   }
 
   public async loadContents() {
-    let defaultCriteria = '*';
+    let defaultCriteria = '(TRANID=*)';
     let criteria;
-    if (this.activeFilter) {
-      criteria = toEscapedCriteriaString(this.activeFilter, 'TASK');
+    if (this.activeTransactionFilter) {
+      criteria = toEscapedCriteriaString(this.activeTransactionFilter, 'TRANID');
     } else {
       criteria = defaultCriteria;
     }
@@ -52,14 +52,16 @@ export class CICSTaskTree extends TreeItem {
         name: "CICSTASK",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
+        criteria: criteria
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
 
       const tasksArray = Array.isArray(taskResponse.response.records.cicstask) ? taskResponse.response.records.cicstask : [taskResponse.response.records.cicstask];
-      this.label = `Tasks${this.activeFilter?` (${this.activeFilter}) `: " "}[${tasksArray.length}]`;
+      this.label = `Tasks${this.activeTransactionFilter?` (${this.activeTransactionFilter}) `: " "}[${tasksArray.length}]`;
       for (const task of tasksArray) {
-        const newProgramItem = new CICSTaskTreeItem(task, this.parentRegion);
-        this.addProgram(newProgramItem);
+        const newTaskItem = new CICSTaskTreeItem(task, this.parentRegion, this);
+        newTaskItem.setLabel(newTaskItem.label!.toString().replace(task.task, `${task.task} - ${task.tranid}`));
+        this.addTask(newTaskItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
@@ -75,18 +77,18 @@ export class CICSTaskTree extends TreeItem {
   }
 
   public clearFilter() {
-    this.activeFilter = undefined;
-    this.contextValue = `cicstreetask.${this.activeFilter ? 'filtered' : 'unfiltered'}.tasks`;
+    this.activeTransactionFilter = undefined;
+    this.contextValue = `cicstreetask.${this.activeTransactionFilter ? 'filtered' : 'unfiltered'}.tasks`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
-    this.activeFilter = newFilter;
-    this.contextValue = `cicstreetask.${this.activeFilter ? 'filtered' : 'unfiltered'}.tasks`;
+    this.activeTransactionFilter = newFilter;
+    this.contextValue = `cicstreetask.${this.activeTransactionFilter ? 'filtered' : 'unfiltered'}.tasks`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public getFilter() {
-    return this.activeFilter;
+    return this.activeTransactionFilter;
   }
 }
