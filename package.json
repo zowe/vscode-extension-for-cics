@@ -329,6 +329,11 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicstreetask.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstreetransaction.*/",
           "command": "cics-extension-for-zowe.filterTransactions",
           "group": "inline"
