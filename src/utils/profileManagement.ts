@@ -313,7 +313,9 @@ export class ProfileManagement {
       if (allItemsResponse.status === 200) {
         const jsonFromXml = ProfileManagement.cmciResponseXml2Json(allItemsResponse.data);
         if (jsonFromXml.response && jsonFromXml.response.records && jsonFromXml.response.records[resourceName.toLowerCase()]) {
-          const returnedResources = jsonFromXml.response.records[resourceName.toLowerCase()].map((item: { _attributes: any; }) => item._attributes);
+          const recordAttributes = jsonFromXml.response.records[resourceName.toLowerCase()];
+          const recordAttributesArr = Array.isArray(recordAttributes) ? recordAttributes : [recordAttributes];
+          const returnedResources = recordAttributesArr.map((item: { _attributes: any; }) => item._attributes);
           return returnedResources;
         }
       }
