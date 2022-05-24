@@ -21,7 +21,15 @@ import { CICSTree } from "../trees/CICSTree";
 import * as https from "https";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
+import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
+import { CICSCombinedTaskTree } from "../trees/CICSCombinedTaskTree";
 
+/**
+ * Purge a CICS Task and reload the CICS Task tree contents and the combined Task tree contents
+ * @param tree 
+ * @param treeview 
+ * @returns 
+ */
 export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.purgeTask",
@@ -71,7 +79,30 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
               }
             } catch (error) {
               https.globalAgent.options.rejectUnauthorized = undefined;
-              window.showErrorMessage(`Something went wrong when performing a PURGE - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            // @ts-ignore
+            if (error.mMessage) {
+              // @ts-ignore
+              const mMessageArr = error.mMessage.split(" ").join("").split("\n");
+              let resp;
+              let resp2;
+              let respAlt;
+              let eibfnAlt;
+              for (const val of mMessageArr) {
+                const values = val.split(":");
+                if (values[0] === "resp"){
+                  resp = values[1];
+                } else if (values[0] === "resp2"){
+                  resp2 = values[1];
+                } else if (values[0] === "resp_alt"){
+                  respAlt = values[1];
+                } else if (values[0] === "eibfn_alt"){
+                  eibfnAlt = values[1];
+                }
+              }
+              window.showErrorMessage(`Perform ${purgeType?.toUpperCase()} on CICSTask "${allSelectedNodes[parseInt(index)].task.task}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
+            } else {
+              window.showErrorMessage(`Something went wrong when performing a ${purgeType?.toUpperCase()} - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            }
             }
           }
           for (const parentRegion of parentRegions) {
@@ -82,12 +113,15 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
                 await taskTree.loadContents();
               }
               // if node is in a plex and the plex contains the region container tree
-              // if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
-              //   const allLocalFileTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0] as CICSCombinedLocalFileTree;
-              //   if (allLocalFileTreeTree.collapsibleState === 2 && allLocalFileTreeTree.getActiveFilter()) {
-              //     await allLocalFileTreeTree.loadContents(tree);
-              //   }
-              // }
+              // Note: this avoids the condition of an item in the cics task tree item having a different state to the
+              // same task item in a CICS combined task tree of the same profile
+              if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
+                const allTaskTreeTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedlocalfiletree."))[0] as CICSCombinedTaskTree;
+                // If allTasksTree is open
+                if (allTaskTreeTree.collapsibleState === 2 && allTaskTreeTree.getActiveFilter()) {
+                  await allTaskTreeTree.loadContents(tree);
+                }
+              }
             } catch(error) {
               window.showErrorMessage(`Something went wrong when reloading tasks - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
             }
@@ -99,6 +133,13 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
   );
 }
 
+/**
+ * CMCI Purge Task request
+ * @param session 
+ * @param parms 
+ * @param purgeType 
+ * @returns 
+ */
 async function purgeTask(
   session: AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; },
