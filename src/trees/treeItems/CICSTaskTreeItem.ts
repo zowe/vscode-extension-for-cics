@@ -13,28 +13,26 @@ import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSRegionTree } from "../CICSRegionTree";
 import { getIconPathInResources } from "../../utils/profileUtils";
 
-export class CICSTransactionTreeItem extends TreeItem {
-  transaction: any;
+export class CICSTaskTreeItem extends TreeItem {
+  task: any;
   parentRegion: CICSRegionTree;
   directParent: any;
-  transactionName: string;
 
   constructor(
-    transaction: any,
+    task: any,
     parentRegion: CICSRegionTree,
     directParent: any,
-    public readonly iconPath = getIconPathInResources("local-transaction-dark.svg", "local-transaction-light.svg")
+    public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
   ) {
 
-    super(
-      `${transaction.tranid} ${transaction.status.toLowerCase() === "disabled"  ? "(Disabled)" : ""}`,
+    super(`${task.task}`,
       TreeItemCollapsibleState.None
     );
-    this.transaction = transaction;
-    this.contextValue = `cicstransaction.${transaction.status.toLowerCase()}.${transaction.tranid}`;
+    
+    this.task = task;
     this.parentRegion = parentRegion;
+    this.contextValue = `cicstask.`;
     this.directParent = directParent;
-    this.transactionName = transaction.tranid;
   }
 
   public setLabel(newLabel: string) {

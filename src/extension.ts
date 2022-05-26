@@ -19,12 +19,13 @@ import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowProgramAttributesCommand,
   getShowRegionAttributes,
+  getShowTransactionAttributesCommand,
+  getShowLocalFileAttributesCommand,
+  getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
-import { getShowTransactionAttributesCommand } from "./commands/showTransactionAttributesCommand";
-import { getShowLocalFileAttributesCommand } from "./commands/showLocalFileAttributesCommand";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
 import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
@@ -49,8 +50,12 @@ import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
 import { regionContainerExpansionHandler } from "./utils/expansionHandler";
 import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
-import { CredentialManagerFactory, Logger } from "@zowe/imperative";
+import { CredentialManagerFactory, ICommandProfileTypeConfiguration, Logger } from "@zowe/imperative";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
+import { getRevealTransactionCommand } from "./commands/revealTransaction";
+import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
+import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
+import { getFilterTasksCommand } from "./commands/filterTasksCommand";
 
 export async function activate(context: ExtensionContext) {
   const log = Logger.getAppLogger();
@@ -58,10 +63,10 @@ export async function activate(context: ExtensionContext) {
   await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
   const zeVersion = getZoweExplorerVersion();
   if (!zeVersion){
-    window.showErrorMessage("Zowe Explorer was not found: Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed");
+    window.showErrorMessage("Zowe Explorer was not found: Please ensure Zowe Explorer v2.0.0 or higher is installed");
     return;
   } else if (zeVersion[0] !== "2"){
-    window.showErrorMessage(`Current version of Zowe Explorer is ${zeVersion}. Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed`);
+    window.showErrorMessage(`Current version of Zowe Explorer is ${zeVersion}. Please ensure Zowe Explorer v2.0.0 or higher is installed`);
     return;
   }
   if (ProfileManagement.apiDoesExist()) {
@@ -149,7 +154,21 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicstreetask.")) {
+      window.withProgress({
+        title: 'Loading Tasks',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of tasks");
+        });
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
+      // Children only loaded if filter has been applied
       if (node.element.getActiveFilter()) {
         node.element.loadContents(treeDataProv);
       }
@@ -160,6 +179,11 @@ export async function activate(context: ExtensionContext) {
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
+      if (node.element.getActiveFilter()) {
+        node.element.loadContents(treeDataProv);
+      }
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } else if (node.element.contextValue.includes("cicscombinedtasktree.")) {
       if (node.element.getActiveFilter()) {
         node.element.loadContents(treeDataProv);
       }
@@ -217,24 +241,31 @@ export async function activate(context: ExtensionContext) {
     getCloseLocalFileCommand(treeDataProv, treeview),
     getOpenLocalFileCommand(treeDataProv, treeview),
 
+    getPurgeTaskCommand(treeDataProv, treeview),
+
     getShowRegionAttributes(treeview),
     getShowProgramAttributesCommand(treeview),
     getShowTransactionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
+    getShowTaskAttributesCommand(treeview),
 
     getFilterProgramsCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
     getFilterLocalFilesCommand(treeDataProv, treeview),
+    getFilterTasksCommand(treeDataProv, treeview),
     getFilterAllProgramsCommand(treeDataProv, treeview),
     getFilterAllTransactionsCommand(treeDataProv, treeview),
     getFilterAllLocalFilesCommand(treeDataProv, treeview),
+    getFilterAllTasksCommand(treeDataProv, treeview),
     
     getFilterPlexResources(treeDataProv, treeview),
 
     getClearResourceFilterCommand(treeDataProv, treeview),
     getClearPlexFilterCommand(treeDataProv, treeview),
     
-    viewMoreCommand(treeDataProv, treeview)
+    viewMoreCommand(treeDataProv, treeview),
+
+    getRevealTransactionCommand(treeDataProv, treeview)
   );
 }
 

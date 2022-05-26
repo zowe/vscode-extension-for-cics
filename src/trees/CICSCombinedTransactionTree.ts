@@ -104,7 +104,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
             return child.getRegionName() === transaction.eyu_cicsname;
           }
         })[0] as CICSRegionTree;
-        const transactionTree = new CICSTransactionTreeItem(transaction,parentRegion);
+        const transactionTree = new CICSTransactionTreeItem(transaction,parentRegion, this);
         transactionTree.setLabel(transactionTree.label!.toString().replace(transaction.tranid, `${transaction.tranid} (${transaction.eyu_cicsname})`));
         newChildren.push(transactionTree);
       }

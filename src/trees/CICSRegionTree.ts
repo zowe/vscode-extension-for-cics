@@ -16,12 +16,14 @@ import { CICSLocalFileTree } from "./CICSLocalFileTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { getIconPathInResources } from "../utils/profileUtils";
+import { CICSTaskTree } from "./CICSTaskTree";
 
 export class CICSRegionTree extends TreeItem {
-  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree] | null;
+  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree, CICSTaskTree] | null;
   region: any;
   parentSession: CICSSessionTree;
   parentPlex: CICSPlexTree | undefined;
+  directParent: any;
   isActive: true | false;
 
   constructor(
@@ -29,13 +31,14 @@ export class CICSRegionTree extends TreeItem {
     region: any,
     parentSession: CICSSessionTree,
     parentPlex: CICSPlexTree | undefined,
+    directParent: any,
     public iconPath = getIconPathInResources("region-dark.svg", "region-light.svg")
   ) {
     super(regionName, TreeItemCollapsibleState.Collapsed);
     this.region = region;
     this.contextValue = `cicsregion.${regionName}`;
-
     this.parentSession = parentSession;
+    this.directParent = directParent;
     if (parentPlex) {
       this.parentPlex = parentPlex;
     }
@@ -51,7 +54,7 @@ export class CICSRegionTree extends TreeItem {
       this.collapsibleState = TreeItemCollapsibleState.None;
       this.iconPath = getIconPathInResources("region-dark-disabled.svg", "region-light-disabled.svg");
     } else {
-      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this)];
+      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this), new CICSTaskTree(this)];
     }
 
   }
@@ -66,5 +69,9 @@ export class CICSRegionTree extends TreeItem {
   
   public getChildren() {
     return this.children;
+  }
+
+  public getParent() {
+    return this.directParent;
   }
 }

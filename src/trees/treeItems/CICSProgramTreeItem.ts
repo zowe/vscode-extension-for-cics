@@ -16,10 +16,12 @@ import { getIconPathInResources } from "../../utils/profileUtils";
 export class CICSProgramTreeItem extends TreeItem {
   program: any;
   parentRegion: CICSRegionTree;
+  directParent: any;
 
   constructor(
     program: any,
     parentRegion: CICSRegionTree,
+    directParent: any,
     public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
   ) {
 
@@ -35,11 +37,16 @@ export class CICSProgramTreeItem extends TreeItem {
     
     this.program = program;
     this.parentRegion = parentRegion;
+    this.directParent = directParent;
     this.contextValue = `cicsprogram.${program.status.toLowerCase()}.${program.program
       }`;
   }
 
   public setLabel(newLabel: string) {
     this.label = newLabel;
+  }
+
+  public getParent() {
+    return this.directParent;
   }
 }

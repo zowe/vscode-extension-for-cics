@@ -106,7 +106,7 @@ export class CICSCombinedProgramTree extends TreeItem {
             return child.getRegionName() === program.eyu_cicsname;
           }
         })[0] as CICSRegionTree;
-        const progamTree = new CICSProgramTreeItem(program,parentRegion);
+        const progamTree = new CICSProgramTreeItem(program,parentRegion, this);
         progamTree.setLabel(progamTree.label!.toString().replace(program.program, `${program.program} (${program.eyu_cicsname})`));
         newChildren.push(progamTree);
       }

@@ -11,7 +11,10 @@
 
 import { commands, window, WebviewPanel, TreeView } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
+import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
+import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
+import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { getAttributesHtml } from "../utils/webviewHTML";
 
@@ -77,6 +80,115 @@ export function getShowRegionAttributes(treeview: TreeView<any>) {
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
           `CICS Region ${regionTree.getRegionName()}`,
+          column || 1,
+          { enableScripts: true }
+        );
+        panel.webview.html = webviewHTML;
+      }
+    }
+  );
+}
+
+export function getShowLocalFileAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showLocalFileAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSLocalFileTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS local file selected");
+        return;
+      }
+      for (const localFileTreeItem of allSelectedNodes) {
+        const localFile = localFileTreeItem.localFile;
+        const attributeHeadings = Object.keys(localFile);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading}</th><td>${localFile[heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+
+        const webviewHTML = getAttributesHtml(localFile.file, webText);
+
+        const column = window.activeTextEditor
+          ? window.activeTextEditor.viewColumn
+          : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS Local File ${localFileTreeItem.parentRegion.label}(${localFile.file})`,
+          column || 1,
+          { enableScripts: true }
+        );
+        panel.webview.html = webviewHTML;
+      }
+    }
+  );
+}
+
+export function getShowTransactionAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showTransactionAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSTransactionTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS transaction selected");
+        return;
+      }
+      for (const localTransactionTreeItem of allSelectedNodes) {
+        const transaction = localTransactionTreeItem.transaction;
+        const attributeHeadings = Object.keys(transaction);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading}</th><td>${transaction[heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+
+        const webviewHTML = getAttributesHtml(transaction.tranid, webText);
+
+        const column = window.activeTextEditor
+          ? window.activeTextEditor.viewColumn
+          : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS Local Transaction ${localTransactionTreeItem.parentRegion.label}(${transaction.tranid})`,
+          column || 1,
+          { enableScripts: true }
+        );
+        panel.webview.html = webviewHTML;
+      }
+    }
+  );
+}
+
+///@@@@@@@@@@@@@@ doesnt fit because actvtyid value is too long - edit css
+export function getShowTaskAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showTaskAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSTaskTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS Task selected");
+        return;
+      }
+      for (const localTaskTreeItem of allSelectedNodes) {
+        const task = localTaskTreeItem.task;
+        const attributeHeadings = Object.keys(task);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading}</th><td>${task[heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+
+        const webviewHTML = getAttributesHtml(task.task, webText);
+
+        const column = window.activeTextEditor
+          ? window.activeTextEditor.viewColumn
+          : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS Task ${localTaskTreeItem.parentRegion.label}(${task.task})`,
           column || 1,
           { enableScripts: true }
         );

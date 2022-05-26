@@ -212,7 +212,8 @@ export class CICSTree
                                 item.regions[0].applid,
                                 regionsObtained.response.records.cicsregion,
                                 newSessionTree,
-                                undefined
+                                undefined,
+                                newSessionTree
                                 );
                             newSessionTree.addRegion(newRegionTree);
                         } catch (error) {
@@ -589,6 +590,10 @@ export class CICSTree
     }
     getChildren(element?: CICSSessionTree): ProviderResult<any[]> {
         return element === undefined ? this.loadedProfiles : element!.children;
+    }
+
+    getParent(element: any): ProviderResult<any> {
+        element.getParent();
     }
 
     public _onDidChangeTreeData: EventEmitter<any | undefined> = new EventEmitter<

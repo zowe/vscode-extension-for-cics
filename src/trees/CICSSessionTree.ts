@@ -68,4 +68,8 @@ export class CICSSessionTree extends TreeItem {
   public getIsUnauthorized() {
     return this.isUnauthorized;
   }
+
+  public getParent() {
+    return null;
+  }
 }

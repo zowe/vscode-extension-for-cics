@@ -95,7 +95,7 @@ export class CICSRegionsContainer extends TreeItem {
     for (const region of regionsArray) {
       // If region filter exists then match it
       if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
-        const newRegionTree = new CICSRegionTree(region.cicsname, region, parentPlex.getParent(), parentPlex);
+        const newRegionTree = new CICSRegionTree(region.cicsname, region, parentPlex.getParent(), parentPlex, this);
         this.addRegion(newRegionTree);
         totalCount += 1;
         if (region.cicsstate === 'ACTIVE') {
