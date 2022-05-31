@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone="yes"?>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="cogs" class="svg-inline--fa fa-cogs fa-w-20" role="img" viewBox="0 0 640 700" style="zoom: 1;">
+
+<defs>
+    <marker id="arrowhead-right" markerWidth="4" markerHeight="3" 
+    refX="0" refY="1.5" orient="auto"  fill="#ffffcc">
+      <polygon points="0 0, 3 1.5, 0 3" />
+    </marker>
+</defs>
+
+<defs>
+    <marker id="arrowhead-left" markerWidth="4" markerHeight="3" 
+    refX="2" refY="1.5" orient="auto" fill="#ffffcc">
+      <polygon points="0 1.5, 3 3, 3 0" />
+    </marker>
+</defs>
+
+<rect fill="#666666" x="110" y="30" width="440" height="590" stroke="#cccccc" stroke-width="60" rx="40" ry="40"/>
+
+<!--
+  <svg height="550" width="500">
+      <circle cx="325" cy="400" r="120" stroke="white" stroke-width="35" fill="green" />
+  </svg>
+
+  <line x1="300" y1="320" x2="300" y2="450" stroke="#f1f131" stroke-width="50" stroke-linecap="round" />
+-->
+
+  <line x1="400" y1="320" x2="400" y2="450" stroke="#31ff31" stroke-width="50" stroke-linecap="round" />
+  <line x1="400" y1="320" x2="465" y2="385" stroke="#31ff31" stroke-width="50" stroke-linecap="round" />
+  <line x1="400" y1="450" x2="465" y2="385" stroke="#31ff31" stroke-width="50" stroke-linecap="round" />
+
+</svg>
