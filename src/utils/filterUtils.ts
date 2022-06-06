@@ -52,6 +52,8 @@ export async function getPatternFromFilter(resourceName: string, resourceHistory
         window.showInformationMessage( "You must enter a pattern");
         return;
     }
+    // Replace with upper case
+    pattern = pattern.toUpperCase();
     // Remove whitespace
     return pattern.replace(/\s/g, "");
 }
