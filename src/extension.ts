@@ -209,11 +209,15 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node);
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
       setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicscombinedtasktree.")) {
+      setIconClosed(node);
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
       setIconClosed(node);
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
       setIconClosed(node);
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
+      setIconClosed(node);
+    } else if (node.element.contextValue.includes("cicstreetask.")) {
       setIconClosed(node);
     }
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
