@@ -405,6 +405,7 @@ export const getAttributesHtml = (title: string, webText: string) => {
       table {
         border:1px solid var(--vscode-editor-foreground);
         width: 90%;
+        table-layout:fixed
       }
       th {
         border:1px solid var(--vscode-editor-foreground);
@@ -415,6 +416,7 @@ export const getAttributesHtml = (title: string, webText: string) => {
       td {
         border:1px solid var(--vscode-editor-foreground);
         padding: 0.3rem 0.5rem;
+        word-wrap:break-word;
       }
       h1 {
         width: 100%;
