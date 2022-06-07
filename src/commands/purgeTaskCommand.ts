@@ -19,7 +19,7 @@ import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 import * as https from "https";
-import { findSelectedNodes } from "../utils/commandUtils";
+import { findSelectedNodes, splitCmciErrorMessage } from "../utils/commandUtils";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSCombinedTaskTree } from "../trees/CICSCombinedTaskTree";
@@ -82,23 +82,7 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
             // @ts-ignore
             if (error.mMessage) {
               // @ts-ignore
-              const mMessageArr = error.mMessage.split(" ").join("").split("\n");
-              let resp;
-              let resp2;
-              let respAlt;
-              let eibfnAlt;
-              for (const val of mMessageArr) {
-                const values = val.split(":");
-                if (values[0] === "resp"){
-                  resp = values[1];
-                } else if (values[0] === "resp2"){
-                  resp2 = values[1];
-                } else if (values[0] === "resp_alt"){
-                  respAlt = values[1];
-                } else if (values[0] === "eibfn_alt"){
-                  eibfnAlt = values[1];
-                }
-              }
+              const [_, resp2, respAlt, eibfnAlt] = splitCmciErrorMessage(error.mMessage);
               window.showErrorMessage(`Perform ${purgeType?.toUpperCase()} on CICSTask "${allSelectedNodes[parseInt(index)].task.task}" failed: EXEC CICS command (${eibfnAlt}) RESP(${respAlt}) RESP2(${resp2})`);
             } else {
               window.showErrorMessage(`Something went wrong when performing a ${purgeType?.toUpperCase()} - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
