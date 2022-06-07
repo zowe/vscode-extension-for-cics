@@ -32,3 +32,29 @@ export function findSelectedNodes(treeview: TreeView<any>, instanceOf:any, click
     }
     return allSelectedNodes;
 }
+
+/**
+ * Split error messages from Zowe CICS plugin's Cmci REST client
+ * @param message 
+ * @returns 
+ */
+export function splitCmciErrorMessage(message: any){
+    const messageArr = message.split(" ").join("").split("\n");
+    let resp;
+    let resp2;
+    let respAlt;
+    let eibfnAlt;
+    for (const val of messageArr) {
+      const values = val.split(":");
+      if (values[0] === "resp"){
+        resp = values[1];
+      } else if (values[0] === "resp2"){
+        resp2 = values[1];
+      } else if (values[0] === "resp_alt"){
+        respAlt = values[1];
+      } else if (values[0] === "eibfn_alt"){
+        eibfnAlt = values[1];
+      }
+    }
+    return [resp, resp2, respAlt, eibfnAlt];
+}
