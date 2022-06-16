@@ -104,7 +104,7 @@ export function getShowLocalFileAttributesCommand(treeview: TreeView<any>) {
         let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
         webText += "<tbody>";
         for (const heading of attributeHeadings) {
-          webText += `<tr><th class="colHeading">${heading}</th><td>${localFile[heading]}</td></tr>`;
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${localFile[heading]}</td></tr>`;
         }
         webText += "</tbody>";
 
@@ -140,7 +140,7 @@ export function getShowTransactionAttributesCommand(treeview: TreeView<any>) {
         let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
         webText += "<tbody>";
         for (const heading of attributeHeadings) {
-          webText += `<tr><th class="colHeading">${heading}</th><td>${transaction[heading]}</td></tr>`;
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${transaction[heading]}</td></tr>`;
         }
         webText += "</tbody>";
 
@@ -177,7 +177,7 @@ export function getShowTaskAttributesCommand(treeview: TreeView<any>) {
         let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
         webText += "<tbody>";
         for (const heading of attributeHeadings) {
-          webText += `<tr><th class="colHeading">${heading}</th><td>${task[heading]}</td></tr>`;
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${task[heading]}</td></tr>`;
         }
         webText += "</tbody>";
 
