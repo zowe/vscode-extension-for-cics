@@ -264,6 +264,11 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
+        "command": "cics-extension-for-zowe.revealProgram",
+        "title": "Reveal Program",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
         "command": "cics-extension-for-zowe.purgeTask",
         "title": "Purge Task",
         "category": "Zowe Explorer for IBM CICS"
@@ -386,7 +391,7 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
           "command": "cics-extension-for-zowe.showTransactionAttributes",
-          "group": ""
+          "group": "000_zowecics_main@0"
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicslocalfile.*/",
@@ -411,12 +416,12 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicstransaction.disabled.*/",
           "command": "cics-extension-for-zowe.enableTransaction",
-          "group": ""
+          "group": "000_zowecics_main@1"
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstransaction.enabled.*/",
           "command": "cics-extension-for-zowe.disableTransaction",
-          "group": ""
+          "group": "000_zowecics_main@1"
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicslocalfile.disabled.*/",
@@ -461,6 +466,11 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicstask.*/",
           "command": "cics-extension-for-zowe.revealTransaction",
+          "group": "001_zowecics_reveal@0"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
+          "command": "cics-extension-for-zowe.revealProgram",
           "group": "001_zowecics_reveal@0"
         },
         {

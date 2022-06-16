@@ -56,6 +56,7 @@ import { getRevealTransactionCommand } from "./commands/revealTransaction";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
 import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
 import { getFilterTasksCommand } from "./commands/filterTasksCommand";
+import { getRevealProgramCommand } from "./commands/revealProgram";
 
 export async function activate(context: ExtensionContext) {
   const log = Logger.getAppLogger();
@@ -269,7 +270,8 @@ export async function activate(context: ExtensionContext) {
     
     viewMoreCommand(treeDataProv, treeview),
 
-    getRevealTransactionCommand(treeDataProv, treeview)
+    getRevealTransactionCommand(treeDataProv, treeview),
+    getRevealProgramCommand(treeDataProv, treeview)
   );
 }
 
