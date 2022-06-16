@@ -36,6 +36,8 @@ Ensure that you meet the following prerequisites before you use the extension:
 - Install VSCode
 
 - Install Zowe Explorer v2
+
+**Tip**: See [Troubleshooting guide](./docs/Troubleshooting.md) for solutions to common problems.
 ## Features
 
 - Load profiles directly from Zowe instance locally installed.
@@ -294,4 +296,7 @@ Before filing an issue, check if an error is arising from the Zowe Explorer for 
 Error messages arising from the Zowe Explorer extension will have the `Source` as `Zowe Explorer(Extension)`.
 
 ### Filing an issue
+
+Before filing an issue, check the [Troubleshooting guide](./docs/Troubleshooting.md) first to ensure that the issue hasn't already been addressed.
+
 To file issues, use the [Zowe Explorer for IBM CICS issue list](https://github.com/zowe/vscode-extension-for-cics/issues), or chat with use on [Slack](https://openmainframeproject.slack.com/archives/CUVE37Z5F) by indicating the message is for the Zowe Explorer for IBM CICS extension.
