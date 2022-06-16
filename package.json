@@ -502,6 +502,34 @@
           "default": "file=*",
           "description": "Default filter criteria for Local Files",
           "scope": "window"
+        },
+        "zowe.cics.allPrograms.recordCountIncrement": {
+          "type": "number",
+          "default": 500,
+          "description": "Default filter criteria for all Programs",
+          "scope": "window",
+          "minimum": 1
+        },
+        "zowe.cics.allTransactions.recordCountIncrement": {
+          "type": "number",
+          "default": 500,
+          "description": "Default filter criteria for all Transactions",
+          "scope": "window",
+          "minimum": 1
+        },
+        "zowe.cics.allLocalFiles.recordCountIncrement": {
+          "type": "number",
+          "default": 500,
+          "description": "Default filter criteria for all Local Files",
+          "scope": "window",
+          "minimum": 1
+        },
+        "zowe.cics.allTasks.recordCountIncrement": {
+          "type": "number",
+          "default": 500,
+          "description": "Default filter criteria for all Tasks",
+          "scope": "window",
+          "minimum": 1
         }
       }
     }
