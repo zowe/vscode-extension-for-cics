@@ -68,6 +68,12 @@ export class ProfileManagement {
     return mProfileInfo;
   }
 
+  /**
+   * Makes axios GET request with path and axios config object given
+   * @param path 
+   * @param config 
+   * @returns 
+   */
   public static async makeRequest(path:string, config:AxiosRequestConfig) {
     const response = await axios.get(path, config);
     return response;
@@ -194,6 +200,7 @@ export class ProfileManagement {
               );
               for (const plex of uniqueReturnedPlexes) {
                 try {
+                  // Regions are empty because we only load Plex when session is expanded
                   infoLoaded.push({
                     plexname: plex.plexname,
                     regions: [],
@@ -240,6 +247,9 @@ export class ProfileManagement {
     return infoLoaded;
   }
 
+  /**
+   * Return all the regions in a given plex
+   */
   public static async getRegionInfoInPlex(plex: CICSPlexTree) {
     try {
       const profile = plex.getProfile();
