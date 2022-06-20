@@ -70,6 +70,7 @@ export class CICSTransactionTree extends TreeItem {
         // @ts-ignore
       } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No transactions found`);
+        this.label = `Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
         window.showErrorMessage(`Something went wrong when fetching transaction - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
