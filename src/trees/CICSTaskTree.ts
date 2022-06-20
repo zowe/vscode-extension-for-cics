@@ -60,7 +60,8 @@ export class CICSTaskTree extends TreeItem {
       this.label = `Tasks${this.activeTransactionFilter?` (${this.activeTransactionFilter}) `: " "}[${tasksArray.length}]`;
       for (const task of tasksArray) {
         const newTaskItem = new CICSTaskTreeItem(task, this.parentRegion, this);
-        newTaskItem.setLabel(newTaskItem.label!.toString().replace(task.task, `${task.task} - ${task.tranid}`));
+        // Show run status if run status isn't SUSPENDED (assuming SUSPENDED is default runstatus)
+        newTaskItem.setLabel(newTaskItem.label!.toString().replace(task.task, `${task.task} - ${task.tranid}${task.runstatus !== "SUSPENDED" ? ` (${task.runstatus})` : ""}`));
         this.addTask(newTaskItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");

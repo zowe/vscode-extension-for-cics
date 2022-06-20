@@ -108,7 +108,8 @@ export class CICSCombinedTaskTree extends TreeItem {
           }
         })[0] as CICSRegionTree;
         const taskTree = new CICSTaskTreeItem(task,parentRegion, this);
-        taskTree.setLabel(taskTree.label!.toString().replace(task.task, `${task.task} - ${task.tranid} (${task.eyu_cicsname})`));
+        // Show run status if run status isn't SUSPENDED (assuming SUSPENDED is default runstatus)
+        taskTree.setLabel(taskTree.label!.toString().replace(task.task, `${task.task} - ${task.tranid} (${task.eyu_cicsname})${task.runstatus !== "SUSPENDED" ? ` (${task.runstatus})` : ""}`));
         newChildren.push(taskTree);
       }
       if (!count) {
