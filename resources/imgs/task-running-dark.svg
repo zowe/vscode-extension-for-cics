@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="yes"?>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="cogs" class="svg-inline--fa fa-cogs fa-w-20" role="img" viewBox="0 0 640 700" style="zoom: 1;">
+
+<rect fill="#cccccc" x="110" y="30" width="440" height="590" stroke="#313131" stroke-width="60" rx="40" ry="40"/>
+
+  <line x1="380" y1="320" x2="380" y2="450" stroke="#55ff55" stroke-width="50" stroke-linecap="round" />
+  <line x1="380" y1="320" x2="445" y2="385" stroke="#55ff55" stroke-width="50" stroke-linecap="round" />
+  <line x1="380" y1="450" x2="445" y2="385" stroke="#55ff55" stroke-width="50" stroke-linecap="round" />
+
+</svg>
