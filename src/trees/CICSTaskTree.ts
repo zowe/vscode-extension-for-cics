@@ -71,6 +71,7 @@ export class CICSTaskTree extends TreeItem {
         window.showErrorMessage(`Resource Limit Exceeded - Set a task filter to narrow search`);
       } else if ((error as any).mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No tasks found`);
+        this.label = `Tasks${this.activeTransactionFilter?` (${this.activeTransactionFilter}) `: " "}[0]`;
       } else {
         window.showErrorMessage(`Something went wrong when fetching tasks - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }

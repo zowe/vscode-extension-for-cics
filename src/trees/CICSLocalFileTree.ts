@@ -74,6 +74,7 @@ export class CICSLocalFileTree extends TreeItem {
         // @ts-ignore
       } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No local files found`);
+        this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
         window.showErrorMessage(`Something went wrong when fetching local files - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
