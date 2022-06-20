@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
@@ -39,10 +39,10 @@ export class CICSCombinedTaskTree extends TreeItem {
     this.children = [new TextTreeItem("Use the search button to display tasks", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = 300;
+    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allTasks.recordCountIncrement')}`; 
     this.constant = "CICSTask";
     }
-
+    
     public async loadContents(tree: CICSTree){
       window.withProgress({
         title: 'Loading Task',

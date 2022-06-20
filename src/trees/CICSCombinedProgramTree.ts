@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSProgramTreeItem } from "./treeItems/CICSProgramTreeItem";
 import { CICSRegionTree } from "./CICSRegionTree";
@@ -40,7 +40,7 @@ export class CICSCombinedProgramTree extends TreeItem {
     this.children = [new TextTreeItem("Use the search button to display programs", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = 500;
+    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allPrograms.recordCountIncrement')}`; 
     this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
     }
 
@@ -70,7 +70,7 @@ export class CICSCombinedProgramTree extends TreeItem {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allPrograms;
-              if (recordsCount <= 500) {
+              if (recordsCount <= this.incrementCount) {
                 allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
               } else {
                 allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);

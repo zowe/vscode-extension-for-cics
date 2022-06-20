@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
@@ -39,7 +39,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
     this.children = [new TextTreeItem("Use the search button to display local files", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = 500;
+    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allLocalFiles.recordCountIncrement')}`; 
     this.constant = "CICSLocalFile";
     }
 
@@ -69,7 +69,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allLocalFiles;
-              if (recordsCount <= 500) {
+              if (recordsCount <= this.incrementCount) {
                 allLocalFiles = await ProfileManagement.getCachedResources(
                   this.parentPlex.getProfile(),
                   cacheTokenInfo.cacheToken,

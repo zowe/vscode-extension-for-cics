@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
@@ -40,7 +40,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
     this.children = [new TextTreeItem("Use the search button to display local transactions", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = 500;
+    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allTransactions.recordCountIncrement')}`; 
     this.constant = CicsCmciConstants.CICS_LOCAL_TRANSACTION;
     }
 
@@ -69,7 +69,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
               let allLocalTransactions;
-              if (recordsCount <= 500) {
+              if (recordsCount <= this.incrementCount) {
                 allLocalTransactions = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
               } else {
                 allLocalTransactions = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
