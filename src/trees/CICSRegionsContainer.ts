@@ -87,6 +87,10 @@ export class CICSRegionsContainer extends TreeItem {
     }
   }
 
+  /**
+   * Count the number of total and active regions
+   * @param regionsArray 
+   */
   private addRegionsUtility(regionsArray: [any]){
     let activeCount = 0;
     let totalCount = 0;
@@ -103,6 +107,7 @@ export class CICSRegionsContainer extends TreeItem {
         }
       }
     }
+    // Don't show the applied filter if no filters applied i.e. '*'
     const newLabel = this.activeFilter === "*" ? `Regions [${activeCount}/${totalCount}]` : `Regions (${this.activeFilter}) [${activeCount}/${totalCount}]`;
     this.setLabel(newLabel);
   }
