@@ -64,8 +64,9 @@ export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
     const plexProfile = plex.getProfile();
     // Region name and plex name specified
     if (plexProfile.profile!.regionName && plexProfile.profile!.cicsPlex) {
+        // If connection doesn't have a group name
         if (!plex.getGroupName()) {
-            // CICSRegion
+            // Only 1 CICSRegion inside CICSPlex
             window.withProgress({
                 title: 'Loading region',
                 location: ProgressLocation.Notification,
@@ -82,6 +83,7 @@ export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
             plex.clearChildren();
             plex.addRegionContainer();
             const regionsContainer = findRegionsContainerFromPlex(plex);
+            // Run region container expansion handler by forcing execution
             regionContainerExpansionHandler(regionsContainer, tree);
             plex.addNewCombinedTrees();
             tree._onDidChangeTreeData.fire(undefined);
