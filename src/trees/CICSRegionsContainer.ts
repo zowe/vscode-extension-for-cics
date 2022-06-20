@@ -72,7 +72,7 @@ export class CICSRegionsContainer extends TreeItem {
     this.clearChildren(); 
     const regionsArray = Array.isArray(regionsObtained.response.records.cicsmanagedregion) ? regionsObtained.response.records.cicsmanagedregion : [regionsObtained.response.records.cicsmanagedregion];
     this.addRegionsUtility(regionsArray);
-    // Keep plex open after label change
+    // Keep container open after label change
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
     tree._onDidChangeTreeData.fire(undefined);
   }
@@ -82,7 +82,7 @@ export class CICSRegionsContainer extends TreeItem {
     const regionInfo = await ProfileManagement.getRegionInfoInPlex(parentPlex);
     if (regionInfo) {   
         this.addRegionsUtility(regionInfo);
-        // Keep plex open after label change
+        // Keep container open after label change
         this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   }
