@@ -35,6 +35,7 @@ export class CICSTree
 
     public clearLoadedProfiles() {
         this.loadedProfiles = [];
+        this._onDidChangeTreeData.fire(undefined);
     }
 
     public async loadStoredProfileNames() {
@@ -64,7 +65,6 @@ export class CICSTree
         //const allCICSProfileNames = await ProfileManagement.getProfilesCache().getNamesForType('cics');
         const configInstance = await ProfileManagement.getConfigInstance();
         const allCICSProfiles = (await ProfileManagement.getProfilesCache().getProfileInfo()).getAllProfiles("cics");
-        //const allCICSProfiles = configInstance.getAllProfiles("cics");
         // const allCICSProfiles = await ProfileManagement.getProfilesCache().getProfiles('cics');
         if (!allCICSProfiles) {
             if (!configInstance.usingTeamConfig) {
@@ -138,6 +138,13 @@ export class CICSTree
 
     }
 
+    /**
+     * 
+     * @param profile 
+     * @param position number that's passed in when updating or expanding profile - needed 
+     * to replace position of current CICSSessionTree.
+     * @param sessionTree current CICSSessionTree only passed in if expanding a profile
+     */
     async loadProfile(profile: IProfileLoaded, position?: number | undefined, sessionTree?: CICSSessionTree) {
         const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         await persistentStorage.addLoadedCICSProfile(profile.name!);
@@ -232,12 +239,12 @@ export class CICSTree
                         }
                     }
                 }
+                // If method was called when expanding profile
                 if (sessionTree) {
-                    // expand profile
                     this.loadedProfiles.splice(position!, 1, newSessionTree);
                 }
+                // If method was called when updating profile
                 else if (position || position === 0) {
-                    // Update profile
                     this.loadedProfiles.splice(position, 0, newSessionTree);
                 } else {
                     this.loadedProfiles.push(newSessionTree);
@@ -245,13 +252,16 @@ export class CICSTree
                 this._onDidChangeTreeData.fire(undefined);
             } catch (error) {
                 https.globalAgent.options.rejectUnauthorized = undefined;
+                // Change session tree icon to disconnected upon error
                 newSessionTree = new CICSSessionTree(
                     profile,
                     getIconPathInResources("profile-disconnected-dark.svg", "profile-disconnected-light.svg")
                     );
+                // If method was called when expanding profile
                 if (sessionTree) {
                     this.loadedProfiles.splice(position!, 1, newSessionTree);
                 }
+                // If method was called when updating profile
                 else if (position || position === 0) {
                     this.loadedProfiles.splice(position, 0, newSessionTree);
                 } else {
@@ -278,21 +288,23 @@ export class CICSTree
                             case "SELF_SIGNED_CERT_IN_CHAIN":
                             case "ERR_TLS_CERT_ALTNAME_INVALID":
                             case "CERT_HAS_EXPIRED":
+                                // If re-expanding a profile that has an expired certificate
                                 if (sessionTree){
-                                        // If expanding a profile
-                                    const busyDecision = await window.showInformationMessage(
+                                    const decision = await window.showInformationMessage(
                                         `Warning: Your connection is not private (${(error as any).code}) - would you still like to proceed to ${profile!.profile!.host} (unsafe)?`,
                                         ...["Yes", "No"]);
-                                    if (busyDecision) {
-                                        if (busyDecision === "Yes") {
+                                    if (decision) {
+                                        if (decision === "Yes") {
                                             const configInstance = await ProfileManagement.getConfigInstance();
                                             let updatedProfile;
                                             if (configInstance.usingTeamConfig) {
                                                 const upd = { profileName: profile.name!, profileType: 'cics' };
                                                 const configInstance = await ProfileManagement.getConfigInstance();
+                                                // flip rejectUnauthorized to false
                                                 await configInstance.updateProperty({ ...upd, property: "rejectUnauthorized", value: false });
                                                 updatedProfile = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profile.name!);
                                             } else {
+                                                // flip rejectUnauthorized to false
                                                 const message = {
                                                     name: profile.name,
                                                     profile: {
