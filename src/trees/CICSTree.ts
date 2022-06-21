@@ -13,7 +13,7 @@ import { getResource } from "@zowe/cics-for-zowe-cli";
 import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
 import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, TreeItemCollapsibleState, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
-import { ProfileManagement } from "../utils/profileManagement";
+import { InfoLoaded, ProfileManagement } from "../utils/profileManagement";
 import { isTheia, openConfigFile } from "../utils/workspaceUtils";
 import { addProfileHtml } from "../utils/webviewHTML";
 import { CICSPlexTree } from "./CICSPlexTree";
@@ -38,9 +38,15 @@ export class CICSTree
         this._onDidChangeTreeData.fire(undefined);
     }
 
+    /**
+     * Searches profiles stored in persistent storage, retrieves information for that profile from
+     * ZE's PorfilesCache API and then creates CICSSessionTrees with this information and adds
+     * these as children to the CICSTree (TreeDataProvider)
+     */
     public async loadStoredProfileNames() {
         const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         await ProfileManagement.profilesCacheRefresh();
+        // Retrieve previously added profiles from persistent storage
         for (const profilename of persistentStorage.getLoadedCICSProfile()) {
             try {
                 const profileToLoad = await ProfileManagement.getProfilesCache().loadNamedProfile(profilename, 'cics');
@@ -189,12 +195,13 @@ export class CICSTree
                         profile = updatedProfile;
                     }
                 }
-                const plexInfo = await ProfileManagement.getPlexInfo(profile);
+                const plexInfo: InfoLoaded[] = await ProfileManagement.getPlexInfo(profile);
+                // Initialise session tree
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
-
+                // For each InfoLoaded object - happens if there are multiple plexes
                 for (const item of plexInfo) {
+                    // No plex
                     if (item.plexname === null) {
-                        // No plex
                         const session = new Session({
                             //type: "basic",
                             hostname: profile.profile!.host,
@@ -356,6 +363,10 @@ export class CICSTree
         );
     }
 
+    /**
+     * Method for V1 profile configuration that provides UI for user to enter profile details
+     * and creates a profile. 
+     */
     async createNewProfile() {
         if (isTheia()) {
             const connnectionName = await window.showInputBox({
@@ -502,6 +513,10 @@ export class CICSTree
         this._onDidChangeTreeData.fire(undefined);
     }
 
+    /**
+     * Delete profile functionality for V1 profile configuration
+     * @param sessions 
+     */
     async deleteSession(sessions: CICSSessionTree[]) {
         let answer;
         if (sessions.length === 1) {

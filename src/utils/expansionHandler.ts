@@ -78,8 +78,8 @@ export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
                 await plex.loadOnlyRegion();
                 tree._onDidChangeTreeData.fire(undefined);
             });
+        // CICSGroup
         } else {
-            // CICSGroup
             plex.clearChildren();
             plex.addRegionContainer();
             const regionsContainer = findRegionsContainerFromPlex(plex);
@@ -99,6 +99,11 @@ export function plexExpansionHandler(plex: CICSPlexTree, tree:CICSTree) {
     tree._onDidChangeTreeData.fire(undefined);
 }
 
+/**
+ * Return a plex node's child 'Regions' container tree node.
+ * @param plex plex tree node from where to start the search
+ * @returns CICSRegionsContainer
+ */
 function findRegionsContainerFromPlex(plex: CICSPlexTree): CICSRegionsContainer {
     const regionsContainer = plex.children.filter(child => {
         if (child instanceof CICSRegionsContainer) {

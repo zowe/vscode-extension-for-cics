@@ -11,6 +11,7 @@
 
 import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import { join } from "path";
+import { CICSTree } from "../trees/CICSTree";
 import { window } from "vscode";
 
 export function missingSessionParameters(profileProfile: any) : (string|undefined)[] {
@@ -60,3 +61,8 @@ export async function promptCredentials(sessionName: string, rePrompt?: boolean)
   }
   return promptInfo;
 }
+
+export function setIconClosed(node: any, tree:CICSTree) {
+  node.element.iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg");
+  tree._onDidChangeTreeData.fire(undefined);
+};

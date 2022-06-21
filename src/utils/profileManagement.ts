@@ -83,7 +83,13 @@ export class ProfileManagement {
     return JSON.parse(xml2json(data, { compact: true, spaces: 4 }));
   }
 
-  public static async getPlexInfo(profile: IProfileLoaded) {
+  /**
+   * Populates the info
+   * @param profile 
+   * @returns Array of type InfoLoaded
+   */
+  public static async getPlexInfo(profile: IProfileLoaded) : 
+  Promise<InfoLoaded[]> {
     const config: AxiosRequestConfig = {
       baseURL: `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`,
       auth: {
@@ -91,11 +97,7 @@ export class ProfileManagement {
         password: profile!.profile!.password,
       }
     };
-    const infoLoaded: { 
-      plexname: string | null,
-      regions: any[],
-      group: boolean 
-    }[] = [];
+    const infoLoaded: InfoLoaded[] = [];
 
     https.globalAgent.options.rejectUnauthorized = profile!.profile!.rejectUnauthorized;
 
@@ -334,4 +336,10 @@ export class ProfileManagement {
       throw error;
     }
   }
+}
+
+export interface InfoLoaded {
+  plexname: string | null,
+  regions: any[],
+  group: boolean
 }

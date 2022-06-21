@@ -11,6 +11,12 @@
 
 import { IUpdateProfile } from "@zowe/imperative";
 
+/**
+ * Used for both Update and Create webviews. 'message' parameter is passed in when
+ * an update profile is performed.
+ * @param message 
+ * @returns 
+ */
 export const addProfileHtml = (message?: IUpdateProfile) => {
   return `<!DOCTYPE html>
   <html lang="en">
@@ -384,6 +390,12 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
 `;
 };
 
+/**
+ * show attributes webview
+ * @param title 
+ * @param webText 
+ * @returns 
+ */
 export const getAttributesHtml = (title: string, webText: string) => {
   return `<!DOCTYPE html>
   <html lang="en">

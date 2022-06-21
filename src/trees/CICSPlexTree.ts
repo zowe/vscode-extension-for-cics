@@ -55,6 +55,9 @@ export class CICSPlexTree extends TreeItem {
     this.children.push(region);
   }
 
+  /**
+   * Method for adding a region when a plex AND region name were specified upon profile creation
+   */
   public async loadOnlyRegion() {
     const plexProfile = this.getProfile();
     https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;

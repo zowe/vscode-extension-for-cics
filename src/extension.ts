@@ -45,12 +45,12 @@ import { viewMoreCommand } from "./commands/viewMoreCommand";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
-import { getIconPathInResources } from "./utils/profileUtils";
+import { getIconPathInResources, setIconClosed } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
 import { regionContainerExpansionHandler } from "./utils/expansionHandler";
 import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
-import { CredentialManagerFactory, ICommandProfileTypeConfiguration, Logger } from "@zowe/imperative";
+import { CredentialManagerFactory, Logger } from "@zowe/imperative";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
 import { getRevealTransactionCommand } from "./commands/revealTransaction";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
@@ -58,6 +58,11 @@ import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
 import { getFilterTasksCommand } from "./commands/filterTasksCommand";
 import { getRevealProgramCommand } from "./commands/revealProgram";
 
+/**
+ * Initialises extension
+ * @param context 
+ * @returns 
+ */
 export async function activate(context: ExtensionContext) {
   const log = Logger.getAppLogger();
   const keytarApi = new KeytarApi(log);
@@ -72,6 +77,7 @@ export async function activate(context: ExtensionContext) {
   }
   if (ProfileManagement.apiDoesExist()) {
     try {
+      // Register 'cics' profiles as a ZE extender
       await ProfileManagement.registerCICSProfiles();
       ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
       await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
@@ -97,12 +103,14 @@ export async function activate(context: ExtensionContext) {
     });
 
   treeview.onDidExpandElement(async (node) => {
+    // Profile node expanded
     if (node.element.contextValue.includes("cicssession.")) {
       try {
         await sessionExpansionHandler(node.element, treeDataProv);
       } catch (error) {
         console.log(error);
       }
+    // Plex node expanded
     } else if (node.element.contextValue.includes("cicsplex.")) {
       try {
         await plexExpansionHandler(node.element, treeDataProv);
@@ -115,7 +123,10 @@ export async function activate(context: ExtensionContext) {
         treeDataProv.loadedProfiles.splice(treeDataProv.getLoadedProfiles().indexOf(node.element.getParent()), 1, newSessionTree);
         treeDataProv._onDidChangeTreeData.fire(undefined);
       }
+    // Region node expanded
     } else if (node.element.contextValue.includes("cicsregion.")) {
+
+    // Programs folder node expanded
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
       window.withProgress({
         title: 'Loading Programs',
@@ -129,6 +140,8 @@ export async function activate(context: ExtensionContext) {
       treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // Transaction folder node expanded
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
       window.withProgress({
         title: 'Loading Transactions',
@@ -142,6 +155,8 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // Local file folder node expanded
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
       window.withProgress({
         title: 'Loading Local Files',
@@ -155,6 +170,8 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // Task folder node expanded
     } else if (node.element.contextValue.includes("cicstreetask.")) {
       window.withProgress({
         title: 'Loading Tasks',
@@ -168,27 +185,37 @@ export async function activate(context: ExtensionContext) {
         treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // All programs folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       // Children only loaded if filter has been applied
       if (node.element.getActiveFilter()) {
-        node.element.loadContents(treeDataProv);
+        await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // All transactions folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
       if (node.element.getActiveFilter()) {
-        node.element.loadContents(treeDataProv);
+        await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // All local files folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
       if (node.element.getActiveFilter()) {
-        node.element.loadContents(treeDataProv);
+        await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // All tasks folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedtasktree.")) {
       if (node.element.getActiveFilter()) {
-        node.element.loadContents(treeDataProv);
+        await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // Regions container folder node expanded
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
       node.element.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
       await regionContainerExpansionHandler(node.element, treeDataProv);
@@ -196,30 +223,25 @@ export async function activate(context: ExtensionContext) {
     }
   });
 
-  const setIconClosed = (node: any) => {
-    node.element.iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg");
-    treeDataProv._onDidChangeTreeData.fire(undefined);
-  };
-
   treeview.onDidCollapseElement(async (node) => {
     if (node.element.contextValue.includes("cicsregionscontainer.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedtasktree.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetask.")) {
-      setIconClosed(node);
+      setIconClosed(node, treeDataProv);
     }
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
   }
