@@ -15,6 +15,12 @@ import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
 
+/**
+ * Clear filter for a Regions Container (previously this was available on a plex)
+ * @param tree 
+ * @param treeview 
+ * @returns 
+ */
 export function getClearPlexFilterCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.clearPlexFilter",

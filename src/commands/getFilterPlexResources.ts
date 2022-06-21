@@ -16,6 +16,12 @@ import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 
+/**
+ * Apply filter for a Regions Container (previously this was available on a plex)
+ * @param tree 
+ * @param treeview 
+ * @returns 
+ */
 export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
     "cics-extension-for-zowe.filterPlexResources",
