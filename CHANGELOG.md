@@ -1,6 +1,19 @@
 # Change Log
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
+
+## `2.1.0`
+- Added a the ability to view CICS Tasks [#224](https://github.com/zowe/vscode-extension-for-cics/pull/224).
+- Added right-click menu action to reveal the associated program from a transaction [#240](https://github.com/zowe/vscode-extension-for-cics/pull/240).
+- Added right-click menu action to reveal the associated transaction from a task [#246](https://github.com/zowe/vscode-extension-for-cics/issues/246).
+- Added the ability to change the default 500 record count incremenet number via Settings (UI) [#242](https://github.com/zowe/vscode-extension-for-cics/pull/242).
+- Fixed the issue which prevented lowercase strings being used for local file filter [#231](https://github.com/zowe/vscode-extension-for-cics/pull/231).
+- Fixed the issue where a right-click `Show Attributes` command incorrectly appears on a `Regions` container [#237](https://github.com/zowe/vscode-extension-for-cics/pull/237).
+- Fixed the issue which left previosuly expanded profiles expanded after refresh of cics view [#244](https://github.com/zowe/vscode-extension-for-cics/issues/244).
+- Updated the troubleshooting guide with a V2 schema error [#241](https://github.com/zowe/vscode-extension-for-cics/pull/241).
+- Updated the `Show Attributes` table to resize column width to fit into the view [#234](https://github.com/zowe/vscode-extension-for-cics/pull/234).
+- Updated the `Show Attributes` table to consistently show uppercase values for headings [#239](https://github.com/zowe/vscode-extension-for-cics/pull/239).
+
 ## `2.0.0`
 - **Major**: Introduced the ability to access Team Profiles.
 - Added v1 backwards compatibility [#180](https://github.com/zowe/vscode-extension-for-cics/pull/180) & [#212](https://github.com/zowe/vscode-extension-for-cics/pull/212).
