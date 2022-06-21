@@ -24,6 +24,8 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
     - [Enable and Disable](#enable-and-disable)
     - [New Copy and Phase In](#new-copy-and-phase-in)
     - [Open and Close Local Files](#open-and-close-local-files)
+    - [Purge Task](#purge-task)
+    - [Reveal Functionality](#reveal-functionality)
 - [Untrusted TLS Certificates](#untrusted-tls-certificates)
 - [Usage Tips](#usage-tips)
 - [Providing feedback or help contributing](#providing-feedback-or-help-contributing)
@@ -38,6 +40,7 @@ Ensure that you meet the following prerequisites before you use the extension:
 - Install Zowe Explorer v2
 
 **Tip**: See [Troubleshooting guide](./docs/Troubleshooting.md) for solutions to common problems.
+
 ## Features
 
 - Load profiles directly from Zowe instance locally installed.
@@ -45,9 +48,10 @@ Ensure that you meet the following prerequisites before you use the extension:
 - Work with multiple regions containing programs, local transactions and local files within a plex in a comprehensible tree-like format.
 - Perform actions such as `Enable`, `Disable`, `New Copy` and `Phase In` directly from the UI.
 - Perform additional actions on local files including `Open` and `Close` directly from the UI.
+- Perform a `Purge` on Tasks with the option to select from a `Purge`, `Force Purge` or `Kill`.
 - View and search attributes of resources and regions by right-clicking and using the dynamic filtering feature.
 - Create new CICS profiles, update session details, and delete profiles using the user-friendly interface.
-- Apply multiple filters to regions, programs, local transactions and/or local files.
+- Apply multiple filters to regions, programs, local transactions local files and/or tasks.
 - View and interact with all resources under a plex.
 
 To Install CICS Extension for Zowe Explorer see [Installation](./docs/installation-guide.md).
@@ -199,7 +203,7 @@ Expand a CICS profile to see the region name, and expand the region to view its 
 
 ### Show and Filter Resources in a Region
 
-Expand a CICS region to show folders for the resource types `Programs` <img src="./docs/images/resource-type-programs.png" width="16px"/>  , `Transactions` <img src="./docs/images/resource-type-transactions.png" width="16px"/> and `Local Files` <img src="./docs/images/resource-type-local-files.png" width="16px"/>.  Expand each type to show the resources. The number of resources in a resource tree will appear in square brackets next to the tree name.
+Expand a CICS region to show folders for the resource types `Programs`, `Transactions`, `Local Files` and `Tasks`.  Expand each type to show the resources. The number of resources in a resource tree will appear in square brackets next to the tree name.
 
 The list of resources are pre-filtered to exclude many of the IBM supplied ones to narrow the contents to just include user programs.  Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  against a resource type to apply a filter.  This can be an exact resource name or else you can use wildcards.  The search history is saved so you can recall previous searches.  
 
@@ -224,7 +228,7 @@ To reset the filter to its initial criteria use the clear filter icon <img src="
 **Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching. 
 
 ### Show and Filter Resources in an 'All' Resource Tree
-Plexes contain an `All Programs`, `All Local Transactions` and `All Local Files` trees which contain all the corresponding resources from all regions in the plex.
+Plexes contain an `All Programs`, `All Local Transactions`, `All Local Files` and `All Tasks` trees which contain all the corresponding resources from all regions in the plex.
 
 To view resources under these trees, use the search icon <img src="./docs/images/resource-filter.png" width="16px"/> inline with the tree and apply a filter.
 
@@ -233,6 +237,13 @@ To view resources under these trees, use the search icon <img src="./docs/images
 </p>
 
 If the applied filter results in over 500 records, either change the filter to narrow down the search, or click the `view X more ...` item to retrieve 'X' more resources.
+
+**Tip:** The default 500 count can be modified via the `Record Count Increment` property in Settings (UI).
+
+<p align="center">
+<img src="./docs/images/record-count-increment.png" alt="Zowe CICS Explorer Record Count Increment in Setting UI" width="700px"/> 
+</p>
+
 ### Show Attributes
 
 Right-click and use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region, `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.  
@@ -269,6 +280,26 @@ To close a local file, right-click against an open local file and perform the `C
 <img src="./docs/images/open-close.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
 </p>
 
+### Purge Task
+
+Right-click against a task and click the `Purge Task` command. This will open a prompt asking whether to perform a `Purge`, `Force Purge` or `Kill`.
+
+Select the appropriate condition to perform the purge.
+
+<p align="center">
+<img src="./docs/images/purge-task.gif" alt="Zowe CICS Explorer Purge Task" width="600px"/> 
+</p>
+
+### Reveal Functionality
+
+Right-click against a Task and perform the `Reveal Transaction` command. This will reveal the associated Local Transaction (i.e. the transaction with the name that matches the `tranid` attribute of the selected Task) under the Local Transactions folder.
+
+The same can be done on a Local Transaction to find the associated Program by executing the `Reveal Program` right-click menu action against a Local Transaction.
+
+<p align="center">
+<img src="./docs/images/reveal.gif" alt="Zowe CICS Explorer Reveal functionality" width="600px"/> 
+</p>
+
 ## Untrusted TLS Certificates
 
 If the CMCI connection is using a TLS certificate that your PC doesn't have in its trust store, then by default the connection will be rejected as potentially this could be from an unsafe site.  To override this behavior,  either set the `Only accept trusted TLS certificates` field on the form when creating/updating the profile to `False`.  This is the same as setting `rejectUnauthorized=false` on the Zowe CICS CLI profile.
@@ -276,7 +307,7 @@ If the CMCI connection is using a TLS certificate that your PC doesn't have in i
 If you define a profile as only accepting trusted TLS certificates when the Zowe Explorer first connects it will detect the mismatch and allow you to override the setting and proceed.  This is done through a pop-up message with a `Yes` button to accept the untrusted certificate authority, which changes the profile's setting.  
 
 <p align="center">
-<img src="./docs/images/untrusted-cert.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/untrusted-cert.gif" alt="Zowe CICS Explorer accepted untrusted certificate" width="600px"/> 
 </p>
 
 ## Usage tips
