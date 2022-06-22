@@ -10,6 +10,7 @@
 */
 
 import { QuickPick, QuickPickItem, window, workspace } from "vscode";
+import * as vscode from "vscode";
 
 export async function resolveQuickPickHelper(
     quickpick: QuickPick<QuickPickItem>
@@ -33,23 +34,38 @@ export class FilterDescriptor implements QuickPickItem {
 }
 
 export async function getPatternFromFilter(resourceName: string, resourceHistory:string[]) {
-    let pattern: string;
-    const desc = new FilterDescriptor(`\uFF0B Create New ${resourceName} Filter (use a comma to separate multiple patterns e.g. LG*,I*)`);
+    let pattern: string = "";
+    const createPick = new FilterDescriptor(`\uFF0B Create New ${resourceName} Filter (use a comma to separate multiple patterns e.g. LG*,I*)`);
     const items = resourceHistory.map(loadedFilter => {
         return { label: loadedFilter };
     });
-    const choice = await window.showQuickPick([desc, ...items]);
+    const quickpick = vscode.window.createQuickPick();
+    quickpick.items = [createPick, ...items];
+    quickpick.placeholder = "Select a Filter";
+    quickpick.ignoreFocusOut = true;
+    quickpick.show();
+    const choice = await resolveQuickPickHelper(quickpick);
+    quickpick.hide();
     if (!choice) {
-        window.showInformationMessage("No Selection Made");
+        vscode.window.showInformationMessage("No Selection Made");
         return;
     }
-    if (choice === desc) {
-        pattern = await window.showInputBox() || "";
+    if (choice instanceof FilterDescriptor) {
+        if (quickpick.value) {
+            pattern = quickpick.value;
+        }
     } else {
-        pattern = await window.showInputBox({value:choice.label}) || "";
+        pattern = choice.label;
     }
+    const options2: vscode.InputBoxOptions = {
+        prompt: "", value: pattern,
+    };
+    if (!options2.validateInput) {
+        options2.validateInput = (value) => null;
+    }
+    pattern = await vscode.window.showInputBox(options2) || "";
     if (!pattern) {
-        window.showInformationMessage( "You must enter a pattern");
+        vscode.window.showInformationMessage("You must enter a pattern");
         return;
     }
     // Replace with upper case
