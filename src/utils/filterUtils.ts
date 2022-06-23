@@ -9,8 +9,7 @@
 *
 */
 
-import { QuickPick, QuickPickItem, window, workspace } from "vscode";
-import * as vscode from "vscode";
+import { InputBoxOptions, QuickPick, QuickPickItem, window, workspace } from "vscode";
 
 export async function resolveQuickPickHelper(
     quickpick: QuickPick<QuickPickItem>
@@ -39,7 +38,7 @@ export async function getPatternFromFilter(resourceName: string, resourceHistory
     const items = resourceHistory.map(loadedFilter => {
         return { label: loadedFilter };
     });
-    const quickpick = vscode.window.createQuickPick();
+    const quickpick = window.createQuickPick();
     quickpick.items = [createPick, ...items];
     quickpick.placeholder = "Select a Filter";
     quickpick.ignoreFocusOut = true;
@@ -47,7 +46,7 @@ export async function getPatternFromFilter(resourceName: string, resourceHistory
     const choice = await resolveQuickPickHelper(quickpick);
     quickpick.hide();
     if (!choice) {
-        vscode.window.showInformationMessage("No Selection Made");
+        window.showInformationMessage("No Selection Made");
         return;
     }
     if (choice instanceof FilterDescriptor) {
@@ -57,15 +56,15 @@ export async function getPatternFromFilter(resourceName: string, resourceHistory
     } else {
         pattern = choice.label;
     }
-    const options2: vscode.InputBoxOptions = {
+    const options2: InputBoxOptions = {
         prompt: "", value: pattern,
     };
     if (!options2.validateInput) {
         options2.validateInput = (value) => null;
     }
-    pattern = await vscode.window.showInputBox(options2) || "";
+    pattern = await window.showInputBox(options2) || "";
     if (!pattern) {
-        vscode.window.showInformationMessage("You must enter a pattern");
+        window.showInformationMessage("You must enter a pattern");
         return;
     }
     // Replace with upper case
