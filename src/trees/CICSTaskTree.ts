@@ -9,7 +9,7 @@
 *
 */
 
-import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
+import { TreeItemCollapsibleState, TreeItem, window , workspace} from "vscode";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
@@ -36,7 +36,11 @@ export class CICSTaskTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = '(TRANID=*)';
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.tasks.filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('zowe.cics.tasks.filter', '(TRANID=*)');
+      defaultCriteria = '(TRANID=*)';
+    }
     let criteria;
     if (this.activeTransactionFilter) {
       criteria = toEscapedCriteriaString(this.activeTransactionFilter, 'TRANID');
