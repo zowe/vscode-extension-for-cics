@@ -21,9 +21,10 @@ import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { getIconPathInResources } from "../utils/profileUtils";
 import { CICSCombinedTaskTree } from "./CICSCombinedTaskTree";
+import { CICSCombinedLibraryTree } from "./CICSCombinedLibraryTree";
 
 export class CICSPlexTree extends TreeItem {
-  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSRegionsContainer) [] = [];
+  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer) [] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
@@ -156,6 +157,7 @@ export class CICSPlexTree extends TreeItem {
     this.children.push(new CICSCombinedTransactionsTree(this));
     this.children.push(new CICSCombinedLocalFileTree(this));
     this.children.push(new CICSCombinedTaskTree(this));
+    this.children.push(new CICSCombinedLibraryTree(this));
   }
 
   public addRegionContainer() {

@@ -175,6 +175,11 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
+        "command": "cics-extension-for-zowe.showLibraryAttributes",
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
         "command": "cics-extension-for-zowe.showTransactionAttributes",
         "title": "Show Attributes",
         "category": "Zowe Explorer for IBM CICS"
@@ -222,6 +227,16 @@
       {
         "command": "cics-extension-for-zowe.disableLocalFile",
         "title": "Disable Local File",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
+        "command": "cics-extension-for-zowe.enableLibrary",
+        "title": "Enable Library",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
+        "command": "cics-extension-for-zowe.disableLibrary",
+        "title": "Disable Library",
         "category": "Zowe Explorer for IBM CICS"
       },
       {
@@ -389,6 +404,11 @@
           "group": ""
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicslibrary.*/",
+          "command": "cics-extension-for-zowe.showLibraryAttributes",
+          "group": ""
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
           "command": "cics-extension-for-zowe.showTransactionAttributes",
           "group": "000_zowecics_main@0"
@@ -411,6 +431,16 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicsprogram.enabled.*/",
           "command": "cics-extension-for-zowe.disableProgram",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslibrary.disabled.*/",
+          "command": "cics-extension-for-zowe.enableLibrary",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslibrary.enabled.*/",
+          "command": "cics-extension-for-zowe.disableLibrary",
           "group": ""
         },
         {

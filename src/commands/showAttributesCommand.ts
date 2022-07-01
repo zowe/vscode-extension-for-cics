@@ -11,6 +11,7 @@
 
 import { commands, window, WebviewPanel, TreeView } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
+import { CICSLibraryTreeItem } from "../trees/treeItems/CICSLibraryTreeItem";
 import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
@@ -195,5 +196,40 @@ export function getShowTaskAttributesCommand(treeview: TreeView<any>) {
         panel.webview.html = webviewHTML;
       }
     }
+  );
+}
+
+export function getShowLibraryAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showLibraryAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSLibraryTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS library selected");
+        return;
+      }
+      for (const libraryTreeItem of allSelectedNodes) {
+        const library = libraryTreeItem.library;
+        const attributeHeadings = Object.keys(library);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${library[heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+        
+        const webviewHTML = getAttributesHtml(library.name, webText);
+        const column = window.activeTextEditor
+        ? window.activeTextEditor.viewColumn
+        : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS Library ${libraryTreeItem.parentRegion.label}(${library.name})`,
+          column || 1,
+          { enableScripts: true }
+          );
+          panel.webview.html = webviewHTML;
+        }
+      }
   );
 }

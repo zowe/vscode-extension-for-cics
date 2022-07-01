@@ -18,6 +18,7 @@ import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } 
 import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowProgramAttributesCommand,
+  getShowLibraryAttributesCommand,
   getShowRegionAttributes,
   getShowTransactionAttributesCommand,
   getShowLocalFileAttributesCommand,
@@ -37,6 +38,8 @@ import { getDeleteSessionCommand } from "./commands/deleteSessionCommand";
 import { getDisableTransactionCommand } from "./commands/disableTransactionCommand";
 import { getEnableTransactionCommand } from "./commands/enableTransactionCommand";
 import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
+import { getEnableLibraryCommand } from "./commands/enableLibraryCommand";
+import { getDisableLibraryCommand } from "./commands/disableLibraryCommand";
 import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
 import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
@@ -186,6 +189,18 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+    // Library folder node expanded
+    } else if (node.element.contextValue.includes("cicstreelibrary.")) {
+      window.withProgress({
+        title: 'Loading Libraries',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async () => {
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
     // All programs folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       // Children only loaded if filter has been applied
@@ -214,6 +229,14 @@ export async function activate(context: ExtensionContext) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
+
+    //All libraries folder node expanded
+      else if (node.element.contextValue.includes("cicscombinedlibrarytree.")) {
+        if (node.element.getActiveFilter()) {
+          await node.element.loadContents(treeDataProv);
+        }
+        node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
     // Regions container folder node expanded
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
@@ -234,6 +257,8 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedtasktree.")) {
       setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicscombinedlibrarytree.")) {
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
@@ -241,6 +266,8 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetask.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicstreelibrary.")) {
       setIconClosed(node, treeDataProv);
     }
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
@@ -264,6 +291,8 @@ export async function activate(context: ExtensionContext) {
     getDisableTransactionCommand(treeDataProv, treeview),
     getEnableLocalFileCommand(treeDataProv, treeview),
     getDisableLocalFileCommand(treeDataProv, treeview),
+    getEnableLibraryCommand(treeDataProv, treeview),
+    getDisableLibraryCommand(treeDataProv, treeview),
 
     getCloseLocalFileCommand(treeDataProv, treeview),
     getOpenLocalFileCommand(treeDataProv, treeview),
@@ -272,6 +301,7 @@ export async function activate(context: ExtensionContext) {
 
     getShowRegionAttributes(treeview),
     getShowProgramAttributesCommand(treeview),
+    getShowLibraryAttributesCommand(treeview),
     getShowTransactionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
