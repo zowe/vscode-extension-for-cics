@@ -129,9 +129,6 @@ import {
       "?CRITERIA=(NAME=" +
       parms.name +
       ")";
-
-  console.log("PARMS.REGIONNAME: " + parms.regionName);
-  console.log("PARMS.NAME: " + parms.name);
   
     return CicsCmciRestClient.putExpectParsedXml(
       session,
