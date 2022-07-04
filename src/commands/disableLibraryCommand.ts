@@ -55,7 +55,6 @@ import {
             const currentNode = allSelectedNodes[parseInt(index)];
             
             https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-            console.log("HERE");
             try {
               await disableLibrary(
                 currentNode.parentRegion.parentSession.session,
