@@ -543,6 +543,12 @@
           "description": "Default filter criteria for Local Files",
           "scope": "window"
         },
+        "zowe.cics.tasks.filter": {
+          "type": "string",
+          "default": "(TRANID=*)",
+          "description": "Default filter criteria for Tasks",
+          "scope": "window"
+        },
         "zowe.cics.allPrograms.recordCountIncrement": {
           "type": "number",
           "default": 500,
