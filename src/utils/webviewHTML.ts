@@ -442,7 +442,6 @@ export const getAttributesHtml = (title: string, webText: string) => {
       }
       .headingTH {
         padding: 0.7rem 0.5rem;
-        display: flex;
         flex-direction: column;
         align-items: center;
       }
