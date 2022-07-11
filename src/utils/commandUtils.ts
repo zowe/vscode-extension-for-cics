@@ -24,7 +24,8 @@ export function findSelectedNodes(treeview: TreeView<any>, instanceOf:any, click
   if (clickedNode) {
     if(selection.includes(clickedNode)){
       allSelectedNodes = [...selection];
-    } else{ //if user right clicks the node other than selected node
+    } else{
+      //if user right clicks the node other than selected node
       allSelectedNodes = [clickedNode];
     }
     allSelectedNodes = allSelectedNodes.filter((selectedNode) => selectedNode instanceof instanceOf);
