@@ -28,6 +28,7 @@ import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
+import { getFilterDb2TransactionCommand } from "./commands/filterDb2TransactionCommand";
 import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
@@ -145,14 +146,29 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
     // Transaction folder node expanded
-    } else if (node.element.contextValue.includes("cicstreetransaction.")) {
+  } else if (node.element.contextValue.includes("cicstreetransaction.")) {
+    window.withProgress({
+      title: 'Loading Transactions',
+      location: ProgressLocation.Notification,
+      cancellable: false
+    }, async (_, token) => {
+      token.onCancellationRequested(() => {
+        console.log("Cancelling the loading of transactions");
+      });
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+    });
+    node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+      // Transaction folder node expanded
+    } else if (node.element.contextValue.includes("cicstreedb2transaction.")) {
       window.withProgress({
-        title: 'Loading Transactions',
+        title: 'Loading Db2 Transactions',
         location: ProgressLocation.Notification,
         cancellable: false
       }, async (_, token) => {
         token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of transactions");
+          console.log("Cancelling the loading of DB2 transactions");
         });
         await node.element.loadContents();
         treeDataProv._onDidChangeTreeData.fire(undefined);
@@ -263,6 +279,8 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
       setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicstreedb2transaction.")) {
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetask.")) {
@@ -308,6 +326,7 @@ export async function activate(context: ExtensionContext) {
 
     getFilterProgramsCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
+    getFilterDb2TransactionCommand(treeDataProv, treeview),
     getFilterLocalFilesCommand(treeDataProv, treeview),
     getFilterTasksCommand(treeDataProv, treeview),
     getFilterAllProgramsCommand(treeDataProv, treeview),

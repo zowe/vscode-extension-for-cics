@@ -89,6 +89,15 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterDb2Transactions",
+        "title": "Filter Db2 Transactions",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.filterTasks",
         "title": "Filter Tasks by Transaction ID",
         "category": "Zowe Explorer for IBM CICS",
@@ -344,6 +353,11 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicstreedb2transaction.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstreelocalfile.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
@@ -356,6 +370,11 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicstreetransaction.*/",
           "command": "cics-extension-for-zowe.filterTransactions",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreedb2transaction.*/",
+          "command": "cics-extension-for-zowe.filterDb2Transactions",
           "group": "inline"
         },
         {
@@ -535,6 +554,12 @@
           "type": "string",
           "default": "NOT (program=DFH* OR program=EYU*)",
           "description": "Default filter criteria for Transactions",
+          "scope": "window"
+        },
+        "zowe.cics.db2transaction.filter": {
+          "type": "string",
+          "default": "NAME=*",
+          "description": "Default filter criteria for Db2 Transactions",
           "scope": "window"
         },
         "zowe.cics.localFile.filter": {

@@ -14,6 +14,7 @@ import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTaskTree } from "../trees/CICSTaskTree";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
+import { CICSDb2TransactionTree } from "../trees/CICSDb2TransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
 
@@ -23,9 +24,10 @@ export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView
     async (node) => {
       const allSelectedProgramTreeNodes = findSelectedNodes(treeview, CICSProgramTree, node);
       const allSelectedTransactionTreeNodes = findSelectedNodes(treeview, CICSTransactionTree, node);
+      const allSelectedDb2TransactionTreeNodes = findSelectedNodes(treeview, CICSDb2TransactionTree, node);
       const allSelectedLocalFileTreeNodes = findSelectedNodes(treeview, CICSLocalFileTree, node);
       const allSelectedTaskTreeNodes = findSelectedNodes(treeview, CICSTaskTree, node);
-      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes];
+      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedDb2TransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes];
       if (!allSelectedNodes || !allSelectedNodes.length) {
         window.showErrorMessage("No CICS resource tree selected");
         return;

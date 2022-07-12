@@ -91,6 +91,24 @@ export async function getDefaultTransactionFilter() {
     return defaultCriteria;
 }
 
+export async function getDefaultDb2TransactionFilter() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.db2transaction.filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('zowe.cics.db2transaction.filter', 'NAME=*');
+      defaultCriteria = 'NAME=*';
+    }
+    return defaultCriteria;
+}
+
+export async function getDefaultTaskFilter() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.tasks.filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('zowe.cics.tasks.filter', '(TRANID=*)');
+      defaultCriteria = '(TRANID=*)';
+    }
+    return defaultCriteria;
+}
+
 export function toEscapedCriteriaString(activeFilter:string, attribute:string): string {
     // returns a string as an escaped_criteria_string suitable for the criteria 
     // query parameter for a CMCI request.
