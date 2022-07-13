@@ -64,6 +64,10 @@ export function getClearPlexFilterCommand(tree: CICSTree, treeview: TreeView<any
                         treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
                         treeToClear.clearFilter();
                         await treeToClear.loadContents();
+                    } else if (resourceToClear === "Libraries"){
+                      treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreelibrary."))[0];
+                      treeToClear.clearFilter();
+                      await treeToClear.loadContents();
                     } else if (resourceToClear === "All"){
                       for (const child of region.children){
                         child.clearFilter();

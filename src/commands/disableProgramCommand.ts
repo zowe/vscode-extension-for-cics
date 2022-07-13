@@ -72,7 +72,7 @@ export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>
           } catch (error) {
             https.globalAgent.options.rejectUnauthorized = undefined;
             // @ts-ignore
-            window.showErrorMessage(`Something went wrong when performing a new copy - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            window.showErrorMessage(`Something went wrong when performing a disable - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
         // Reload contents

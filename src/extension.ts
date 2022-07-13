@@ -19,12 +19,14 @@ import { getPhaseInCommand } from "./commands/phaseInCommand";
 import {
   getShowProgramAttributesCommand,
   getShowLibraryAttributesCommand,
+  getShowLibraryDatasetsAttributesCommand,
   getShowRegionAttributes,
   getShowTransactionAttributesCommand,
   getShowLocalFileAttributesCommand,
   getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
+import { getFilterLibrariesCommand } from "./commands/filterLibrariesCommand";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
@@ -46,6 +48,7 @@ import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
+import { getFilterAllLibrariesCommand } from "./commands/filterAllLibrariesCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
 import { getIconPathInResources, setIconClosed } from "./utils/profileUtils";
@@ -201,6 +204,19 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+    // Library tree item node expanded to view datasets
+    } 
+    else if (node.element.contextValue.includes("cicslibrary.")) {
+      window.withProgress({
+        title: 'Loading Datasets',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async () => {
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
     // All programs folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       // Children only loaded if filter has been applied
@@ -269,6 +285,8 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreelibrary.")) {
       setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicslibrary.")) {
+      setIconClosed(node, treeDataProv);
     }
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
   }
@@ -302,15 +320,18 @@ export async function activate(context: ExtensionContext) {
     getShowRegionAttributes(treeview),
     getShowProgramAttributesCommand(treeview),
     getShowLibraryAttributesCommand(treeview),
+    getShowLibraryDatasetsAttributesCommand(treeview),
     getShowTransactionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
 
     getFilterProgramsCommand(treeDataProv, treeview),
+    getFilterLibrariesCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
     getFilterLocalFilesCommand(treeDataProv, treeview),
     getFilterTasksCommand(treeDataProv, treeview),
     getFilterAllProgramsCommand(treeDataProv, treeview),
+    getFilterAllLibrariesCommand(treeDataProv, treeview),
     getFilterAllTransactionsCommand(treeDataProv, treeview),
     getFilterAllLocalFilesCommand(treeDataProv, treeview),
     getFilterAllTasksCommand(treeDataProv, treeview),
