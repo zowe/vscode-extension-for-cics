@@ -31,12 +31,12 @@ export function getFilterDb2TransactionCommand(tree: CICSTree, treeview: TreeVie
       }
       const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       //do it for DB2
-      const pattern = await getPatternFromFilter("Db2Transaction", persistentStorage.getTransactionSearchHistory());
+      const pattern = await getPatternFromFilter("Db2 Transaction", persistentStorage.getDb2TransactionSearchHistory());
       if (!pattern) {
         return;
       }
       //Do it for Db2
-      await persistentStorage.addTransactionSearchHistory(pattern!);
+      await persistentStorage.addDb2TransactionSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
       window.withProgress({
         title: 'Loading Db2 Transactions',

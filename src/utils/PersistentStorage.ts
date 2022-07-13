@@ -15,6 +15,7 @@ export class PersistentStorage {
     public schema: string;
     private static readonly programSearchHistory: string = "programSearchHistory";
     private static readonly transactionSearchHistory: string = "transactionSearchHistory";
+    private static readonly db2TransactionSearchHistory: string = "db2TransactionSearchHistory";
     private static readonly localFileSearchHistory: string = "localFileSearchHistory";
     private static readonly regionSearchHistory: string = "regionSearchHistory";
     private static readonly loadedCICSProfile: string = "loadedCICSProfile";
@@ -22,6 +23,7 @@ export class PersistentStorage {
 
     private mProgramSearchHistory: string[] = [];
     private mTransactionSearchHistory: string[] = [];
+    private mDb2TransactionSearchHistory: string[] = [];
     private mLocalFileSearchHistory: string[] = [];
     private mRegionSearchHistory: string[] = [];
     private mLoadedCICSProfile: string[] = [];
@@ -36,6 +38,7 @@ export class PersistentStorage {
     private async init() {
         let programSearchHistoryLines: string[] | undefined;
         let transactionSearchHistoryLines: string[] | undefined;
+        let db2TransactionSearchHistoryLines: string[] | undefined;
         let localFileSearchHistoryLines: string[] | undefined;
         let regionSearchHistoryLines: string[] | undefined;
         let loadedCICSProfileLines: string[] | undefined;
@@ -43,6 +46,7 @@ export class PersistentStorage {
         if (workspace.getConfiguration(this.schema)) {
             programSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.programSearchHistory);
             transactionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.transactionSearchHistory);
+            db2TransactionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.db2TransactionSearchHistory);
             localFileSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.localFileSearchHistory);
             regionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.regionSearchHistory);
             loadedCICSProfileLines = workspace.getConfiguration(this.schema).get(PersistentStorage.loadedCICSProfile);
@@ -56,6 +60,11 @@ export class PersistentStorage {
             this.mTransactionSearchHistory = transactionSearchHistoryLines;
         } else {
             await this.resetTransactionSearchHistory();
+        }
+        if (db2TransactionSearchHistoryLines) {
+            this.mDb2TransactionSearchHistory = db2TransactionSearchHistoryLines;
+        } else {
+            await this.resetDb2TransactionSearchHistory();
         }
         if (localFileSearchHistoryLines) {
             this.mLocalFileSearchHistory = localFileSearchHistoryLines;
@@ -82,6 +91,9 @@ export class PersistentStorage {
     public getTransactionSearchHistory(): string[] {
         return this.mTransactionSearchHistory;
     }
+    public getDb2TransactionSearchHistory(): string[] {
+        return this.mDb2TransactionSearchHistory;
+    }
     public getLocalFileSearchHistory(): string[] {
         return this.mLocalFileSearchHistory;
     }
@@ -101,6 +113,10 @@ export class PersistentStorage {
     public async resetTransactionSearchHistory() {
         this.mTransactionSearchHistory = [];
         await this.updateTransactionSearchHistory();
+    }
+    public async resetDb2TransactionSearchHistory() {
+        this.mDb2TransactionSearchHistory = [];
+        await this.updateDb2TransactionSearchHistory();
     }
     public async resetLocalFileSearchHistory() {
         this.mLocalFileSearchHistory = [];
@@ -128,6 +144,13 @@ export class PersistentStorage {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
             settings[PersistentStorage.transactionSearchHistory] = this.mTransactionSearchHistory;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+    private async updateDb2TransactionSearchHistory() {
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if (settings.persistence) {
+            settings[PersistentStorage.db2TransactionSearchHistory] = this.mDb2TransactionSearchHistory;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
@@ -181,6 +204,20 @@ export class PersistentStorage {
                 this.mTransactionSearchHistory.pop();
             }
             await this.updateTransactionSearchHistory();
+        }
+    }
+    public async addDb2TransactionSearchHistory(criteria: string) {
+        if (criteria) {
+            this.mDb2TransactionSearchHistory = this.mDb2TransactionSearchHistory.filter((element) => {
+                return element.trim() !== criteria.trim();
+            });
+
+            this.mDb2TransactionSearchHistory.unshift(criteria);
+
+            if (this.mDb2TransactionSearchHistory.length > 10) {
+                this.mDb2TransactionSearchHistory.pop();
+            }
+            await this.updateDb2TransactionSearchHistory();
         }
     }
     public async addLocalFileSearchHistory(criteria: string) {
