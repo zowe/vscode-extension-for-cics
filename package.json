@@ -194,6 +194,11 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
+        "command": "cics-extension-for-zowe.showDb2TransactionAttributes",
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
         "command": "cics-extension-for-zowe.showLocalFileAttributes",
         "title": "Show Attributes",
         "category": "Zowe Explorer for IBM CICS"
@@ -430,6 +435,11 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
           "command": "cics-extension-for-zowe.showTransactionAttributes",
+          "group": "000_zowecics_main@0"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsdb2transaction.*/",
+          "command": "cics-extension-for-zowe.showDb2TransactionAttributes",
           "group": "000_zowecics_main@0"
         },
         {

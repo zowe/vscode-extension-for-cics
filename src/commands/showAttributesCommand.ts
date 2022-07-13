@@ -16,6 +16,7 @@ import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem"
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
 import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
+import { CICSDb2TransactionTreeItem } from "../trees/treeItems/CICSDb2TransactionTreeItem";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { getAttributesHtml } from "../utils/webviewHTML";
 
@@ -153,6 +154,42 @@ export function getShowTransactionAttributesCommand(treeview: TreeView<any>) {
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
           `CICS Local Transaction ${localTransactionTreeItem.parentRegion.label}(${transaction.tranid})`,
+          column || 1,
+          { enableScripts: true }
+        );
+        panel.webview.html = webviewHTML;
+      }
+    }
+  );
+}
+
+export function getShowDb2TransactionAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showDb2TransactionAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSDb2TransactionTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS Db2 transaction selected");
+        return;
+      }
+      for (const db2TransactionTreeItem of allSelectedNodes) {
+        const db2transaction = db2TransactionTreeItem.db2transaction;
+        const attributeHeadings = Object.keys(db2transaction);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${db2transaction[heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+
+        const webviewHTML = getAttributesHtml(db2transaction.name, webText);
+
+        const column = window.activeTextEditor
+          ? window.activeTextEditor.viewColumn
+          : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS Db2 Transaction ${db2TransactionTreeItem.parentRegion.label}(${db2transaction.name})`,
           column || 1,
           { enableScripts: true }
         );

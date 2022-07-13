@@ -21,6 +21,7 @@ import {
   getShowLibraryAttributesCommand,
   getShowRegionAttributes,
   getShowTransactionAttributesCommand,
+  getShowDb2TransactionAttributesCommand,
   getShowLocalFileAttributesCommand,
   getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
@@ -321,6 +322,7 @@ export async function activate(context: ExtensionContext) {
     getShowProgramAttributesCommand(treeview),
     getShowLibraryAttributesCommand(treeview),
     getShowTransactionAttributesCommand(treeview),
+    getShowDb2TransactionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
 
