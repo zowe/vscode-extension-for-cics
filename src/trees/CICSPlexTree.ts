@@ -17,6 +17,7 @@ import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
 import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
+import { CICSCombinedDb2TransactionsTree } from "./CICSCombinedDb2TransactionTree";
 import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { getIconPathInResources } from "../utils/profileUtils";
@@ -24,7 +25,7 @@ import { CICSCombinedTaskTree } from "./CICSCombinedTaskTree";
 import { CICSCombinedLibraryTree } from "./CICSCombinedLibraryTree";
 
 export class CICSPlexTree extends TreeItem {
-  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer) [] = [];
+  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedDb2TransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer) [] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;

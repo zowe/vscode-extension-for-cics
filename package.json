@@ -298,6 +298,11 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
+        "command": "cics-extension-for-zowe.purgeDb2Transaction",
+        "title": "Purge Transaction",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
         "command": "cics-extension-for-zowe.purgeTask",
         "title": "Purge Task",
         "category": "Zowe Explorer for IBM CICS"
@@ -531,6 +536,10 @@
           "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
           "command": "cics-extension-for-zowe.revealProgram",
           "group": "001_zowecics_reveal@0"
+        },{
+          "when": "view == cics-view && viewItem =~ /^cicsdb2transaction.*/",
+          "command": "cics-extension-for-zowe.purgeDb2Transaction",
+          "group": "000_zowecics_main@1"
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstask.*/",

@@ -58,6 +58,7 @@ import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
 import { CredentialManagerFactory, Logger } from "@zowe/imperative";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
 import { getRevealTransactionCommand } from "./commands/revealTransaction";
+import { getPurgeDb2TransactionCommand } from "./commands/purgeDb2TransactionCommand";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
 import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
 import { getFilterTasksCommand } from "./commands/filterTasksCommand";
@@ -316,6 +317,7 @@ export async function activate(context: ExtensionContext) {
     getCloseLocalFileCommand(treeDataProv, treeview),
     getOpenLocalFileCommand(treeDataProv, treeview),
 
+    getPurgeDb2TransactionCommand(treeDataProv, treeview),
     getPurgeTaskCommand(treeDataProv, treeview),
 
     getShowRegionAttributes(treeview),
