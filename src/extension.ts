@@ -49,6 +49,7 @@ import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
 import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
 import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
+import { getFilterAllDb2TransactionsCommand } from "./commands/filterAllDb2TransactionsCommand";
 import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
 import { getIconPathInResources, setIconClosed } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
@@ -344,6 +345,7 @@ export async function activate(context: ExtensionContext) {
     getFilterTasksCommand(treeDataProv, treeview),
     getFilterAllProgramsCommand(treeDataProv, treeview),
     getFilterAllTransactionsCommand(treeDataProv, treeview),
+    getFilterAllDb2TransactionsCommand(treeDataProv, treeview),
     getFilterAllLocalFilesCommand(treeDataProv, treeview),
     getFilterAllTasksCommand(treeDataProv, treeview),
     

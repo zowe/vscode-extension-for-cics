@@ -143,6 +143,15 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterAllDb2Transactions",
+        "title": "Filter All Db2 Transactions",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.filterAllLocalFiles",
         "title": "Filter All Local Files",
         "category": "Zowe Explorer for IBM CICS",

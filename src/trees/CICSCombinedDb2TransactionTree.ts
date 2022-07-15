@@ -41,7 +41,7 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
     this.activeFilter = undefined;
     this.currentCount = 0;
     this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allDb2Transactions.recordCountIncrement')}`; 
-    this.constant = CicsCmciConstants.CICS_LOCAL_TRANSACTION;
+    this.constant = "CICSDb2Transaction"
     }
 
     public async loadContents(tree: CICSTree){
@@ -82,7 +82,7 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
               this.children = [];
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
-              window.showInformationMessage(`No local transactions found`);
+              window.showInformationMessage(`No Db2 transactions found`);
             }
           }
         } catch (error) {
