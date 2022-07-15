@@ -26,7 +26,7 @@ export class CICSLibraryTree extends TreeItem {
     parentRegion: CICSRegionTree,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
-    super('Library', TreeItemCollapsibleState.Collapsed);
+    super('Libraries', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreelibrary.${this.activeFilter ? 'filtered' : 'unfiltered'}.libraries`;
     this.parentRegion = parentRegion;
   }
@@ -68,6 +68,7 @@ export class CICSLibraryTree extends TreeItem {
         window.showErrorMessage(`Resource Limit Exceeded - Set a library filter to narrow search`);
       } else if ((error as any).mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No libraries found`);
+        this.label = `Libraries${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
         window.showErrorMessage(`Something went wrong when fetching libraries - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }

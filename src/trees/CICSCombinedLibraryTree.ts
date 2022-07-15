@@ -40,7 +40,7 @@ export class CICSCombinedLibraryTree extends TreeItem {
     this.children = [new TextTreeItem("Use the search button to display libraries", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allLibraries.recordCountIncrement')}`; 
+    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allLibraries.recordCountIncrement')}`;
     this.constant = CicsCmciConstants.CICS_LIBRARY_RESOURCE;
     }
 
@@ -106,9 +106,9 @@ export class CICSCombinedLibraryTree extends TreeItem {
             return child.getRegionName() === library.eyu_cicsname;
           }
         })[0] as CICSRegionTree;
-        const progamTree = new CICSLibraryTreeItem(library,parentRegion, this);
-        progamTree.setLabel(progamTree.label!.toString().replace(library.library, `${library.library} (${library.eyu_cicsname})`));
-        newChildren.push(progamTree);
+        const libraryTree = new CICSLibraryTreeItem(library,parentRegion, this);
+        libraryTree.setLabel(libraryTree.label!.toString().replace(library.name, `${library.name} (${library.eyu_cicsname})`));
+        newChildren.push(libraryTree);
       }
       if (!count) {
         count = newChildren.length;

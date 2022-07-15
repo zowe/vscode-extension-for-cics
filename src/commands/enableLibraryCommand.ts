@@ -121,7 +121,7 @@ import {
       "/" +
       CicsCmciConstants.CICS_SYSTEM_MANAGEMENT +
       "/" +
-      "CICSLibrary" + //CicsCmciConstants.CICS_LIBRARY_RESOURCE +
+      CicsCmciConstants.CICS_LIBRARY_RESOURCE + 
       "/" +
       cicsPlex +
       parms.regionName +

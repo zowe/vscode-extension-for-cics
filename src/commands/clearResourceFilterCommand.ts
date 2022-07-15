@@ -10,6 +10,7 @@
 */
 
 import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSLibraryTree } from "../trees/CICSLibraryTree";
 import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTaskTree } from "../trees/CICSTaskTree";
@@ -25,7 +26,8 @@ export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView
       const allSelectedTransactionTreeNodes = findSelectedNodes(treeview, CICSTransactionTree, node);
       const allSelectedLocalFileTreeNodes = findSelectedNodes(treeview, CICSLocalFileTree, node);
       const allSelectedTaskTreeNodes = findSelectedNodes(treeview, CICSTaskTree, node);
-      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes];
+      const allSelectedLibraryTreeNodes = findSelectedNodes(treeview, CICSLibraryTree, node);
+      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes, ...allSelectedLibraryTreeNodes];
       if (!allSelectedNodes || !allSelectedNodes.length) {
         window.showErrorMessage("No CICS resource tree selected");
         return;
