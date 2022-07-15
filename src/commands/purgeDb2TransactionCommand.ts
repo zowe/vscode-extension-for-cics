@@ -41,7 +41,7 @@ export function getPurgeDb2TransactionCommand(tree: CICSTree, treeview: TreeView
       }
       let parentRegions: CICSRegionTree[] = [];
       let choice = await window.showWarningMessage(
-        `Are you sure you want to purge the transaction `,
+        `Are you sure you want to purge the transactions `,
         ...["Yes", "No"]);
       if (choice && choice === "Yes"){
         window.withProgress({

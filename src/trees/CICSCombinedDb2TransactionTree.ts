@@ -34,10 +34,10 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
     parentPlex: CICSPlexTree,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
-    super("All Local Db2 Transactions", TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicscombinedtransactiontree.`;
+    super("All Db2 Transactions", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicscombineddb2transactiontree.`;
     this.parentPlex = parentPlex;
-    this.children = [new TextTreeItem("Use the search button to display local transactions", "applyfiltertext.")];
+    this.children = [new TextTreeItem("Use the search button to display db2 transactions", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
     this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allDb2Transactions.recordCountIncrement')}`; 
@@ -93,7 +93,7 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
     }
 
     public addDb2TransactionsUtil(newChildren:(CICSDb2TransactionTreeItem | ViewMore) [], allDb2Transactions:any, count:number|undefined){
-      for (const transaction of allDb2Transactions) {
+      for (const db2Transaction of allDb2Transactions) {
         const regionsContainer = this.parentPlex.children.filter(child => {
           if (child instanceof CICSRegionsContainer) {
             return child;
@@ -101,12 +101,12 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
         })[0];
         const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
-            return child.getRegionName() === transaction.eyu_cicsname;
+            return child.getRegionName() === db2Transaction.eyu_cicsname;
           }
         })[0] as CICSRegionTree;
-        const transactionTree = new CICSDb2TransactionTreeItem(transaction,parentRegion, this);
-        transactionTree.setLabel(transactionTree.label!.toString().replace(transaction.tranid, `${transaction.tranid} (${transaction.eyu_cicsname})`));
-        newChildren.push(transactionTree);
+        const db2TransactionTree = new CICSDb2TransactionTreeItem(db2Transaction,parentRegion, this);
+        db2TransactionTree.setLabel(db2TransactionTree.label!.toString().replace(db2Transaction.name, `${db2Transaction.name} (${db2Transaction.eyu_cicsname})`));
+        newChildren.push(db2TransactionTree);
       }
       if (!count) {
         count = newChildren.length;
@@ -156,15 +156,15 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
 
     public clearFilter() {
       this.activeFilter = undefined;
-      this.label = `All Local Db2 Transactions`;
-      this.contextValue = `cicscombinedtransactiontree.unfiltered`;
+      this.label = `All Db2 Transactions`;
+      this.contextValue = `cicscombineddb2transactiontree.unfiltered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
-      this.label = `All Local Db2 Transactions (${this.activeFilter})`;
-      this.contextValue = `cicscombinedtransactiontree.filtered`;
+      this.label = `All Db2 Transactions (${this.activeFilter})`;
+      this.contextValue = `cicscombineddb2transactiontree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 

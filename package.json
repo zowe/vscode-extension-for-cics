@@ -413,6 +413,11 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicscombineddb2transactiontree.*/",
+          "command": "cics-extension-for-zowe.filterAllDb2Transactions",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicscombinedlocalfiletree.*/",
           "command": "cics-extension-for-zowe.filterAllLocalFiles",
           "group": "inline"

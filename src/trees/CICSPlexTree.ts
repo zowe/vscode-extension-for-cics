@@ -156,6 +156,7 @@ export class CICSPlexTree extends TreeItem {
   public addNewCombinedTrees(){
     this.children.push(new CICSCombinedProgramTree(this));
     this.children.push(new CICSCombinedTransactionsTree(this));
+    this.children.push(new CICSCombinedDb2TransactionsTree(this));
     this.children.push(new CICSCombinedLocalFileTree(this));
     this.children.push(new CICSCombinedTaskTree(this));
     this.children.push(new CICSCombinedLibraryTree(this));

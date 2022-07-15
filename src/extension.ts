@@ -234,6 +234,13 @@ export async function activate(context: ExtensionContext) {
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+    // All transactions folder node expanded
+  } else if (node.element.contextValue.includes("cicscombineddb2transactiontree.")) {
+    if (node.element.getActiveFilter()) {
+      await node.element.loadContents(treeDataProv);
+    }
+    node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
     // All local files folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
       if (node.element.getActiveFilter()) {
@@ -270,6 +277,8 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicscombineddb2transactiontree.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
       setIconClosed(node, treeDataProv);
