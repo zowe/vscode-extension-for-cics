@@ -46,7 +46,7 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
 
     public async loadContents(tree: CICSTree){
       window.withProgress({
-        title: 'Loading Local Db2 Transactions',
+        title: 'Loading Db2 Transactions',
         location: ProgressLocation.Notification,
         cancellable: true
       }, async (_, token) => {
@@ -86,7 +86,7 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
             }
           }
         } catch (error) {
-          window.showErrorMessage(`Something went wrong when fetching local transactions - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          window.showErrorMessage(`Something went wrong when fetching db2 transactions - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
         }
         }
       );
@@ -121,7 +121,7 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
 
     public async addMoreCachedResources(tree: CICSTree) {
       window.withProgress({
-        title: 'Loading more local transactions',
+        title: 'Loading more db2 transactions',
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {

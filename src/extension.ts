@@ -163,7 +163,7 @@ export async function activate(context: ExtensionContext) {
     });
     node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-      // Transaction folder node expanded
+      // Db2 Transaction folder node expanded
     } else if (node.element.contextValue.includes("cicstreedb2transaction.")) {
       window.withProgress({
         title: 'Loading Db2 Transactions',
@@ -235,7 +235,7 @@ export async function activate(context: ExtensionContext) {
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // All transactions folder node expanded
+    // All db2 transactions folder node expanded
   } else if (node.element.contextValue.includes("cicscombineddb2transactiontree.")) {
     if (node.element.getActiveFilter()) {
       await node.element.loadContents(treeDataProv);
