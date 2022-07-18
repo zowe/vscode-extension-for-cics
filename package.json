@@ -556,6 +556,11 @@
           "group": "000_zowecics_main@1"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicsdb2transaction.*/",
+          "command": "cics-extension-for-zowe.revealTransaction",
+          "group": "001_zowecics_reveal@0"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstask.*/",
           "command": "cics-extension-for-zowe.purgeTask",
           "group": "000_zowecics_main@1"

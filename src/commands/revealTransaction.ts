@@ -17,6 +17,7 @@ import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
+import { CICSDb2TransactionTreeItem } from "../trees/treeItems/CICSDb2TransactionTreeItem";
 import { findSelectedNodes } from "../utils/commandUtils";
 
 /**
@@ -26,7 +27,12 @@ export function getRevealTransactionCommand(tree: CICSTree,treeview: TreeView<an
     return commands.registerCommand(
       "cics-extension-for-zowe.revealTransaction",
       async (node) => {
-        const allSelectedNodes = findSelectedNodes(treeview, CICSTaskTreeItem, node) as CICSTaskTreeItem[];
+        let allSelectedNodes:any = [];
+        if(node instanceof  CICSTaskTreeItem){
+          allSelectedNodes = findSelectedNodes(treeview, CICSTaskTreeItem, node) as CICSTaskTreeItem[];
+        } else if(node instanceof  CICSDb2TransactionTreeItem){
+          allSelectedNodes = findSelectedNodes(treeview, CICSDb2TransactionTreeItem, node) as CICSDb2TransactionTreeItem[];
+        }
         if (!allSelectedNodes || !allSelectedNodes.length) {
           window.showErrorMessage("No CICS Task selected");
           return;
@@ -43,12 +49,16 @@ export function getRevealTransactionCommand(tree: CICSTree,treeview: TreeView<an
         }
         let tranids = [];
         for (const localTaskTreeItem of allSelectedNodes) {
-            const task = localTaskTreeItem.task;
-            tranids.push(task["tranid"]);
+            const selectedItem = localTaskTreeItem.task ? localTaskTreeItem.task: localTaskTreeItem.db2transaction;
+            if(node instanceof  CICSTaskTreeItem){
+              tranids.push(selectedItem["tranid"]);
+            } else if(node instanceof  CICSDb2TransactionTreeItem){
+              tranids.push(selectedItem["transid"]);
+            }
         }
         // Comma separated filter
         const pattern = tranids.join(", ");
-        const localTransactionTree = resourceFolders.filter(child => child instanceof CICSTransactionTree)[0] as CICSTransactionTree;
+        const localTransactionTree = resourceFolders.filter((child: any) => child instanceof CICSTransactionTree)[0] as CICSTransactionTree;
         localTransactionTree.setFilter(pattern);
         await localTransactionTree.loadContents();
         tree._onDidChangeTreeData.fire(undefined);

@@ -41,7 +41,7 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
     this.activeFilter = undefined;
     this.currentCount = 0;
     this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allDb2Transactions.recordCountIncrement')}`; 
-    this.constant = "CICSDb2Transaction"
+    this.constant = "CICSDb2Transaction";
     }
 
     public async loadContents(tree: CICSTree){
