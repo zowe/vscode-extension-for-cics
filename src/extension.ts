@@ -25,6 +25,7 @@ import {
   getShowLocalFileAttributesCommand,
   getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
+import { getShowRegionSITParametersCommand} from "./commands/showParameterCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
 import { getFilterLibrariesCommand } from "./commands/filterLibrariesCommand";
 import { ProfileManagement } from "./utils/profileManagement";
@@ -325,6 +326,8 @@ export async function activate(context: ExtensionContext) {
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
 
+    getShowRegionSITParametersCommand(treeview),
+    
     getFilterProgramsCommand(treeDataProv, treeview),
     getFilterLibrariesCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
