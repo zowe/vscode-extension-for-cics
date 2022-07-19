@@ -80,6 +80,15 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterLibraries",
+        "title": "Filter Libraries",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.filterTransactions",
         "title": "Filter Transactions",
         "category": "Zowe Explorer for IBM CICS",
@@ -127,6 +136,15 @@
       {
         "command": "cics-extension-for-zowe.filterAllPrograms",
         "title": "Filter All Programs",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterAllLibraries",
+        "title": "Filter All Libraries",
         "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/filter-dark.svg",
@@ -194,6 +212,11 @@
       },
       {
         "command": "cics-extension-for-zowe.showLibraryAttributes",
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
+        "command": "cics-extension-for-zowe.showLibraryDatasetsAttributes",
         "title": "Show Attributes",
         "category": "Zowe Explorer for IBM CICS"
       },
@@ -362,6 +385,11 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicstreelibrary.*/",
+          "command": "cics-extension-for-zowe.filterLibraries",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstreeprogram.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
@@ -383,6 +411,11 @@
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstreetask.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreelibrary.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
@@ -414,6 +447,11 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicscombinedprogramtree.*/",
           "command": "cics-extension-for-zowe.filterAllPrograms",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicscombinedlibrarytree.*/",
+          "command": "cics-extension-for-zowe.filterAllLibraries",
           "group": "inline"
         },
         {
@@ -449,6 +487,11 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicslibrary.*/",
           "command": "cics-extension-for-zowe.showLibraryAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsdatasets.*/",
+          "command": "cics-extension-for-zowe.showLibraryDatasetsAttributes",
           "group": ""
         },
         {
@@ -638,6 +681,13 @@
           "type": "number",
           "default": 500,
           "description": "Record count increment criteria for 'All Tasks'",
+          "scope": "window",
+          "minimum": 1
+        },
+        "zowe.cics.allLibraries.recordCountIncrement": {
+          "type": "number",
+          "default": 500,
+          "description": "Record count increment criteria for 'All Libraries'",
           "scope": "window",
           "minimum": 1
         }

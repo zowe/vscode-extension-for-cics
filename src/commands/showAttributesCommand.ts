@@ -11,6 +11,7 @@
 
 import { commands, window, WebviewPanel, TreeView } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
+import { CICSLibraryDatasets } from "../trees/treeItems/CICSLibraryDatasets";
 import { CICSLibraryTreeItem } from "../trees/treeItems/CICSLibraryTreeItem";
 import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
@@ -262,6 +263,41 @@ export function getShowLibraryAttributesCommand(treeview: TreeView<any>) {
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
           `CICS Library ${libraryTreeItem.parentRegion.label}(${library.name})`,
+          column || 1,
+          { enableScripts: true }
+          );
+          panel.webview.html = webviewHTML;
+        }
+      }
+  );
+}
+
+export function getShowLibraryDatasetsAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showLibraryDatasetsAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSLibraryDatasets, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS dataset selected");
+        return;
+      }
+      for (const datasetTreeItem of allSelectedNodes) {
+        const dataset = datasetTreeItem.dataset ;
+        const attributeHeadings = Object.keys(dataset);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${dataset [heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+        
+        const webviewHTML = getAttributesHtml(dataset.dsname, webText);
+        const column = window.activeTextEditor
+        ? window.activeTextEditor.viewColumn
+        : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS Dataset ${datasetTreeItem.parentRegion.label}(${dataset.dsname})`,
           column || 1,
           { enableScripts: true }
           );
