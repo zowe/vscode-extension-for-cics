@@ -17,7 +17,7 @@ import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
 import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
-import { CICSCombinedDb2TransactionsTree } from "./CICSCombinedDb2TransactionTree";
+import { CICSCombinedDb2TransactionsTree } from "./Db2/CICSCombinedDb2TransactionTree";
 import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { getIconPathInResources } from "../utils/profileUtils";

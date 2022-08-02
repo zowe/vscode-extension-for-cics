@@ -10,7 +10,7 @@
 */
 
 import { commands, ProgressLocation, TreeView, window } from "vscode";
-import { CICSDb2TransactionTree } from "../trees/CICSDb2TransactionTree";
+import { CICSDb2TransactionTree } from "../trees/Db2/CICSDb2TransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";

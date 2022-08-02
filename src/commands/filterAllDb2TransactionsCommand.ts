@@ -10,7 +10,7 @@
 */
 
 import { commands, TreeView, window } from "vscode";
-import { CICSCombinedDb2TransactionsTree } from "../trees/CICSCombinedDb2TransactionTree";
+import { CICSCombinedDb2TransactionsTree } from "../trees/Db2/CICSCombinedDb2TransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";

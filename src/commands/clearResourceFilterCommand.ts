@@ -15,7 +15,7 @@ import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTaskTree } from "../trees/CICSTaskTree";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
-import { CICSDb2TransactionTree } from "../trees/CICSDb2TransactionTree";
+import { CICSDb2TransactionTree } from "../trees/Db2/CICSDb2TransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
 

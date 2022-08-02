@@ -10,12 +10,12 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
-import { CICSDb2TransactionTreeItem } from "./treeItems/CICSDb2TransactionTreeItem";
+import { CICSDb2TransactionTreeItem } from "../treeItems/CICSDb2TransactionTreeItem";
 import { CICSDb2Tree } from "./CICSDb2Tree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
-import { getDefaultDb2TransactionFilter, toEscapedCriteriaString } from "../utils/filterUtils";
-import { getIconPathInResources } from "../utils/profileUtils";
+import { getDefaultDb2TransactionFilter, toEscapedCriteriaString } from "../../utils/filterUtils";
+import { getIconPathInResources } from "../../utils/profileUtils";
 
 export class CICSDb2TransactionTree extends TreeItem {
   children: CICSDb2TransactionTreeItem[] = [];

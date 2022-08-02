@@ -22,7 +22,7 @@ import * as https from "https";
 import { findSelectedNodes, splitCmciErrorMessage } from "../utils/commandUtils";
 import { CICSDb2TransactionTreeItem } from "../trees/treeItems/CICSDb2TransactionTreeItem";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
-import { CICSCombinedDb2TransactionsTree } from "../trees/CICSCombinedDb2TransactionTree";
+import { CICSCombinedDb2TransactionsTree } from "../trees/Db2/CICSCombinedDb2TransactionTree";
 
 /**
  * Purge a CICS Db2Transaction and reload the CICS Db2Transaction tree contents and the combined Db2Transaction tree contents

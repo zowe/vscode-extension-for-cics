@@ -11,13 +11,10 @@
 
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { CICSDb2TransactionTree } from "./CICSDb2TransactionTree";
-import { CICSRegionTree } from "./CICSRegionTree";
-import { getResource } from "@zowe/cics-for-zowe-cli";
-import * as https from "https";
-import { CICSPlexTree } from "./CICSPlexTree";
-import { CICSSessionTree } from "./CICSSessionTree";
-import { getDefaultDb2TransactionFilter, toEscapedCriteriaString } from "../utils/filterUtils";
-import { getIconPathInResources } from "../utils/profileUtils";
+import { CICSRegionTree } from "../CICSRegionTree";
+import { CICSPlexTree } from "../CICSPlexTree";
+import { CICSSessionTree } from "../CICSSessionTree";
+import { getIconPathInResources } from "../../utils/profileUtils";
 
 export class CICSDb2Tree extends TreeItem {
   children: CICSDb2TransactionTree[] = [];

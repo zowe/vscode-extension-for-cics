@@ -10,7 +10,7 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { CICSDb2Tree } from "../CICSDb2Tree";
+import { CICSDb2Tree } from "../Db2/CICSDb2Tree";
 import { getIconPathInResources } from "../../utils/profileUtils";
 export class CICSDb2TransactionTreeItem extends TreeItem {
   db2transaction: any;

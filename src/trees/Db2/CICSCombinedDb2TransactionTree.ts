@@ -10,15 +10,15 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
-import { CICSPlexTree } from "./CICSPlexTree";
-import { CICSTree } from "./CICSTree";
-import { ProfileManagement } from "../utils/profileManagement";
-import { ViewMore } from "./treeItems/utils/ViewMore";
-import { CICSDb2TransactionTreeItem } from "./treeItems/CICSDb2TransactionTreeItem";
-import { toEscapedCriteriaString } from "../utils/filterUtils";
-import { CICSRegionsContainer } from "./CICSRegionsContainer";
-import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
-import { getIconPathInResources } from "../utils/profileUtils";
+import { CICSPlexTree } from "../CICSPlexTree";
+import { CICSTree } from "../CICSTree";
+import { ProfileManagement } from "../../utils/profileManagement";
+import { ViewMore } from "../treeItems/utils/ViewMore";
+import { CICSDb2TransactionTreeItem } from "../treeItems/CICSDb2TransactionTreeItem";
+import { toEscapedCriteriaString } from "../../utils/filterUtils";
+import { CICSRegionsContainer } from "../CICSRegionsContainer";
+import { TextTreeItem } from "../treeItems/utils/TextTreeItem";
+import { getIconPathInResources } from "../../utils/profileUtils";
 import { CICSDb2Tree } from "./CICSDb2Tree";
 
 export class CICSCombinedDb2TransactionsTree extends TreeItem {

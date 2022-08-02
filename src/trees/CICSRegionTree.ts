@@ -12,7 +12,7 @@
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSProgramTree } from "./CICSProgramTree";
 import { CICSTransactionTree } from "./CICSTransactionTree";
-import { CICSDb2Tree } from "./CICSDb2Tree";
+import { CICSDb2Tree } from "./Db2/CICSDb2Tree";
 import { CICSLocalFileTree } from "./CICSLocalFileTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
