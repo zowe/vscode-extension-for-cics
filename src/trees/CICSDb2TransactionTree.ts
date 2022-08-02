@@ -11,7 +11,7 @@
 
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { CICSDb2TransactionTreeItem } from "./treeItems/CICSDb2TransactionTreeItem";
-import { CICSRegionTree } from "./CICSRegionTree";
+import { CICSDb2Node } from "./CICSDb2Node";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { getDefaultDb2TransactionFilter, toEscapedCriteriaString } from "../utils/filterUtils";
@@ -19,11 +19,11 @@ import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSDb2TransactionTree extends TreeItem {
   children: CICSDb2TransactionTreeItem[] = [];
-  parentRegion: CICSRegionTree;
+  parentRegion: CICSDb2Node;
   activeFilter: string | undefined = undefined;
 
   constructor(
-    parentRegion: CICSRegionTree,
+    parentRegion: CICSDb2Node,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('Db2 Transactions', TreeItemCollapsibleState.Collapsed);

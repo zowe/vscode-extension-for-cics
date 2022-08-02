@@ -11,16 +11,15 @@
 
 import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
 import { CICSPlexTree } from "./CICSPlexTree";
-import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSTree } from "./CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 import { ViewMore } from "./treeItems/utils/ViewMore";
-import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
 import { CICSDb2TransactionTreeItem } from "./treeItems/CICSDb2TransactionTreeItem";
 import { toEscapedCriteriaString } from "../utils/filterUtils";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
 import { getIconPathInResources } from "../utils/profileUtils";
+import { CICSDb2Node } from "./CICSDb2Node";
 
 export class CICSCombinedDb2TransactionsTree extends TreeItem {
   children: (CICSDb2TransactionTreeItem | ViewMore) [] | [TextTreeItem] | null;
@@ -100,10 +99,10 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
           }
         })[0];
         const parentRegion = regionsContainer.getChildren()!.filter(child => {
-          if (child instanceof CICSRegionTree) {
+          if (child instanceof CICSDb2Node) {
             return child.getRegionName() === db2Transaction.eyu_cicsname;
           }
-        })[0] as CICSRegionTree;
+        })[0] as CICSDb2Node;
         const db2TransactionTree = new CICSDb2TransactionTreeItem(db2Transaction,parentRegion, this);
         db2TransactionTree.setLabel(db2TransactionTree.label!.toString().replace(db2Transaction.name, `${db2Transaction.name} (${db2Transaction.eyu_cicsname})`));
         newChildren.push(db2TransactionTree);

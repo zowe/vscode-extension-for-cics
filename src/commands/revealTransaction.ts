@@ -45,7 +45,7 @@ export function getRevealTransactionCommand(tree: CICSTree,treeview: TreeView<an
           const regionTree: CICSRegionTree = regionsContainer.getChildren()!.filter(region => region.getRegionName() === allSelectedNodes[0].parentRegion.getRegionName())[0];
           resourceFolders = regionTree.getChildren()!;
         } else {
-          resourceFolders = allSelectedNodes[0].parentRegion.getChildren()!;
+          resourceFolders = allSelectedNodes[0].parentRegion.contextValue.includes('cicsregion') ? allSelectedNodes[0].parentRegion.getChildren()! : allSelectedNodes[0].parentRegion.parentRegion.getChildren()!;
         }
         let tranids = [];
         for (const localTaskTreeItem of allSelectedNodes) {

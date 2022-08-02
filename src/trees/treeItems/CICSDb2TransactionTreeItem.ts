@@ -10,18 +10,17 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { CICSRegionTree } from "../CICSRegionTree";
+import { CICSDb2Node } from "../CICSDb2Node";
 import { getIconPathInResources } from "../../utils/profileUtils";
-
 export class CICSDb2TransactionTreeItem extends TreeItem {
   db2transaction: any;
-  parentRegion: CICSRegionTree;
+  parentRegion: CICSDb2Node;
   directParent: any;
   db2transactionName: string;
 
   constructor(
     db2transaction: any,
-    parentRegion: CICSRegionTree,
+    parentRegion: CICSDb2Node,
     directParent: any,
     public readonly iconPath = getIconPathInResources("local-transaction-dark.svg", "local-transaction-light.svg")
   ) {
