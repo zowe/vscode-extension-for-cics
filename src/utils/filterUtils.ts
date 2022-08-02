@@ -100,6 +100,15 @@ export async function getDefaultDb2TransactionFilter() {
     return defaultCriteria;
 }
 
+export async function getDefaultDb2DefinitionFilter() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.db2definition.filter')}`;
+    if (!defaultCriteria || defaultCriteria.length === 0) {
+      await workspace.getConfiguration().update('zowe.cics.db2definition.filter', 'NAME=*');
+      defaultCriteria = 'NAME=*';
+    }
+    return defaultCriteria;
+}
+
 export async function getDefaultTaskFilter() {
     let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.tasks.filter')}`;
     if (!defaultCriteria || defaultCriteria.length === 0) {

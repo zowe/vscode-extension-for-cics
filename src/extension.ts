@@ -181,8 +181,23 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+      // Db2 Definition folder node expanded
+    } else if (node.element.contextValue.includes("cicstreedb2definition.")) {
+      window.withProgress({
+        title: 'Loading Db2 Transactions',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of DB2 transactions");
+        });
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
     // Local file folder node expanded
-    } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
+    }else if (node.element.contextValue.includes("cicstreelocalfile.")) {
       window.withProgress({
         title: 'Loading Local Files',
         location: ProgressLocation.Notification,
@@ -308,6 +323,8 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreedb2transaction.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicstreedb2definition.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
       setIconClosed(node, treeDataProv);

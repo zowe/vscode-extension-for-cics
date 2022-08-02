@@ -11,13 +11,14 @@
 
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { CICSDb2TransactionTree } from "./CICSDb2TransactionTree";
+import { CICSDb2DefinitionTree } from "./CICSDb2DefinitionTree";
 import { CICSRegionTree } from "../CICSRegionTree";
 import { CICSPlexTree } from "../CICSPlexTree";
 import { CICSSessionTree } from "../CICSSessionTree";
 import { getIconPathInResources } from "../../utils/profileUtils";
 
 export class CICSDb2Tree extends TreeItem {
-  children: CICSDb2TransactionTree[] = [];
+  children: [CICSDb2TransactionTree, CICSDb2DefinitionTree];
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
   parentPlex: CICSPlexTree | undefined;
@@ -27,30 +28,26 @@ export class CICSDb2Tree extends TreeItem {
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('Db2', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreedb2node.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactions`;
+    this.contextValue = `cicstreedb2tree.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactions`;
     this.parentRegion = parentRegion;
-    this.children = [new CICSDb2TransactionTree(this)];
+    this.children = [new CICSDb2TransactionTree(this), new CICSDb2DefinitionTree(this)];
     this.parentPlex = parentRegion.parentPlex;
     this.parentSession = parentRegion.parentSession;
 
   }
-
-  // public addDb2Transaction(program: CICSDb2TransactionTreeItem) {
-  //   this.children.push(program);
-  // }
 
   public async loadContents() {
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreedb2node.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactions`;
+    this.contextValue = `cicstreedb2tree.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreedb2node.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactions`;
+    this.contextValue = `cicstreedb2tree.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
