@@ -13,27 +13,27 @@ import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSDb2Tree } from "../Db2/CICSDb2Tree";
 import { getIconPathInResources } from "../../utils/profileUtils";
 export class CICSDb2DefinitionTreeItem extends TreeItem {
-  db2transaction: any;
+  db2definition: any;
   parentRegion: CICSDb2Tree;
   directParent: any;
   db2definitionName: string;
 
   constructor(
-    db2transaction: any,
+    db2definition: any,
     parentRegion: CICSDb2Tree,
     directParent: any,
     public readonly iconPath = getIconPathInResources("local-transaction-dark.svg", "local-transaction-light.svg")
   ) {
 
     super(
-      `${db2transaction.name}`,
+      `${db2definition.name}`,
       TreeItemCollapsibleState.None
     );
-    this.db2transaction = db2transaction;
-    this.contextValue = `cicsdb2transaction.${db2transaction.name}`;
+    this.db2definition = db2definition;
+    this.contextValue = `cicsdb2definition.${db2definition.name}`;
     this.parentRegion = parentRegion;
     this.directParent = directParent;
-    this.db2definitionName = db2transaction.name;
+    this.db2definitionName = db2definition.name;
   }
 
   public setLabel(newLabel: string) {

@@ -57,7 +57,7 @@ export class CICSDb2DefinitionTree extends TreeItem {
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
       const db2definitionArray = Array.isArray(db2definitionResponse.response.records.cicsdefinitiondb2transaction) ? db2definitionResponse.response.records.cicsdefinitiondb2transaction : [db2definitionResponse.response.records.cicsdefinitiondb2transaction];
-      this.label = `Db2 Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[${db2definitionArray.length}]`;
+      this.label = `Db2 Definition${this.activeFilter?` (${this.activeFilter}) `: " "}[${db2definitionArray.length}]`;
       for (const db2definition of db2definitionArray) {
         const newDb2DefinitionItem = new CICSDb2DefinitionTreeItem(db2definition, this.parentRegion, this);
         this.addDb2Definition(newDb2DefinitionItem);
