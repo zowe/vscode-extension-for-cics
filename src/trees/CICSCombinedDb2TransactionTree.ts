@@ -19,7 +19,7 @@ import { toEscapedCriteriaString } from "../utils/filterUtils";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
 import { getIconPathInResources } from "../utils/profileUtils";
-import { CICSDb2Node } from "./CICSDb2Node";
+import { CICSDb2Tree } from "./CICSDb2Tree";
 
 export class CICSCombinedDb2TransactionsTree extends TreeItem {
   children: (CICSDb2TransactionTreeItem | ViewMore) [] | [TextTreeItem] | null;
@@ -99,10 +99,10 @@ export class CICSCombinedDb2TransactionsTree extends TreeItem {
           }
         })[0];
         const parentRegion = regionsContainer.getChildren()!.filter(child => {
-          if (child instanceof CICSDb2Node) {
+          if (child instanceof CICSDb2Tree) {
             return child.getRegionName() === db2Transaction.eyu_cicsname;
           }
-        })[0] as CICSDb2Node;
+        })[0] as CICSDb2Tree;
         const db2TransactionTree = new CICSDb2TransactionTreeItem(db2Transaction,parentRegion, this);
         db2TransactionTree.setLabel(db2TransactionTree.label!.toString().replace(db2Transaction.name, `${db2Transaction.name} (${db2Transaction.eyu_cicsname})`));
         newChildren.push(db2TransactionTree);

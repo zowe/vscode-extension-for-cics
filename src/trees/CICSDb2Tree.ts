@@ -19,7 +19,7 @@ import { CICSSessionTree } from "./CICSSessionTree";
 import { getDefaultDb2TransactionFilter, toEscapedCriteriaString } from "../utils/filterUtils";
 import { getIconPathInResources } from "../utils/profileUtils";
 
-export class CICSDb2Node extends TreeItem {
+export class CICSDb2Tree extends TreeItem {
   children: CICSDb2TransactionTree[] = [];
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
