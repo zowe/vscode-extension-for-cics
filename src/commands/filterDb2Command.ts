@@ -69,12 +69,12 @@ export function getFilterDb2TransactionDefinitionCommand(tree: CICSTree, treevie
       }
       const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       //do it for DB2
-      const pattern = await getPatternFromFilter("Db2 Transaction", persistentStorage.getDb2TransactionSearchHistory());
+      const pattern = await getPatternFromFilter("Db2 Transaction", persistentStorage.getDb2TransactionDefinitionSearchHistory());
       if (!pattern) {
         return;
       }
       //Do it for Db2
-      await persistentStorage.addDb2TransactionSearchHistory(pattern!);
+      await persistentStorage.addDb2TransactionDefinitionSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
       window.withProgress({
         title: 'Loading Db2 Transaction Definitions',
