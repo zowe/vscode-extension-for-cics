@@ -100,8 +100,8 @@ export async function getDefaultDb2TransactionFilter() {
     return defaultCriteria;
 }
 
-export async function getDefaultDb2DefinitionFilter() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.db2definition.filter')}`;
+export async function getDefaultDb2TransactionDefinitionFilter() {
+    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.db2transactiondefinition.filter')}`;
     if (!defaultCriteria || defaultCriteria.length === 0) {
       await workspace.getConfiguration().update('zowe.cics.db2definition.filter', 'NAME=*');
       defaultCriteria = 'NAME=*';

@@ -23,6 +23,7 @@ import {
   getShowRegionAttributes,
   getShowTransactionAttributesCommand,
   getShowDb2TransactionAttributesCommand,
+  getshowDb2TransactionDefinitionAttributesCommand,
   getShowLocalFileAttributesCommand,
   getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
@@ -31,7 +32,7 @@ import { getFilterLibrariesCommand } from "./commands/filterLibrariesCommand";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
-import { getFilterDb2TransactionCommand } from "./commands/filterDb2TransactionCommand";
+import { getFilterDb2TransactionCommand, getFilterDb2TransactionDefinitionCommand } from "./commands/filterDb2Command";
 import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
 import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
@@ -181,8 +182,8 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-      // Db2 Definition folder node expanded
-    } else if (node.element.contextValue.includes("cicstreedb2definition.")) {
+      // Db2 Transaction Definitions folder node expanded
+    } else if (node.element.contextValue.includes("cicstreedb2transactiondefinition.")) {
       window.withProgress({
         title: 'Loading Db2 Transactions',
         location: ProgressLocation.Notification,
@@ -324,7 +325,7 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreedb2transaction.")) {
       setIconClosed(node, treeDataProv);
-    } else if (node.element.contextValue.includes("cicstreedb2definition.")) {
+    } else if (node.element.contextValue.includes("cicstreedb2transactiondefinition.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
       setIconClosed(node, treeDataProv);
@@ -371,6 +372,7 @@ export async function activate(context: ExtensionContext) {
     getShowLibraryDatasetsAttributesCommand(treeview),
     getShowTransactionAttributesCommand(treeview),
     getShowDb2TransactionAttributesCommand(treeview),
+    getshowDb2TransactionDefinitionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
 
@@ -378,6 +380,7 @@ export async function activate(context: ExtensionContext) {
     getFilterLibrariesCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
     getFilterDb2TransactionCommand(treeDataProv, treeview),
+    getFilterDb2TransactionDefinitionCommand(treeDataProv, treeview),
     getFilterLocalFilesCommand(treeDataProv, treeview),
     getFilterTasksCommand(treeDataProv, treeview),
     getFilterAllProgramsCommand(treeDataProv, treeview),

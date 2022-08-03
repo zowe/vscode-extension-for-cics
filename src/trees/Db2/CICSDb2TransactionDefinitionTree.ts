@@ -10,15 +10,15 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
-import { CICSDb2DefinitionTreeItem } from "../treeItems/CICSDb2DefinitionTreeItem";
+import { CICSDb2TransactionDefinitionTreeItem } from "../treeItems/CICSDb2TransactionDefinitionTreeItem";
 import { CICSDb2Tree } from "./CICSDb2Tree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
-import { getDefaultDb2DefinitionFilter, toEscapedCriteriaString } from "../../utils/filterUtils";
+import { getDefaultDb2TransactionDefinitionFilter, toEscapedCriteriaString } from "../../utils/filterUtils";
 import { getIconPathInResources } from "../../utils/profileUtils";
 
-export class CICSDb2DefinitionTree extends TreeItem {
-  children: CICSDb2DefinitionTreeItem[] = [];
+export class CICSDb2TransactionDefinitionTree extends TreeItem {
+  children: CICSDb2TransactionDefinitionTreeItem[] = [];
   parentRegion: CICSDb2Tree;
   activeFilter: string | undefined = undefined;
 
@@ -26,17 +26,17 @@ export class CICSDb2DefinitionTree extends TreeItem {
     parentRegion: CICSDb2Tree,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
-    super('Db2 Defintions', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreedb2definition.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2definitions`;
+    super('Db2 Transaction Definitions', TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreedb2transactiondefinition.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactiondefinitions`;
     this.parentRegion = parentRegion;
   }
 
-  public addDb2Definition(program: CICSDb2DefinitionTreeItem) {
+  public addDb2TransactionDefinition(program: CICSDb2TransactionDefinitionTreeItem) {
     this.children.push(program);
   }
 
   public async loadContents() {
-    let defaultCriteria = await getDefaultDb2DefinitionFilter();
+    let defaultCriteria = await getDefaultDb2TransactionDefinitionFilter();
     let criteria;
     if (this.activeFilter) {
       criteria = toEscapedCriteriaString(this.activeFilter, 'name');
@@ -48,45 +48,45 @@ export class CICSDb2DefinitionTree extends TreeItem {
 
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
-      const db2definitionResponse = await getResource(this.parentRegion.parentSession.session, {
+      const db2transactiondefinitionResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSDefinitionDb2Transaction",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: "Name=*",
+        criteria: criteria,
         parameter: "CSDGROUP(*)"
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      const db2definitionArray = Array.isArray(db2definitionResponse.response.records.cicsdefinitiondb2transaction) ? db2definitionResponse.response.records.cicsdefinitiondb2transaction : [db2definitionResponse.response.records.cicsdefinitiondb2transaction];
-      this.label = `Db2 Definition${this.activeFilter?` (${this.activeFilter}) `: " "}[${db2definitionArray.length}]`;
-      for (const db2definition of db2definitionArray) {
-        const newDb2DefinitionItem = new CICSDb2DefinitionTreeItem(db2definition, this.parentRegion, this);
-        this.addDb2Definition(newDb2DefinitionItem);
+      const db2transactiondefinitionArray = Array.isArray(db2transactiondefinitionResponse.response.records.cicsdefinitiondb2transaction) ? db2transactiondefinitionResponse.response.records.cicsdefinitiondb2transaction : [db2transactiondefinitionResponse.response.records.cicsdefinitiondb2transaction];
+      this.label = `Db2 Transaction Definitions${this.activeFilter?` (${this.activeFilter}) `: " "}[${db2transactiondefinitionArray.length}]`;
+      for (const db2transactiondefinition of db2transactiondefinitionArray) {
+        const newDb2TransactionDefinitionItem = new CICSDb2TransactionDefinitionTreeItem(db2transactiondefinition, this.parentRegion, this);
+        this.addDb2TransactionDefinition(newDb2TransactionDefinitionItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
       if (error!.mMessage!.includes('exceeded a resource limit')) {
-        window.showErrorMessage(`Resource Limit Exceeded - Set a definition filter to narrow search`);
+        window.showErrorMessage(`Resource Limit Exceeded - Set a transaction definition filter to narrow search`);
         // @ts-ignore
       } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
         window.showInformationMessage(`No Db2 definition found`);
-        this.label = `Db2Definitions${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        this.label = `Db2 Transaction Definitions${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching db2 definition - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(`Something went wrong when fetching db2 transaction definition - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
     }
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreedb2definition.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2definitions`;
+    this.contextValue = `cicstreedb2transactiondefinition.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactiondefinitions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreedb2definition.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2definitions`;
+    this.contextValue = `cicstreedb2transactiondefinition.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactiondefinitions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 

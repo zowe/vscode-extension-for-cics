@@ -18,6 +18,7 @@ import { CICSTransactionTree } from "../trees/CICSTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
 import { CICSDb2TransactionTreeItem } from "../trees/treeItems/CICSDb2TransactionTreeItem";
+import { CICSDb2TransactionDefinitionTreeItem } from "../trees/treeItems/CICSDb2TransactionDefinitionTreeItem";
 import { findSelectedNodes } from "../utils/commandUtils";
 
 /**
@@ -28,10 +29,18 @@ export function getRevealTransactionCommand(tree: CICSTree,treeview: TreeView<an
       "cics-extension-for-zowe.revealTransaction",
       async (node) => {
         let allSelectedNodes:any = [];
-        if(node instanceof  CICSTaskTreeItem){
-          allSelectedNodes = findSelectedNodes(treeview, CICSTaskTreeItem, node) as CICSTaskTreeItem[];
-        } else if(node instanceof  CICSDb2TransactionTreeItem){
-          allSelectedNodes = findSelectedNodes(treeview, CICSDb2TransactionTreeItem, node) as CICSDb2TransactionTreeItem[];
+        switch(node.contextValue.substring(0, node.contextValue.indexOf('.'))){
+          case 'cicsdefinitiondb2transaction': {
+            allSelectedNodes = findSelectedNodes(treeview, CICSDb2TransactionDefinitionTreeItem, node) as CICSDb2TransactionDefinitionTreeItem[];
+            break;
+          }
+          case 'cicsdb2transaction': {
+            allSelectedNodes = findSelectedNodes(treeview, CICSDb2TransactionTreeItem, node) as CICSDb2TransactionTreeItem[];
+            break;
+          }
+          default: {
+            allSelectedNodes = findSelectedNodes(treeview, CICSTaskTreeItem, node) as CICSTaskTreeItem[];
+          }
         }
         if (!allSelectedNodes || !allSelectedNodes.length) {
           window.showErrorMessage("No CICS Task selected");
@@ -48,13 +57,21 @@ export function getRevealTransactionCommand(tree: CICSTree,treeview: TreeView<an
           resourceFolders = allSelectedNodes[0].parentRegion.contextValue.includes('cicsregion') ? allSelectedNodes[0].parentRegion.getChildren()! : allSelectedNodes[0].parentRegion.parentRegion.getChildren()!;
         }
         let tranids = [];
-        for (const localTaskTreeItem of allSelectedNodes) {
-            const selectedItem = localTaskTreeItem.task ? localTaskTreeItem.task: localTaskTreeItem.db2transaction;
-            if(node instanceof  CICSTaskTreeItem){
-              tranids.push(selectedItem["tranid"]);
-            } else if(node instanceof  CICSDb2TransactionTreeItem){
-              tranids.push(selectedItem["transid"]);
-            }
+        for (const item of allSelectedNodes) {
+
+        switch(item.contextValue.substring(0, item.contextValue.indexOf('.'))){
+          case 'cicsdefinitiondb2transaction': {
+            tranids.push(item.db2definition["transid"]);
+            break;
+          }
+          case 'cicsdb2transaction': {
+            tranids.push(item.db2transaction["transid"]);
+            break;
+          }
+          default: {
+            tranids.push(item.task["tranid"]);
+          }
+        }
         }
         // Comma separated filter
         const pattern = tranids.join(", ");

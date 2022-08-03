@@ -12,7 +12,7 @@
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSDb2Tree } from "../Db2/CICSDb2Tree";
 import { getIconPathInResources } from "../../utils/profileUtils";
-export class CICSDb2DefinitionTreeItem extends TreeItem {
+export class CICSDb2TransactionDefinitionTreeItem extends TreeItem {
   db2definition: any;
   parentRegion: CICSDb2Tree;
   directParent: any;
@@ -30,7 +30,7 @@ export class CICSDb2DefinitionTreeItem extends TreeItem {
       TreeItemCollapsibleState.None
     );
     this.db2definition = db2definition;
-    this.contextValue = `cicsdb2definition.${db2definition.name}`;
+    this.contextValue = `cicsdefinitiondb2transaction.${db2definition.name}`;
     this.parentRegion = parentRegion;
     this.directParent = directParent;
     this.db2definitionName = db2definition.name;

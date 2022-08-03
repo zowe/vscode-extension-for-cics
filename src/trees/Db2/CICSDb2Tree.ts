@@ -11,14 +11,14 @@
 
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { CICSDb2TransactionTree } from "./CICSDb2TransactionTree";
-import { CICSDb2DefinitionTree } from "./CICSDb2DefinitionTree";
+import { CICSDb2TransactionDefinitionTree } from "./CICSDb2TransactionDefinitionTree";
 import { CICSRegionTree } from "../CICSRegionTree";
 import { CICSPlexTree } from "../CICSPlexTree";
 import { CICSSessionTree } from "../CICSSessionTree";
 import { getIconPathInResources } from "../../utils/profileUtils";
 
 export class CICSDb2Tree extends TreeItem {
-  children: [CICSDb2TransactionTree, CICSDb2DefinitionTree];
+  children: [CICSDb2TransactionTree, CICSDb2TransactionDefinitionTree];
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
   parentPlex: CICSPlexTree | undefined;
@@ -30,7 +30,7 @@ export class CICSDb2Tree extends TreeItem {
     super('Db2', TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreedb2tree.${this.activeFilter ? 'filtered' : 'unfiltered'}.db2transactions`;
     this.parentRegion = parentRegion;
-    this.children = [new CICSDb2TransactionTree(this), new CICSDb2DefinitionTree(this)];
+    this.children = [new CICSDb2TransactionTree(this), new CICSDb2TransactionDefinitionTree(this)];
     this.parentPlex = parentRegion.parentPlex;
     this.parentSession = parentRegion.parentSession;
 
