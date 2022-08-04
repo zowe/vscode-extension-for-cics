@@ -59,11 +59,11 @@ import { regionContainerExpansionHandler } from "./utils/expansionHandler";
 import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
 import { CredentialManagerFactory, Logger } from "@zowe/imperative";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
-import { getRevealTransactionCommand } from "./commands/revealTransaction";
+import { getInquireTransactionCommand } from "./commands/inquireTransaction";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
 import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
 import { getFilterTasksCommand } from "./commands/filterTasksCommand";
-import { getRevealProgramCommand } from "./commands/revealProgram";
+import { getInquireProgramCommand } from "./commands/inquireProgram";
 
 /**
  * Initialises extension
@@ -346,8 +346,8 @@ export async function activate(context: ExtensionContext) {
     
     viewMoreCommand(treeDataProv, treeview),
 
-    getRevealTransactionCommand(treeDataProv, treeview),
-    getRevealProgramCommand(treeDataProv, treeview)
+    getInquireTransactionCommand(treeDataProv, treeview),
+    getInquireProgramCommand(treeDataProv, treeview)
   );
 }
 
