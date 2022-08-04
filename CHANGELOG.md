@@ -14,6 +14,7 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Updated the `Show Attributes` table to resize column width to fit into the view [#234](https://github.com/zowe/vscode-extension-for-cics/pull/234).
 - Updated the `Show Attributes` table to consistently show uppercase values for headings [#239](https://github.com/zowe/vscode-extension-for-cics/pull/239).
 - Adding the 'Show SIT Attribute' option for Regions and Added filter on Name and Source Columns [#277](https://github.com/zowe/vscode-extension-for-cics/pull/277).
+- Renamed 'Reveal Tansaction' and 'Reveal Program' to 'Inquire Tansaction' and 'Inquire Program'[#281](https://github.com/zowe/vscode-extension-for-cics/pull/281).
 
 ## `2.0.0`
 - **Major**: Introduced the ability to access Team Profiles.
