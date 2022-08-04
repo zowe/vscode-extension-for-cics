@@ -70,7 +70,7 @@ export class CICSDb2TransactionDefinitionTree extends TreeItem {
         window.showErrorMessage(`Resource Limit Exceeded - Set a transaction definition filter to narrow search`);
         // @ts-ignore
       } else if (error!.mMessage!.split(" ").join("").includes('recordcount:0')) {
-        window.showInformationMessage(`No Db2 definition found`);
+        window.showInformationMessage(`No Db2 transaction definition found`);
         this.label = `Db2 Transaction Definitions${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
         window.showErrorMessage(`Something went wrong when fetching db2 transaction definition - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
