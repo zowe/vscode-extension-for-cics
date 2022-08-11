@@ -40,8 +40,6 @@ import { getDeleteSessionCommand } from "./commands/deleteSessionCommand";
 import { getDisableTransactionCommand } from "./commands/disableTransactionCommand";
 import { getEnableTransactionCommand } from "./commands/enableTransactionCommand";
 import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
-import { getEnableLibraryCommand } from "./commands/enableLibraryCommand";
-import { getDisableLibraryCommand } from "./commands/disableLibraryCommand";
 import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
 import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
@@ -309,8 +307,6 @@ export async function activate(context: ExtensionContext) {
     getDisableTransactionCommand(treeDataProv, treeview),
     getEnableLocalFileCommand(treeDataProv, treeview),
     getDisableLocalFileCommand(treeDataProv, treeview),
-    getEnableLibraryCommand(treeDataProv, treeview),
-    getDisableLibraryCommand(treeDataProv, treeview),
 
     getCloseLocalFileCommand(treeDataProv, treeview),
     getOpenLocalFileCommand(treeDataProv, treeview),
