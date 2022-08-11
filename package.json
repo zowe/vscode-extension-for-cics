@@ -223,6 +223,11 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
+        "command": "cics-extension-for-zowe.showRegionParameters",
+        "title": "Show SIT Parameters",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
         "command": "cics-extension-for-zowe.enableProgram",
         "title": "Enable Program",
         "category": "Zowe Explorer for IBM CICS"
@@ -292,13 +297,13 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
-        "command": "cics-extension-for-zowe.revealTransaction",
-        "title": "Reveal Transaction",
+        "command": "cics-extension-for-zowe.inquireTransaction",
+        "title": "Inquire Transaction",
         "category": "Zowe Explorer for IBM CICS"
       },
       {
-        "command": "cics-extension-for-zowe.revealProgram",
-        "title": "Reveal Program",
+        "command": "cics-extension-for-zowe.inquireProgram",
+        "title": "Inquire Program",
         "category": "Zowe Explorer for IBM CICS"
       },
       {
@@ -344,6 +349,11 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicsregion\\./",
           "command": "cics-extension-for-zowe.showRegionAttributes",
+          "group": ""
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsregion\\./",
+          "command": "cics-extension-for-zowe.showRegionParameters",
           "group": ""
         },
         {
@@ -523,13 +533,13 @@
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstask.*/",
-          "command": "cics-extension-for-zowe.revealTransaction",
-          "group": "001_zowecics_reveal@0"
+          "command": "cics-extension-for-zowe.inquireTransaction",
+          "group": "001_zowecics_inquire@0"
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstransaction.*/",
-          "command": "cics-extension-for-zowe.revealProgram",
-          "group": "001_zowecics_reveal@0"
+          "command": "cics-extension-for-zowe.inquireProgram",
+          "group": "001_zowecics_inquire@0"
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstask.*/",

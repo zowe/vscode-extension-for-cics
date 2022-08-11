@@ -25,6 +25,7 @@ import {
   getShowLocalFileAttributesCommand,
   getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
+import { getShowRegionSITParametersCommand} from "./commands/showParameterCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
 import { getFilterLibrariesCommand } from "./commands/filterLibrariesCommand";
 import { ProfileManagement } from "./utils/profileManagement";
@@ -56,11 +57,11 @@ import { regionContainerExpansionHandler } from "./utils/expansionHandler";
 import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
 import { CredentialManagerFactory, Logger } from "@zowe/imperative";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
-import { getRevealTransactionCommand } from "./commands/revealTransaction";
+import { getInquireTransactionCommand } from "./commands/inquireTransaction";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
 import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
 import { getFilterTasksCommand } from "./commands/filterTasksCommand";
-import { getRevealProgramCommand } from "./commands/revealProgram";
+import { getInquireProgramCommand } from "./commands/inquireProgram";
 
 /**
  * Initialises extension
@@ -321,6 +322,8 @@ export async function activate(context: ExtensionContext) {
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
 
+    getShowRegionSITParametersCommand(treeview),
+    
     getFilterProgramsCommand(treeDataProv, treeview),
     getFilterLibrariesCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
@@ -339,8 +342,8 @@ export async function activate(context: ExtensionContext) {
     
     viewMoreCommand(treeDataProv, treeview),
 
-    getRevealTransactionCommand(treeDataProv, treeview),
-    getRevealProgramCommand(treeDataProv, treeview)
+    getInquireTransactionCommand(treeDataProv, treeview),
+    getInquireProgramCommand(treeDataProv, treeview)
   );
 }
 

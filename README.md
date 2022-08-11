@@ -25,7 +25,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
     - [New Copy and Phase In](#new-copy-and-phase-in)
     - [Open and Close Local Files](#open-and-close-local-files)
     - [Purge Task](#purge-task)
-    - [Reveal Functionality](#reveal-functionality)
+    - [Inquire Functionality](#inquire-functionality)
 - [Untrusted TLS Certificates](#untrusted-tls-certificates)
 - [Usage Tips](#usage-tips)
 - [Providing feedback or help contributing](#providing-feedback-or-help-contributing)
@@ -290,14 +290,14 @@ Select the appropriate condition to perform the purge.
 <img src="./docs/images/purge-task.gif" alt="Zowe CICS Explorer Purge Task" width="600px"/> 
 </p>
 
-### Reveal Functionality
+### Inquire Functionality
 
-Right-click against a Task and perform the `Reveal Transaction` command. This will reveal the associated Local Transaction (i.e. the transaction with the name that matches the `tranid` attribute of the selected Task) under the Local Transactions folder.
+Right-click against a Task and perform the `Inquire Transaction` command. This will inquire the associated Local Transaction (i.e. the transaction with the name that matches the `tranid` attribute of the selected Task) under the Local Transactions folder.
 
-The same can be done on a Local Transaction to find the associated Program by executing the `Reveal Program` right-click menu action against a Local Transaction.
+The same can be done on a Local Transaction to find the associated Program by executing the `Inquire Program` right-click menu action against a Local Transaction.
 
 <p align="center">
-<img src="./docs/images/reveal.gif" alt="Zowe CICS Explorer Reveal functionality" width="600px"/> 
+<img src="./docs/images/inquire.gif" alt="Zowe CICS Explorer Inquire functionality" width="600px"/> 
 </p>
 
 ## Untrusted TLS Certificates
