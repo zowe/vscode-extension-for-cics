@@ -26,6 +26,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
     - [Open and Close Local Files](#open-and-close-local-files)
     - [Purge Task](#purge-task)
     - [Inquire Functionality](#inquire-functionality)
+    - [View Datasets under Libraries](#view-datasets-under-libraries)
 - [Untrusted TLS Certificates](#untrusted-tls-certificates)
 - [Usage Tips](#usage-tips)
 - [Providing feedback or help contributing](#providing-feedback-or-help-contributing)
@@ -298,6 +299,14 @@ The same can be done on a Local Transaction to find the associated Program by ex
 
 <p align="center">
 <img src="./docs/images/inquire.gif" alt="Zowe CICS Explorer Inquire functionality" width="600px"/> 
+</p>
+
+### View Datasets under Libraries
+
+Expand the libraries of a region to view specific datasets belonging to a library. Right-click on libraries to `Show Attributes` to view library attributes. Similarly, right-click on datasets to `Show Attributes` to view dataset attributes.
+
+<p align="center">
+<img src="./docs/images/datasets.gif" alt="Zowe CICS Explorer View Datasets functionality" width="600px"/> 
 </p>
 
 ## Untrusted TLS Certificates
