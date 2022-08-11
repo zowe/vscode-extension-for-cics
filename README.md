@@ -303,7 +303,7 @@ The same can be done on a Local Transaction to find the associated Program by ex
 
 ### View Datasets under Libraries
 
-Expand the libraries of a region to view specific datasets belonging to a library. Right-click on libraries to `Show Attributes` to view library attributes. Similarly, right-click on datasets to `Show Attributes` to view dataset attributes.
+Expand libraries of a region to view specific datasets belonging to a library. Right-click on libraries to `Show Attributes` to view library attributes. Similarly, right-click on datasets to `Show Attributes` to view dataset attributes.
 
 <p align="center">
 <img src="./docs/images/datasets.gif" alt="Zowe CICS Explorer View Datasets functionality" width="600px"/> 
