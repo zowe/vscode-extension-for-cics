@@ -30,14 +30,14 @@ export class CICSLibraryTreeItem extends TreeItem {
   ) {
 
     super(
-      `${library.name} ${library.enablestatus.toLowerCase() === "disabled" ? "(Disabled)" : ""}`,
+      `${library.name}`,
       TreeItemCollapsibleState.Collapsed
     );
 
     this.library = library;
     this.parentRegion = parentRegion;
     this.directParent = directParent;
-    this.contextValue = `cicslibrary.${library.enablestatus.toLowerCase()}.${library.name}`;
+    this.contextValue = `cicslibrary.${library.name}`;
   }
 
   public setLabel(newLabel: string) {
@@ -66,7 +66,7 @@ export class CICSLibraryTreeItem extends TreeItem {
       }); 
       https.globalAgent.options.rejectUnauthorized = undefined;
       const datasetArray = Array.isArray(libraryResponse.response.records.cicslibrarydatasetname) ? libraryResponse.response.records.cicslibrarydatasetname : [libraryResponse.response.records.cicslibrarydatasetname];
-      this.label = `${this.library.name} [${datasetArray.length}]${this.parentRegion.parentPlex ? ` (${this.library.eyu_cicsname})` : ""} ${this.library.enablestatus.toLowerCase() === "disabled" ? "(Disabled)" : ""}`;
+      this.label = `${this.library.name} [${datasetArray.length}]${this.parentRegion.parentPlex ? ` (${this.library.eyu_cicsname})` : ""}`;
       for (const dataset of datasetArray) {
         const newDatasetItem = new CICSLibraryDatasets(dataset, this.parentRegion, this); //this=CICSLibraryTreeItem
         this.addDataset(newDatasetItem);

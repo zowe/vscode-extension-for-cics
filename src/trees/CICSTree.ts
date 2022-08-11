@@ -10,7 +10,7 @@
 */
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
-import { IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
+import { BaseAuthHandler, IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
 import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, TreeItemCollapsibleState, WebviewPanel, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { InfoLoaded, ProfileManagement } from "../utils/profileManagement";
@@ -203,7 +203,7 @@ export class CICSTree
                     // No plex
                     if (item.plexname === null) {
                         const session = new Session({
-                            //type: "basic",
+                            type: "basic",
                             hostname: profile.profile!.host,
                             port: Number(profile.profile!.port),
                             user: profile.profile!.user,

@@ -258,11 +258,6 @@
         "category": "Zowe Explorer for IBM CICS"
       },
       {
-        "command": "cics-extension-for-zowe.enableLibrary",
-        "title": "Enable Library",
-        "category": "Zowe Explorer for IBM CICS"
-      },
-      {
         "command": "cics-extension-for-zowe.disableLibrary",
         "title": "Disable Library",
         "category": "Zowe Explorer for IBM CICS"
@@ -487,16 +482,6 @@
           "group": ""
         },
         {
-          "when": "view == cics-view && viewItem =~ /^cicslibrary.disabled.*/",
-          "command": "cics-extension-for-zowe.enableLibrary",
-          "group": ""
-        },
-        {
-          "when": "view == cics-view && viewItem =~ /^cicslibrary.enabled.*/",
-          "command": "cics-extension-for-zowe.disableLibrary",
-          "group": ""
-        },
-        {
           "when": "view == cics-view && viewItem =~ /^cicstransaction.disabled.*/",
           "command": "cics-extension-for-zowe.enableTransaction",
           "group": "000_zowecics_main@1"
@@ -602,6 +587,12 @@
           "description": "Default filter criteria for Tasks",
           "scope": "window"
         },
+        "zowe.cics.library.filter": {
+          "type": "string",
+          "default": "(NAME=*)",
+          "description": "Default filter criteria for Library",
+          "scope": "window"
+        },
         "zowe.cics.allPrograms.recordCountIncrement": {
           "type": "number",
           "default": 500,
@@ -640,6 +631,14 @@
       }
     }
   },
+  "resolutions": {
+    "**/ansi-regex": "^5.0.1",
+    "**/log4js": "6.4.6",
+    "**/glob-parent": "^5.1.2",
+    "**/minimist": "^1.2.6",
+    "**/moment": "^2.29.4",
+    "**/tar": "^6.1.9"
+  },
   "scripts": {
     "vscode:prepublish": "npm run build",
     "build": "run-script-os",
@@ -668,9 +667,9 @@
   "dependencies": {
     "@types/axios": "^0.14.0",
     "@zowe/cics-for-zowe-cli": "^5.0.0",
-    "@zowe/cli": "^7.0.1",
-    "@zowe/imperative": "^5.0.1",
-    "@zowe/zowe-explorer-api": "^2.0.3",
+    "@zowe/cli": "7.2.3",
+    "@zowe/imperative": "5.3.3",
+    "@zowe/zowe-explorer-api": "2.2.1",
     "axios": "^0.21.4",
     "https": "^1.0.0",
     "run-script-os": "^1.1.6",

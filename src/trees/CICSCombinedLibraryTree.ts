@@ -41,7 +41,7 @@ export class CICSCombinedLibraryTree extends TreeItem {
     this.activeFilter = undefined;
     this.currentCount = 0;
     this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allLibraries.recordCountIncrement')}`;
-    this.constant = CicsCmciConstants.CICS_LIBRARY_RESOURCE;
+    this.constant = "CICSLibrary";
     }
 
     public async loadContents(tree: CICSTree){

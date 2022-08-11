@@ -73,7 +73,7 @@ export class CICSTaskTree extends TreeItem {
       https.globalAgent.options.rejectUnauthorized = undefined;
       if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a task filter to narrow search`);
-      } else if ((error as any).mMessage!.split(" ").join("").includes('recordcount:0')) {
+      } else if ((this.children.length == 0)) {
         window.showInformationMessage(`No tasks found`);
         this.label = `Tasks${this.activeTransactionFilter?` (${this.activeTransactionFilter}) `: " "}[0]`;
       } else {
