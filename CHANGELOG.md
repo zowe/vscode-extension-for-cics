@@ -2,6 +2,20 @@
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
+## `2.2.0`
+- Added the ability to carry user input in the subsequent search filter for all resources [#258](https://github.com/zowe/vscode-extension-for-cics/pull/258).
+- Added a new CICS Library resource type [#260](https://github.com/zowe/vscode-extension-for-cics/pull/260).
+- Provided the ability to right-click on `Show Attributes` command on libraries to view library attributes [#260](https://github.com/zowe/vscode-extension-for-cics/pull/260).
+- Provided the ability to expand libraries to showcase datasets belonging to libraries [#274](https://github.com/zowe/vscode-extension-for-cics/pull/274).
+- Provided the ability to right-click on `Show Attributes` command on datasets to view dataset attributes [#260](https://github.com/zowe/vscode-extension-for-cics/pull/274).
+- Implemented search filter functionality to filter specific libraries in stand-alone regions and in CICSplex systems [#284](https://github.com/zowe/vscode-extension-for-cics/pull/284).
+- Fixed an issue relating to filter searches for all resources which provided incorrect results for applied filters that held a value of 0 in return [#284](https://github.com/zowe/vscode-extension-for-cics/pull/284).
+- Fixed an issue where a connection to a single region with SEC=YES configured for SMSS with basicAuthentication on the TCP/IP service returned an error; no data was being displayed [#284](https://github.com/zowe/vscode-extension-for-cics/pull/284).
+- Provided a default filter for the CICS Tasks and CICS Library resources [#263](https://github.com/zowe/vscode-extension-for-cics/pull/263) & [#284](https://github.com/zowe/vscode-extension-for-cics/pull/284).
+- Fixed an issue that caused the Attribute heading (on the display page associated with the `Show Attributes` command) to disappear after scrolling down [#269](https://github.com/zowe/vscode-extension-for-cics/pull/269).
+- Added the `Show SIT Attribute` option for Regions and Added filter on Name and Source Columns [#277](https://github.com/zowe/vscode-extension-for-cics/pull/277).
+- Renamed `Reveal Tansaction` and `Reveal Program` to `Inquire Tansaction` and `Inquire Program` for better user clarity [#281](https://github.com/zowe/vscode-extension-for-cics/pull/281).
+
 ## `2.1.0`
 - Added a the ability to view CICS Tasks [#224](https://github.com/zowe/vscode-extension-for-cics/pull/224).
 - Added right-click menu action to reveal the associated program from a transaction [#240](https://github.com/zowe/vscode-extension-for-cics/pull/240).
@@ -13,8 +27,6 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Updated the troubleshooting guide with a V2 schema error [#241](https://github.com/zowe/vscode-extension-for-cics/pull/241).
 - Updated the `Show Attributes` table to resize column width to fit into the view [#234](https://github.com/zowe/vscode-extension-for-cics/pull/234).
 - Updated the `Show Attributes` table to consistently show uppercase values for headings [#239](https://github.com/zowe/vscode-extension-for-cics/pull/239).
-- Adding the 'Show SIT Attribute' option for Regions and Added filter on Name and Source Columns [#277](https://github.com/zowe/vscode-extension-for-cics/pull/277).
-- Renamed 'Reveal Tansaction' and 'Reveal Program' to 'Inquire Tansaction' and 'Inquire Program'[#281](https://github.com/zowe/vscode-extension-for-cics/pull/281).
 
 ## `2.0.0`
 - **Major**: Introduced the ability to access Team Profiles.
