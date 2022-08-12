@@ -24,7 +24,7 @@ export class CICSLibraryDatasets extends TreeItem {
     dataset: any,
     parentRegion: any,
     directParent: CICSLibraryTreeItem,
-    public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
+    public readonly iconPath = getIconPathInResources("library-dark.svg", "library-light.svg")
   ) {
 
     super(
