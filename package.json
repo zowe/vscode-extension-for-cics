@@ -2,7 +2,7 @@
   "name": "cics-extension-for-zowe",
   "displayName": "Zowe Explorer for IBM CICS",
   "description": "Extension to the Zowe Explorer for IBM CICS",
-  "publisher": "6skcoqp5aqil6bwnegshbt7nkymbyfbvobpfmm5gqorytucfm5vq",
+  "publisher": "Zowe",
   "repository": {
     "url": "https://github.com/zowe/vscode-extension-for-cics"
   },
