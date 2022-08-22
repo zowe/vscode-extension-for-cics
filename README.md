@@ -49,7 +49,7 @@ Ensure that you meet the following prerequisites before you use the extension:
 - Work with multiple regions containing programs, local transactions and local files within a plex in a comprehensible tree-like format.
 - Perform actions such as `Enable`, `Disable`, `New Copy` and `Phase In` directly from the UI.
 - Perform additional actions on local files including `Open` and `Close` directly from the UI.
-- Perform a `Purge` on Tasks with the option to select from a `Purge`, `Force Purge` or `Kill`.
+- Perform a `Purge` on Tasks with the option to select from a `Purge` or `Force Purge`.
 - View and search attributes of resources and regions by right-clicking and using the dynamic filtering feature.
 - Create new CICS profiles, update session details, and delete profiles using the user-friendly interface.
 - Apply multiple filters to regions, programs, local transactions local files and/or tasks.
@@ -283,7 +283,7 @@ To close a local file, right-click against an open local file and perform the `C
 
 ### Purge Task
 
-Right-click against a task and click the `Purge Task` command. This will open a prompt asking whether to perform a `Purge`, `Force Purge` or `Kill`.
+Right-click against a task and click the `Purge Task` command. This will open a prompt asking whether to perform a `Purge` or `Force Purge`.
 
 Select the appropriate condition to perform the purge.
 
