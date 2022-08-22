@@ -42,7 +42,7 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
       let parentRegions: CICSRegionTree[] = [];
       let purgeType = await window.showInformationMessage(
         `Choose one of the following options for Purge`,
-        ...["Purge", "Force Purge", "Kill"]);
+        ...["Purge", "Force Purge"]);
       if (purgeType){
         purgeType =  purgeType.replace(" ","").toUpperCase();
 
