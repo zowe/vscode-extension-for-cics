@@ -27,7 +27,9 @@ import {
 } from "./commands/showAttributesCommand";
 import { getShowRegionSITParametersCommand} from "./commands/showParameterCommand";
 import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
+import { getFilterDatasetProgramsCommand } from "./commands/filterProgramsCommand";
 import { getFilterLibrariesCommand } from "./commands/filterLibrariesCommand";
+import {getFilterDatasetsCommand} from "./commands/filterDatasetsCommand";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
 import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
@@ -216,6 +218,18 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+    // Dataset node expanded 
+    } else if (node.element.contextValue.includes("cicsdatasets.")) {
+      window.withProgress({
+        title: 'Loading Programs',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async () => {
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
     // All programs folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       // Children only loaded if filter has been applied
@@ -325,7 +339,9 @@ export async function activate(context: ExtensionContext) {
     getShowRegionSITParametersCommand(treeview),
     
     getFilterProgramsCommand(treeDataProv, treeview),
+    getFilterDatasetProgramsCommand(treeDataProv, treeview),
     getFilterLibrariesCommand(treeDataProv, treeview),
+    getFilterDatasetsCommand(treeDataProv, treeview),
     getFilterTransactionCommand(treeDataProv, treeview),
     getFilterLocalFilesCommand(treeDataProv, treeview),
     getFilterTasksCommand(treeDataProv, treeview),

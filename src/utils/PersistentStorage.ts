@@ -15,6 +15,7 @@ export class PersistentStorage {
     public schema: string;
     private static readonly programSearchHistory: string = "programSearchHistory";
     private static readonly librarySearchHistory: string = "librarySearchHistory";
+    private static readonly datasetSearchHistory: string = "datasetSearchHistory";
     private static readonly transactionSearchHistory: string = "transactionSearchHistory";
     private static readonly localFileSearchHistory: string = "localFileSearchHistory";
     private static readonly regionSearchHistory: string = "regionSearchHistory";
@@ -23,6 +24,7 @@ export class PersistentStorage {
 
     private mProgramSearchHistory: string[] = [];
     private mLibrarySearchHistory: string[] = [];
+    private mDatasetSearchHistory: string[] = [];
     private mTransactionSearchHistory: string[] = [];
     private mLocalFileSearchHistory: string[] = [];
     private mRegionSearchHistory: string[] = [];
@@ -38,6 +40,7 @@ export class PersistentStorage {
     private async init() {
         let programSearchHistoryLines: string[] | undefined;
         let librarySearchHistoryLines: string[] | undefined;  
+        let datasetSearchHistoryLines: string[] | undefined; 
         let transactionSearchHistoryLines: string[] | undefined;
         let localFileSearchHistoryLines: string[] | undefined;
         let regionSearchHistoryLines: string[] | undefined;
@@ -46,6 +49,7 @@ export class PersistentStorage {
         if (workspace.getConfiguration(this.schema)) {
             programSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.programSearchHistory);
             librarySearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.librarySearchHistory);
+            datasetSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.datasetSearchHistory);
             transactionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.transactionSearchHistory);
             localFileSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.localFileSearchHistory);
             regionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.regionSearchHistory);
@@ -60,6 +64,11 @@ export class PersistentStorage {
             this.mLibrarySearchHistory = librarySearchHistoryLines;
         } else {
             await this.resetLibrarySearchHistory();
+        }
+        if (datasetSearchHistoryLines) {
+            this.mDatasetSearchHistory = datasetSearchHistoryLines;
+        } else {
+            await this.resetDatasetSearchHistory();
         }
         if (transactionSearchHistoryLines) {
             this.mTransactionSearchHistory = transactionSearchHistoryLines;
@@ -91,6 +100,9 @@ export class PersistentStorage {
     public getLibrarySearchHistory(): string[] {
         return this.mLibrarySearchHistory;
     }
+    public getDatasetSearchHistory(): string[] {
+        return this.mDatasetSearchHistory;
+    }
     public getTransactionSearchHistory(): string[] {
         return this.mTransactionSearchHistory;
     }
@@ -113,6 +125,10 @@ export class PersistentStorage {
     public async resetLibrarySearchHistory() {
         this.mLibrarySearchHistory = [];
         await this.updateLibrarySearchHistory();
+    }
+    public async resetDatasetSearchHistory() {
+        this.mDatasetSearchHistory = [];
+        await this.updateDatasetSearchHistory();
     }
     public async resetTransactionSearchHistory() {
         this.mTransactionSearchHistory = [];
@@ -144,6 +160,13 @@ export class PersistentStorage {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
             settings[PersistentStorage.librarySearchHistory] = this.mLibrarySearchHistory;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+    private async updateDatasetSearchHistory() {
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if (settings.persistence) {
+            settings[PersistentStorage.datasetSearchHistory] = this.mDatasetSearchHistory;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
@@ -205,6 +228,21 @@ export class PersistentStorage {
                 this.mLibrarySearchHistory.pop();
             }
             await this.updateLibrarySearchHistory();
+        }
+    }
+
+    public async addDatasetSearchHistory(criteria: string) {
+        if (criteria) {
+            this.mDatasetSearchHistory = this.mDatasetSearchHistory.filter((element) => {
+                return element.trim() !== criteria.trim();
+            });
+
+            this.mDatasetSearchHistory.unshift(criteria);
+
+            if (this.mDatasetSearchHistory.length > 10) {
+                this.mDatasetSearchHistory.pop();
+            }
+            await this.updateDatasetSearchHistory();
         }
     }
 

@@ -15,12 +15,15 @@ import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { getIconPathInResources } from "../../utils/profileUtils";
 import { CICSLibraryDatasets } from "./CICSLibraryDatasets";
+import { toEscapedCriteriaString } from "../../utils/filterUtils";
+import { systemDefaultPlatform } from "vscode-test/out/util";
 
 export class CICSLibraryTreeItem extends TreeItem {
   children: CICSLibraryDatasets[] = [];
   library: any;
   parentRegion: CICSRegionTree;
   directParent: any;
+  activeFilter: string | undefined = undefined;
 
   constructor(
     library: any,
@@ -37,7 +40,7 @@ export class CICSLibraryTreeItem extends TreeItem {
     this.library = library;
     this.parentRegion = parentRegion;
     this.directParent = directParent;
-    this.contextValue = `cicslibrary.${library.name}`;
+    this.contextValue = `cicslibrary.${this.activeFilter ? 'filtered' : 'unfiltered'}${library.name}`;
   }
 
   public setLabel(newLabel: string) {
@@ -49,10 +52,15 @@ export class CICSLibraryTreeItem extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = '(library=' + this.library.name + ')';
+    let defaultCriteria = '(DSNAME=*)';
     let criteria;
+
+    if (this.activeFilter) {
+      criteria = toEscapedCriteriaString(this.activeFilter, 'DSNAME');
+    } else {
+      criteria = defaultCriteria;
+    }
     
-    criteria = defaultCriteria;
     this.children = [];
     try {
 
@@ -66,7 +74,7 @@ export class CICSLibraryTreeItem extends TreeItem {
       }); 
       https.globalAgent.options.rejectUnauthorized = undefined;
       const datasetArray = Array.isArray(libraryResponse.response.records.cicslibrarydatasetname) ? libraryResponse.response.records.cicslibrarydatasetname : [libraryResponse.response.records.cicslibrarydatasetname];
-      this.label = `${this.library.name} [${datasetArray.length}]${this.parentRegion.parentPlex ? ` (${this.library.eyu_cicsname})` : ""}`;
+      this.label = `${this.library.name}${this.parentRegion.parentPlex ? ` (${this.library.eyu_cicsname})` : ""}${this.activeFilter?` (${this.activeFilter}) `: " "}[${datasetArray.length}]`;
       for (const dataset of datasetArray) {
         const newDatasetItem = new CICSLibraryDatasets(dataset, this.parentRegion, this); //this=CICSLibraryTreeItem
         this.addDataset(newDatasetItem);
@@ -76,12 +84,29 @@ export class CICSLibraryTreeItem extends TreeItem {
       https.globalAgent.options.rejectUnauthorized = undefined;
       if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a datasets filter to narrow search`);
-      } else if ((error as any).mMessage!.split(" ").join("").includes('recordcount:0')) {
+      } else if (this.children.length == 0) {
         window.showInformationMessage(`No datasets found`);
+        this.label = `${this.library.name}${this.parentRegion.parentPlex ? ` (${this.library.eyu_cicsname})` : ""}${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
         window.showErrorMessage(`Something went wrong when fetching datasets - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
     }
+  }
+
+  public clearFilter() {
+    this.activeFilter = undefined;
+    this.contextValue = `cicslibrary.${this.activeFilter ? 'filtered' : 'unfiltered'}${this.library.name}`;
+    this.collapsibleState = TreeItemCollapsibleState.Expanded;
+  }
+
+  public setFilter(newFilter: string) {
+    this.activeFilter = newFilter;
+    this.contextValue = `cicslibrary.${this.activeFilter ? 'filtered' : 'unfiltered'}${this.library.name}`;
+    this.collapsibleState = TreeItemCollapsibleState.Expanded;
+  }
+
+  public getFilter() {
+    return this.activeFilter;
   }
 
   public getParent() {
