@@ -10,6 +10,7 @@
 */
 
 import { commands, ProgressLocation, TreeView, window } from "vscode";
+import { CICSLibraryDatasets } from "../trees/treeItems/CICSLibraryDatasets";
 import { CICSLibraryTree } from "../trees/CICSLibraryTree";
 import { CICSLocalFileTree } from "../trees/CICSLocalFileTree";
 import { CICSProgramTree } from "../trees/CICSProgramTree";
@@ -17,6 +18,7 @@ import { CICSTaskTree } from "../trees/CICSTaskTree";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
+import { CICSLibraryTreeItem } from "../trees/treeItems/CICSLibraryTreeItem";
 
 export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -27,7 +29,9 @@ export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView
       const allSelectedLocalFileTreeNodes = findSelectedNodes(treeview, CICSLocalFileTree, node);
       const allSelectedTaskTreeNodes = findSelectedNodes(treeview, CICSTaskTree, node);
       const allSelectedLibraryTreeNodes = findSelectedNodes(treeview, CICSLibraryTree, node);
-      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes, ...allSelectedLibraryTreeNodes];
+      const allSelectedDatasetTreeNodes = findSelectedNodes(treeview, CICSLibraryTreeItem, node);
+      const allSelectedDatasetProgramTreeNodes = findSelectedNodes(treeview, CICSLibraryDatasets, node);
+      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes, ...allSelectedLibraryTreeNodes, ...allSelectedDatasetTreeNodes, ...allSelectedDatasetProgramTreeNodes];
       if (!allSelectedNodes || !allSelectedNodes.length) {
         window.showErrorMessage("No CICS resource tree selected");
         return;

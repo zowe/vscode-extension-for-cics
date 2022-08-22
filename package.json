@@ -80,8 +80,26 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterDatasetPrograms",
+        "title": "Filter Programs",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.filterLibraries",
         "title": "Filter Libraries",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterDatasets",
+        "title": "Filter Datasets",
         "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/filter-dark.svg",
@@ -362,8 +380,18 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicsdatasets.*/",
+          "command": "cics-extension-for-zowe.filterDatasetPrograms",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstreelibrary.*/",
           "command": "cics-extension-for-zowe.filterLibraries",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslibrary.*/",
+          "command": "cics-extension-for-zowe.filterDatasets",
           "group": "inline"
         },
         {
@@ -388,6 +416,16 @@
         },
         {
           "when": "view == cics-view && viewItem =~ /^cicstreelibrary.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicslibrary.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicsdatasets.filtered.*/",
           "command": "cics-extension-for-zowe.clearFilter",
           "group": "inline"
         },
