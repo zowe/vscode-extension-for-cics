@@ -75,7 +75,7 @@ export class CICSLibraryDatasets extends TreeItem {
       https.globalAgent.options.rejectUnauthorized = undefined;
 
       const programsArray = Array.isArray(datasetResponse.response.records.cicsprogram) ? datasetResponse.response.records.cicsprogram: [datasetResponse.response.records.cicsprogram];
-      this.label = `${this.dataset.dsname} [Program Count: ${programsArray.length}]`;
+      this.label = `${this.dataset.dsname}${this.activeFilter?` (${this.activeFilter}) `: " "}[Programs Count: ${programsArray.length}]`;
       for (const program of programsArray) {
         const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion, this); 
         this.addProgram(newProgramItem);
@@ -87,7 +87,7 @@ export class CICSLibraryDatasets extends TreeItem {
         window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);
       } else if (this.children.length == 0) {
         window.showInformationMessage(`No programs found`);
-        this.label = `${this.dataset.dsname} [Program Count: 0]`;
+        this.label = `${this.dataset.dsname}${this.activeFilter?` (${this.activeFilter}) `: " "}[Programs Count: 0]`;
       } else {
         window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }

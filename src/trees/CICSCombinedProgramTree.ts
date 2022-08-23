@@ -84,6 +84,7 @@ export class CICSCombinedProgramTree extends TreeItem {
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
               window.showInformationMessage(`No programs found`);
+              this.label = `All Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
             }
           }
         } catch (error) {

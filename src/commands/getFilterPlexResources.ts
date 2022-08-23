@@ -40,9 +40,9 @@ export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) 
       const plexProfile = plex.getProfile();
       let resourceToFilter: any;
       if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-        resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files"]);
+        resourceToFilter = await window.showQuickPick(["Programs", "Local Transactions", "Local Files", "Tasks", "Libraries"]);
       } else {
-        resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files"]);
+        resourceToFilter = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files", "Tasks", "Libraries"]);
       }
       const persistentStorage = new PersistentStorage("zowe.cics.persistent");
       let resourceHistory;
@@ -52,7 +52,12 @@ export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) 
         resourceHistory = persistentStorage.getTransactionSearchHistory();
       } else if (resourceToFilter === "Local Files"){
         resourceHistory = persistentStorage.getLocalFileSearchHistory();
-      } else if (resourceToFilter === "Regions") {
+      } else if(resourceToFilter === "Tasks"){
+        resourceHistory = persistentStorage.getTransactionSearchHistory();
+      } else if(resourceToFilter === "Libraries"){
+        resourceHistory = persistentStorage.getLibrarySearchHistory();
+      }
+        else if (resourceToFilter === "Regions") {
         resourceHistory = persistentStorage.getRegionSearchHistory();
       } else {
           window.showInformationMessage("No Selection Made");
@@ -68,6 +73,10 @@ export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) 
             await persistentStorage.addLocalFileSearchHistory(pattern);
         } else if (resourceToFilter === "Regions"){
             await persistentStorage.addRegionSearchHistory(pattern);
+        } else if (resourceToFilter === "Tasks"){
+            await persistentStorage.addTransactionSearchHistory(pattern);
+        } else if(resourceToFilter === "Libraries"){
+            await persistentStorage.addLibrarySearchHistory(pattern);
         }
 
         chosenNode.collapsibleState = TreeItemCollapsibleState.Expanded;
@@ -93,6 +102,10 @@ export function getFilterPlexResources(tree: CICSTree, treeview: TreeView<any>) 
                     treeToFilter = region.children?.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
                 } else if (resourceToFilter === "Local Files"){
                     treeToFilter = region.children?.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+                } else if (resourceToFilter === "Tasks"){
+                    treeToFilter = region.children?.filter((child:any) => child.contextValue.includes("cicstreetask."))[0];
+                } else if (resourceToFilter === "Libraries"){
+                    treeToFilter = region.children?.filter((child:any) => child.contextValue.includes("cicstreelibrary."))[0];
                 }
                 if (treeToFilter) {
                   treeToFilter.setFilter(pattern!);

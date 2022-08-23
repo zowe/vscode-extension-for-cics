@@ -35,9 +35,9 @@ export function getClearPlexFilterCommand(tree: CICSTree, treeview: TreeView<any
         const plexProfile = plex.getProfile();
         let resourceToClear;
         if (plexProfile.profile.regionName && plexProfile.profile.cicsPlex) {
-          resourceToClear = await window.showQuickPick(["Programs", "Local Transactions", "Local Files", "All"]);
+          resourceToClear = await window.showQuickPick(["Programs", "Local Transactions", "Local Files", "Tasks", "Libraries", "All"]);
         } else {
-          resourceToClear = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files", "All"]);
+          resourceToClear = await window.showQuickPick(["Regions", "Programs", "Local Transactions", "Local Files", "Tasks", "Libraries", "All"]);
         }
         if (!resourceToClear) {
           window.showInformationMessage("No option selected");
@@ -62,6 +62,10 @@ export function getClearPlexFilterCommand(tree: CICSTree, treeview: TreeView<any
                         await treeToClear.loadContents();
                     } else if (resourceToClear === "Local Files"){
                         treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreelocalfile."))[0];
+                        treeToClear.clearFilter();
+                        await treeToClear.loadContents();
+                    } else if (resourceToClear === "Tasks"){
+                        treeToClear = region.children.filter((child:any) => child.contextValue.includes("cicstreetask."))[0];
                         treeToClear.clearFilter();
                         await treeToClear.loadContents();
                     } else if (resourceToClear === "Libraries"){

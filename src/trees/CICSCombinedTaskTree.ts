@@ -82,6 +82,7 @@ export class CICSCombinedTaskTree extends TreeItem {
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
               window.showInformationMessage(`No tasks found`);
+              this.label = `All Tasks${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
             }
           }
         } catch (error) {
