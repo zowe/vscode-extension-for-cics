@@ -95,6 +95,7 @@ export class CICSCombinedLocalFileTree extends TreeItem {
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
               window.showInformationMessage(`No local files found`);
+              this.label = `All Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
             }
           }
         } catch (error) {

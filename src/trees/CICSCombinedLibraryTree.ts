@@ -84,6 +84,7 @@ export class CICSCombinedLibraryTree extends TreeItem {
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
               window.showInformationMessage(`No libraries found`);
+              this.label = `All Libraries${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
             }
           }
         } catch (error) {

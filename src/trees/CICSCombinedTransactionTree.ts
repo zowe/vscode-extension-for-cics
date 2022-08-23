@@ -83,6 +83,7 @@ export class CICSCombinedTransactionsTree extends TreeItem {
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
               window.showInformationMessage(`No local transactions found`);
+              this.label = `All Local Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
             }
           }
         } catch (error) {
