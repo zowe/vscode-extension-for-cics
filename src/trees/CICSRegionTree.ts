@@ -18,9 +18,10 @@ import { CICSPlexTree } from "./CICSPlexTree";
 import { getIconPathInResources } from "../utils/profileUtils";
 import { CICSTaskTree } from "./CICSTaskTree";
 import { CICSLibraryTree } from "./CICSLibraryTree";
+import { CICSWebTree } from "./CICSWebTree";
 
 export class CICSRegionTree extends TreeItem {
-  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree, CICSTaskTree, CICSLibraryTree] | null;
+  children: [CICSProgramTree, CICSTransactionTree, CICSLocalFileTree, CICSTaskTree, CICSLibraryTree, CICSWebTree] | null;
   region: any;
   parentSession: CICSSessionTree;
   parentPlex: CICSPlexTree | undefined;
@@ -55,7 +56,7 @@ export class CICSRegionTree extends TreeItem {
       this.collapsibleState = TreeItemCollapsibleState.None;
       this.iconPath = getIconPathInResources("region-dark-disabled.svg", "region-light-disabled.svg");
     } else {
-      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this), new CICSTaskTree(this), new CICSLibraryTree(this)];
+      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this), new CICSTaskTree(this), new CICSLibraryTree(this), new CICSWebTree(this)];
     }
 
   }

@@ -16,22 +16,22 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
-import { CICSRegionTree } from "../trees/CICSRegionTree";
-import { CICSTree } from "../trees/CICSTree";
+import { CICSRegionTree } from "../../trees/CICSRegionTree";
+import { CICSTree } from "../../trees/CICSTree";
 import * as https from "https";
-import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
-import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
-import { findSelectedNodes } from "../utils/commandUtils";
-import { CICSCombinedProgramTree } from "../trees/CICSCombinedProgramTree";
+import { CICSRegionsContainer } from "../../trees/CICSRegionsContainer";
+import { findSelectedNodes } from "../../utils/commandUtils";
+import { CICSProgramTreeItem } from "../../trees/treeItems/CICSProgramTreeItem";
+import { CICSCombinedProgramTree } from "../../trees/CICSCombinedTrees/CICSCombinedProgramTree";
 
 /**
- * Performs enable on selected CICSProgram nodes.
+ * Performs disable on selected CICSProgram nodes.
  * @param tree - tree which contains the node
  * @param treeview - Tree View of current cics tree
  */
-export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
+export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.enableProgram",
+    "cics-extension-for-zowe.disableProgram",
     async (clickedNode) => {
       const allSelectedNodes = findSelectedNodes(treeview, CICSProgramTreeItem, clickedNode);
       if (!allSelectedNodes || !allSelectedNodes.length) {
@@ -40,16 +40,16 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
       }
       let parentRegions: CICSRegionTree[] = [];
       window.withProgress({
-        title: 'Enable',
+        title: 'Disable',
         location: ProgressLocation.Notification,
         cancellable: true
       }, async (progress, token) => {
         token.onCancellationRequested(() => {
-          console.log("Cancelling the Enable");
+          console.log("Cancelling the Disable");
         });
         for (const index in allSelectedNodes) {
           progress.report({
-            message: `Enabling ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+            message: `Disabling ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
             increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
           const currentNode = allSelectedNodes[parseInt(index)];
@@ -57,7 +57,7 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
           https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
           
           try {
-            await enableProgram(
+            await disableProgram(
               currentNode.parentRegion.parentSession.session,
               {
                 name: currentNode.program.program,
@@ -69,10 +69,10 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
             if (!parentRegions.includes(currentNode.parentRegion)) {
               parentRegions.push(currentNode.parentRegion);
             }
-          
           } catch (error) {
             https.globalAgent.options.rejectUnauthorized = undefined;
-            window.showErrorMessage(`Something went wrong when performing an ENABLE - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            // @ts-ignore
+            window.showErrorMessage(`Something went wrong when performing a disable - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
         // Reload contents
@@ -100,7 +100,7 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
   );
 }
 
-async function enableProgram(
+async function disableProgram(
   session: AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
@@ -108,7 +108,7 @@ async function enableProgram(
     request: {
       action: {
         $: {
-          name: "ENABLE",
+          name: "DISABLE",
         },
       },
     },
@@ -127,7 +127,7 @@ async function enableProgram(
     parms.name +
     ")";
 
-  return await CicsCmciRestClient.putExpectParsedXml(
+  return CicsCmciRestClient.putExpectParsedXml(
     session,
     cmciResource,
     [],

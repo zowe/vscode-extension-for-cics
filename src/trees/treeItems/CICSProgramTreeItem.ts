@@ -29,7 +29,7 @@ export class CICSProgramTreeItem extends TreeItem {
       `${program.program}${(
         program.status.toLowerCase() === "disabled" && parseInt(program.newcopycnt) ? ` (New copy count: ${program.newcopycnt}) (Disabled)` : 
         program.status.toLowerCase() === "disabled" && !parseInt(program.newcopycnt) ? ` (Disabled)` : 
-        program.status.toLowerCase() !== "disabled" && parseInt(program.newcopycnt) ? `  (New copy count: ${program.newcopycnt})` : 
+        program.status.toLowerCase() !== "disabled" && parseInt(program.newcopycnt) ? ` (New copy count: ${program.newcopycnt})` : 
         ""
       )}`,
       TreeItemCollapsibleState.None

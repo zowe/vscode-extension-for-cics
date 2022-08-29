@@ -16,25 +16,29 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
-import { CICSRegionTree } from "../trees/CICSRegionTree";
-import { CICSTree } from "../trees/CICSTree";
+import { CICSRegionTree } from "../../trees/CICSRegionTree";
+import { CICSTree } from "../../trees/CICSTree";
 import * as https from "https";
-import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
-import { findSelectedNodes } from "../utils/commandUtils";
-import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
-import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTransactionTree";
+import { CICSRegionsContainer } from "../../trees/CICSRegionsContainer";
+import { CICSProgramTreeItem } from "../../trees/treeItems/CICSProgramTreeItem";
+import { findSelectedNodes } from "../../utils/commandUtils";
+import { CICSCombinedProgramTree } from "../../trees/CICSCombinedTrees/CICSCombinedProgramTree";
 
-export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<any>) {
+/**
+ * Performs enable on selected CICSProgram nodes.
+ * @param tree - tree which contains the node
+ * @param treeview - Tree View of current cics tree
+ */
+export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.enableTransaction",
+    "cics-extension-for-zowe.enableProgram",
     async (clickedNode) => {
-      const allSelectedNodes = findSelectedNodes(treeview, CICSTransactionTreeItem, clickedNode);
+      const allSelectedNodes = findSelectedNodes(treeview, CICSProgramTreeItem, clickedNode);
       if (!allSelectedNodes || !allSelectedNodes.length) {
-        window.showErrorMessage("No CICS transaction selected");
+        window.showErrorMessage("No CICS program selected");
         return;
       }
       let parentRegions: CICSRegionTree[] = [];
-      
       window.withProgress({
         title: 'Enable',
         location: ProgressLocation.Notification,
@@ -53,10 +57,10 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
           https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
           
           try {
-            await enableTransaction(
+            await enableProgram(
               currentNode.parentRegion.parentSession.session,
               {
-                name: currentNode.transaction.tranid,
+                name: currentNode.program.program,
                 regionName: currentNode.parentRegion.label,
                 cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
               }
@@ -65,27 +69,29 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
             if (!parentRegions.includes(currentNode.parentRegion)) {
               parentRegions.push(currentNode.parentRegion);
             }
+          
           } catch (error) {
             https.globalAgent.options.rejectUnauthorized = undefined;
             window.showErrorMessage(`Something went wrong when performing an ENABLE - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
+        // Reload contents
         for (const parentRegion of parentRegions) {
           try {
-            const transactionTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
+            const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
             // Only load contents if the tree is expanded
-            if (transactionTree.collapsibleState === 2) {
-              await transactionTree.loadContents();
+            if (programTree.collapsibleState === 2) {
+              await programTree.loadContents();
             }
             // if node is in a plex and the plex contains the region container tree
             if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
-              const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0] as CICSCombinedTransactionsTree;
-              if (allTransactionTree.collapsibleState === 2 && allTransactionTree.getActiveFilter()) {
-                await allTransactionTree.loadContents(tree);
+              const allProgramsTree = parentRegion.parentPlex!.children!.filter((child: any) => child.contextValue.includes("cicscombinedprogramtree."))[0] as CICSCombinedProgramTree;
+              if (allProgramsTree.collapsibleState === 2 && allProgramsTree.getActiveFilter()) {
+                await allProgramsTree.loadContents(tree);
               }
             }
           } catch (error) {
-            window.showErrorMessage(`Something went wrong when reloading transactions - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            window.showErrorMessage(`Something went wrong when reloading programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
         tree._onDidChangeTreeData.fire(undefined);
@@ -94,7 +100,7 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
   );
 }
 
-async function enableTransaction(
+async function enableProgram(
   session: AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
@@ -113,11 +119,11 @@ async function enableTransaction(
     "/" +
     CicsCmciConstants.CICS_SYSTEM_MANAGEMENT +
     "/" +
-    CicsCmciConstants.CICS_LOCAL_TRANSACTION +
+    CicsCmciConstants.CICS_PROGRAM_RESOURCE +
     "/" +
     cicsPlex +
     parms.regionName +
-    "?CRITERIA=(TRANID=" +
+    "?CRITERIA=(PROGRAM=" +
     parms.name +
     ")";
 

@@ -9,9 +9,9 @@
 *
 */
 
-import { getDisableProgramCommand } from "./commands/disableProgramCommand";
+import { getDisableProgramCommand } from "./commands/disableCommands/disableProgramCommand";
 import { getRemoveSessionCommand } from "./commands/removeSessionCommand";
-import { getEnableProgramCommand } from "./commands/enableProgramCommand";
+import { getEnableProgramCommand } from "./commands/enableCommands/enableProgramCommand";
 import { getAddSessionCommand } from "./commands/addSessionCommand";
 import { getNewCopyCommand } from "./commands/newCopyCommand";
 import { ExtensionContext, ProgressLocation, TreeItemCollapsibleState, window } from "vscode";
@@ -20,38 +20,33 @@ import {
   getShowProgramAttributesCommand,
   getShowLibraryAttributesCommand,
   getShowLibraryDatasetsAttributesCommand,
+  getShowTCPIPServiceAttributesCommand,
+  getShowURIMapAttributesCommand,
   getShowRegionAttributes,
   getShowTransactionAttributesCommand,
   getShowLocalFileAttributesCommand,
   getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
 import { getShowRegionSITParametersCommand} from "./commands/showParameterCommand";
-import { getFilterProgramsCommand } from "./commands/filterProgramsCommand";
-import { getFilterDatasetProgramsCommand } from "./commands/filterProgramsCommand";
-import { getFilterLibrariesCommand } from "./commands/filterLibrariesCommand";
-import {getFilterDatasetsCommand} from "./commands/filterDatasetsCommand";
+import { getFilterProgramsCommand, getFilterDatasetProgramsCommand, getFilterLibrariesCommand, getFilterDatasetsCommand, getFilterTransactionCommand, getFilterLocalFilesCommand, getFilterTasksCommand } from "./commands/filterResourceCommands";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
-import { getFilterTransactionCommand } from "./commands/filterTransactionCommand";
 import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
-import { getFilterLocalFilesCommand } from "./commands/filterLocalFileCommand";
 import { getFilterPlexResources } from "./commands/getFilterPlexResources";
 import { getClearPlexFilterCommand } from "./commands/clearPlexFilterCommand";
 import { getRefreshCommand } from "./commands/refreshCommand";
 import { getUpdateSessionCommand } from "./commands/updateSessionCommand";
 import { getDeleteSessionCommand } from "./commands/deleteSessionCommand";
-import { getDisableTransactionCommand } from "./commands/disableTransactionCommand";
-import { getEnableTransactionCommand } from "./commands/enableTransactionCommand";
-import { getEnableLocalFileCommand } from "./commands/enableLocalFileCommand";
-import { getDisableLocalFileCommand } from "./commands/disableLocalFileCommand";
+import { getDisableTransactionCommand } from "./commands/disableCommands/disableTransactionCommand";
+import { getEnableTransactionCommand } from "./commands/enableCommands/enableTransactionCommand";
+import { getEnableLocalFileCommand } from "./commands/enableCommands/enableLocalFileCommand";
+import { getDisableLocalFileCommand } from "./commands/disableCommands/disableLocalFileCommand";
 import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
-import { getFilterAllProgramsCommand } from "./commands/filterAllProgramsCommand";
-import { getFilterAllLibrariesCommand } from "./commands/filterAllLibrariesCommand";
-import { getFilterAllTransactionsCommand } from "./commands/filterAllTransactionsCommand";
-import { getFilterAllLocalFilesCommand } from "./commands/getFilterAllLocalFilesCommand";
+import { getFilterAllProgramsCommand } from "./commands/filterAllResourceCommand";
+import { getFilterAllLibrariesCommand, getFilterAllTransactionsCommand, getFilterAllLocalFilesCommand, getFilterAllURIMapsCommand, getFilterAllTCPIPServicesCommand, getFilterAllTasksCommand} from "./commands/filterAllResourceCommand";
 import { getIconPathInResources, setIconClosed } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
@@ -61,8 +56,6 @@ import { CredentialManagerFactory, Logger } from "@zowe/imperative";
 import { KeytarApi } from "@zowe/zowe-explorer-api";
 import { getInquireTransactionCommand } from "./commands/inquireTransaction";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
-import { getFilterAllTasksCommand } from "./commands/filterAllTasksCommand";
-import { getFilterTasksCommand } from "./commands/filterTasksCommand";
 import { getInquireProgramCommand } from "./commands/inquireProgram";
 
 /**
@@ -133,7 +126,21 @@ export async function activate(context: ExtensionContext) {
     // Region node expanded
     } else if (node.element.contextValue.includes("cicsregion.")) {
 
-    // Programs folder node expanded
+    // Web folder node expanded
+    } else if (node.element.contextValue.includes("cicstreeweb.")) {
+      window.withProgress({
+        title: 'Loading Resources',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of resources");
+        });
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+      // Programs folder node expanded
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
       window.withProgress({
         title: 'Loading Programs',
@@ -230,6 +237,36 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+    // TCPIP folder node expanded
+    } else if (node.element.contextValue.includes("cicstreetcpips.")) {
+      window.withProgress({
+        title: 'Loading TCPIP Services',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of TCPIP services");
+        });
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // URIMap folder node expanded
+    } else if (node.element.contextValue.includes("cicstreeurimap.")) {
+      window.withProgress({
+        title: 'Loading URIMaps',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of URIMaps");
+        });
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
     // All programs folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       // Children only loaded if filter has been applied
@@ -260,12 +297,28 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 
-    //All libraries folder node expanded
+    // All libraries folder node expanded
       else if (node.element.contextValue.includes("cicscombinedlibrarytree.")) {
         if (node.element.getActiveFilter()) {
           await node.element.loadContents(treeDataProv);
         }
         node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    } 
+
+    // All TCPIP Services node expanded 
+      else if (node.element.contextValue.includes("cicscombinedtcpipstree.")) {
+      if (node.element.getActiveFilter()) {
+        await node.element.loadContents(treeDataProv);
+      }
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }  
+    
+    // All URI Maps node expanded 
+    else if (node.element.contextValue.includes("cicscombinedurimapstree.")) {
+    if (node.element.getActiveFilter()) {
+      await node.element.loadContents(treeDataProv);
+    }
+    node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
     // Regions container folder node expanded
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
@@ -288,6 +341,10 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedlibrarytree.")) {
       setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicscombinedtcpipstree.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicscombinedurimapstree.")) {
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
@@ -300,7 +357,13 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicslibrary.")) {
       setIconClosed(node, treeDataProv);
-    }
+    } else if (node.element.contextValue.includes("cicstreeweb.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicstreetcpips.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicstreeurimap.")) {
+      setIconClosed(node, treeDataProv);
+    } 
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
   }
   );
@@ -332,6 +395,8 @@ export async function activate(context: ExtensionContext) {
     getShowProgramAttributesCommand(treeview),
     getShowLibraryAttributesCommand(treeview),
     getShowLibraryDatasetsAttributesCommand(treeview),
+    getShowTCPIPServiceAttributesCommand(treeview),
+    getShowURIMapAttributesCommand(treeview),
     getShowTransactionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
@@ -350,6 +415,8 @@ export async function activate(context: ExtensionContext) {
     getFilterAllTransactionsCommand(treeDataProv, treeview),
     getFilterAllLocalFilesCommand(treeDataProv, treeview),
     getFilterAllTasksCommand(treeDataProv, treeview),
+    getFilterAllURIMapsCommand(treeDataProv, treeview),
+    getFilterAllTCPIPServicesCommand(treeDataProv, treeview),
     
     getFilterPlexResources(treeDataProv, treeview),
 

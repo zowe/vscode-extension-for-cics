@@ -10,7 +10,7 @@
 */
 
 import { commands, TreeItemCollapsibleState, TreeView, window } from "vscode";
-import { CICSCombinedTaskTree } from "../trees/CICSCombinedTaskTree";
+import { CICSCombinedTaskTree } from "../trees/CICSCombinedTrees/CICSCombinedTaskTree";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSRegionTree } from "../trees/CICSRegionTree";

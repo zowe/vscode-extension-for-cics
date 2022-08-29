@@ -16,13 +16,13 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
-import { CICSRegionTree } from "../trees/CICSRegionTree";
-import { CICSTree } from "../trees/CICSTree";
+import { CICSRegionTree } from "../../trees/CICSRegionTree";
+import { CICSTree } from "../../trees/CICSTree";
 import * as https from "https";
-import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
-import { findSelectedNodes, splitCmciErrorMessage } from "../utils/commandUtils";
-import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
-import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTransactionTree";
+import { CICSRegionsContainer } from "../../trees/CICSRegionsContainer";
+import { findSelectedNodes, splitCmciErrorMessage } from "../../utils/commandUtils";
+import { CICSTransactionTreeItem } from "../../trees/treeItems/CICSTransactionTreeItem";
+import { CICSCombinedTransactionsTree } from "../../trees/CICSCombinedTrees/CICSCombinedTransactionTree";
 
 export function getDisableTransactionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(

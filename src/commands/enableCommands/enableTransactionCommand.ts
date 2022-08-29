@@ -16,40 +16,36 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
-import { CICSRegionTree } from "../trees/CICSRegionTree";
-import { CICSTree } from "../trees/CICSTree";
+import { CICSRegionTree } from "../../trees/CICSRegionTree";
+import { CICSTree } from "../../trees/CICSTree";
 import * as https from "https";
-import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
-import { findSelectedNodes } from "../utils/commandUtils";
-import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
-import { CICSCombinedProgramTree } from "../trees/CICSCombinedProgramTree";
+import { CICSRegionsContainer } from "../../trees/CICSRegionsContainer";
+import { findSelectedNodes } from "../../utils/commandUtils";
+import { CICSTransactionTreeItem } from "../../trees/treeItems/CICSTransactionTreeItem";
+import { CICSCombinedTransactionsTree } from "../../trees/CICSCombinedTrees/CICSCombinedTransactionTree";
 
-/**
- * Performs disable on selected CICSProgram nodes.
- * @param tree - tree which contains the node
- * @param treeview - Tree View of current cics tree
- */
-export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>) {
+export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
-    "cics-extension-for-zowe.disableProgram",
+    "cics-extension-for-zowe.enableTransaction",
     async (clickedNode) => {
-      const allSelectedNodes = findSelectedNodes(treeview, CICSProgramTreeItem, clickedNode);
+      const allSelectedNodes = findSelectedNodes(treeview, CICSTransactionTreeItem, clickedNode);
       if (!allSelectedNodes || !allSelectedNodes.length) {
-        window.showErrorMessage("No CICS program selected");
+        window.showErrorMessage("No CICS transaction selected");
         return;
       }
       let parentRegions: CICSRegionTree[] = [];
+      
       window.withProgress({
-        title: 'Disable',
+        title: 'Enable',
         location: ProgressLocation.Notification,
         cancellable: true
       }, async (progress, token) => {
         token.onCancellationRequested(() => {
-          console.log("Cancelling the Disable");
+          console.log("Cancelling the Enable");
         });
         for (const index in allSelectedNodes) {
           progress.report({
-            message: `Disabling ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
+            message: `Enabling ${parseInt(index) + 1} of ${allSelectedNodes.length}`,
             increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
           const currentNode = allSelectedNodes[parseInt(index)];
@@ -57,10 +53,10 @@ export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>
           https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
           
           try {
-            await disableProgram(
+            await enableTransaction(
               currentNode.parentRegion.parentSession.session,
               {
-                name: currentNode.program.program,
+                name: currentNode.transaction.tranid,
                 regionName: currentNode.parentRegion.label,
                 cicsPlex: currentNode.parentRegion.parentPlex ? currentNode.parentRegion.parentPlex.getPlexName() : undefined,
               }
@@ -71,27 +67,25 @@ export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>
             }
           } catch (error) {
             https.globalAgent.options.rejectUnauthorized = undefined;
-            // @ts-ignore
-            window.showErrorMessage(`Something went wrong when performing a disable - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            window.showErrorMessage(`Something went wrong when performing an ENABLE - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
-        // Reload contents
         for (const parentRegion of parentRegions) {
           try {
-            const programTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreeprogram."))[0];
+            const transactionTree = parentRegion.children!.filter((child: any) => child.contextValue.includes("cicstreetransaction."))[0];
             // Only load contents if the tree is expanded
-            if (programTree.collapsibleState === 2) {
-              await programTree.loadContents();
+            if (transactionTree.collapsibleState === 2) {
+              await transactionTree.loadContents();
             }
             // if node is in a plex and the plex contains the region container tree
             if (parentRegion.parentPlex && parentRegion.parentPlex.children.some((child) => child instanceof CICSRegionsContainer)) {
-              const allProgramsTree = parentRegion.parentPlex!.children!.filter((child: any) => child.contextValue.includes("cicscombinedprogramtree."))[0] as CICSCombinedProgramTree;
-              if (allProgramsTree.collapsibleState === 2 && allProgramsTree.getActiveFilter()) {
-                await allProgramsTree.loadContents(tree);
+              const allTransactionTree = parentRegion.parentPlex.children!.filter((child: any) => child.contextValue.includes("cicscombinedtransactiontree."))[0] as CICSCombinedTransactionsTree;
+              if (allTransactionTree.collapsibleState === 2 && allTransactionTree.getActiveFilter()) {
+                await allTransactionTree.loadContents(tree);
               }
             }
           } catch (error) {
-            window.showErrorMessage(`Something went wrong when reloading programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            window.showErrorMessage(`Something went wrong when reloading transactions - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
           }
         }
         tree._onDidChangeTreeData.fire(undefined);
@@ -100,7 +94,7 @@ export function getDisableProgramCommand(tree: CICSTree, treeview: TreeView<any>
   );
 }
 
-async function disableProgram(
+async function enableTransaction(
   session: AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
@@ -108,7 +102,7 @@ async function disableProgram(
     request: {
       action: {
         $: {
-          name: "DISABLE",
+          name: "ENABLE",
         },
       },
     },
@@ -119,15 +113,15 @@ async function disableProgram(
     "/" +
     CicsCmciConstants.CICS_SYSTEM_MANAGEMENT +
     "/" +
-    CicsCmciConstants.CICS_PROGRAM_RESOURCE +
+    CicsCmciConstants.CICS_LOCAL_TRANSACTION +
     "/" +
     cicsPlex +
     parms.regionName +
-    "?CRITERIA=(PROGRAM=" +
+    "?CRITERIA=(TRANID=" +
     parms.name +
     ")";
 
-  return CicsCmciRestClient.putExpectParsedXml(
+  return await CicsCmciRestClient.putExpectParsedXml(
     session,
     cmciResource,
     [],

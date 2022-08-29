@@ -22,7 +22,7 @@ import * as https from "https";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem";
 import { findSelectedNodes, splitCmciErrorMessage } from "../utils/commandUtils";
-import { CICSCombinedLocalFileTree } from "../trees/CICSCombinedLocalFileTree";
+import { CICSCombinedLocalFileTree } from "../trees/CICSCombinedTrees/CICSCombinedLocalFileTree";
 
 export function getOpenLocalFileCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(

@@ -18,7 +18,7 @@ import * as https from "https";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
 import { findSelectedNodes, splitCmciErrorMessage } from "../utils/commandUtils";
-import { CICSCombinedProgramTree } from "../trees/CICSCombinedProgramTree";
+import { CICSCombinedProgramTree } from "../trees/CICSCombinedTrees/CICSCombinedProgramTree";
 
 /**
  * Performs PHASE IN on selected CICSProgram nodes.
