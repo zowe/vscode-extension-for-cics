@@ -15,16 +15,18 @@ import { IProfileLoaded } from "@zowe/imperative";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
-import { CICSCombinedProgramTree } from "./CICSCombinedProgramTree";
-import { CICSCombinedTransactionsTree } from "./CICSCombinedTransactionTree";
-import { CICSCombinedLocalFileTree } from "./CICSCombinedLocalFileTree";
+import { CICSCombinedProgramTree } from "./CICSCombinedTrees/CICSCombinedProgramTree";
+import { CICSCombinedTransactionsTree } from "./CICSCombinedTrees/CICSCombinedTransactionTree";
+import { CICSCombinedLocalFileTree } from "./CICSCombinedTrees/CICSCombinedLocalFileTree";
 import { CICSRegionsContainer } from "./CICSRegionsContainer";
 import { getIconPathInResources } from "../utils/profileUtils";
-import { CICSCombinedTaskTree } from "./CICSCombinedTaskTree";
-import { CICSCombinedLibraryTree } from "./CICSCombinedLibraryTree";
+import { CICSCombinedTaskTree } from "./CICSCombinedTrees/CICSCombinedTaskTree";
+import { CICSCombinedLibraryTree } from "./CICSCombinedTrees/CICSCombinedLibraryTree";
+import { CICSCombinedTCPIPServiceTree } from "./CICSCombinedTrees/CICSCombinedTCPIPServiceTree";
+import { CICSCombinedURIMapTree } from "./CICSCombinedTrees/CICSCombinedURIMapTree";
 
 export class CICSPlexTree extends TreeItem {
-  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer) [] = [];
+  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer | CICSCombinedTCPIPServiceTree | CICSCombinedURIMapTree) [] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
@@ -158,6 +160,8 @@ export class CICSPlexTree extends TreeItem {
     this.children.push(new CICSCombinedLocalFileTree(this));
     this.children.push(new CICSCombinedTaskTree(this));
     this.children.push(new CICSCombinedLibraryTree(this));
+    this.children.push(new CICSCombinedTCPIPServiceTree(this));
+    this.children.push(new CICSCombinedURIMapTree(this));
   }
 
   public addRegionContainer() {

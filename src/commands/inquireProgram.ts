@@ -10,7 +10,7 @@
 */
 
 import { commands, TreeView, window } from "vscode";
-import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTransactionTree";
+import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTrees/CICSCombinedTransactionTree";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
 import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";

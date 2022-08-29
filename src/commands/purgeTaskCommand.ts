@@ -22,7 +22,7 @@ import * as https from "https";
 import { findSelectedNodes, splitCmciErrorMessage } from "../utils/commandUtils";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
 import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
-import { CICSCombinedTaskTree } from "../trees/CICSCombinedTaskTree";
+import { CICSCombinedTaskTree } from "../trees/CICSCombinedTrees/CICSCombinedTaskTree";
 
 /**
  * Purge a CICS Task and reload the CICS Task tree contents and the combined Task tree contents

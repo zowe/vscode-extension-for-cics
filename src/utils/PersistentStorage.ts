@@ -20,6 +20,8 @@ export class PersistentStorage {
     private static readonly localFileSearchHistory: string = "localFileSearchHistory";
     private static readonly regionSearchHistory: string = "regionSearchHistory";
     private static readonly loadedCICSProfile: string = "loadedCICSProfile";
+    private static readonly tcpipsSearchHistory: string = "tcpipsSearchHistory";
+    private static readonly urimapsSearchHistory: string = "urimapsSearchHistory";
 
 
     private mProgramSearchHistory: string[] = [];
@@ -29,6 +31,8 @@ export class PersistentStorage {
     private mLocalFileSearchHistory: string[] = [];
     private mRegionSearchHistory: string[] = [];
     private mLoadedCICSProfile: string[] = [];
+    private mTCPIPSSearchHistory: string[] = [];
+    private mURIMapsSearchHistory: string[] = [];
 
     constructor(
         schema: string,
@@ -45,6 +49,8 @@ export class PersistentStorage {
         let localFileSearchHistoryLines: string[] | undefined;
         let regionSearchHistoryLines: string[] | undefined;
         let loadedCICSProfileLines: string[] | undefined;
+        let tcpipsSearchHistoryLines: string[] | undefined;
+        let urimapsSearchHistoryLines: string[] | undefined;
 
         if (workspace.getConfiguration(this.schema)) {
             programSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.programSearchHistory);
@@ -54,6 +60,8 @@ export class PersistentStorage {
             localFileSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.localFileSearchHistory);
             regionSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.regionSearchHistory);
             loadedCICSProfileLines = workspace.getConfiguration(this.schema).get(PersistentStorage.loadedCICSProfile);
+            tcpipsSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.tcpipsSearchHistory);
+            urimapsSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.urimapsSearchHistory);
         }
         if (programSearchHistoryLines) {
             this.mProgramSearchHistory = programSearchHistoryLines;
@@ -90,6 +98,16 @@ export class PersistentStorage {
         } else {
             await this.resetLoadedCICSProfile();
         }
+        if (tcpipsSearchHistoryLines) {
+            this.mTCPIPSSearchHistory = tcpipsSearchHistoryLines;
+        } else {
+            await this.resetTCPIPSSearchHistory();
+        }
+        if (urimapsSearchHistoryLines) {
+            this.mURIMapsSearchHistory = urimapsSearchHistoryLines;
+        } else {
+            await this.resetURIMapsSearchHistory();
+        }
     }
 
 
@@ -114,6 +132,12 @@ export class PersistentStorage {
     }
     public getLoadedCICSProfile(): string[] {
         return this.mLoadedCICSProfile;
+    }
+    public getTCPIPSSearchHistory(): string[] {
+        return this.mTCPIPSSearchHistory;
+    }
+    public getURIMapsSearchHistory(): string[] {
+        return this.mURIMapsSearchHistory;
     }
 
 
@@ -145,6 +169,14 @@ export class PersistentStorage {
     public async resetLoadedCICSProfile(){
         this.mLoadedCICSProfile = [];
         await this.updateLoadedCICSProfile();
+    }
+    public async resetTCPIPSSearchHistory() {
+        this.mTCPIPSSearchHistory = [];
+        await this.updateTCPIPSSearchHistory();
+    }
+    public async resetURIMapsSearchHistory() {
+        this.mURIMapsSearchHistory = [];
+        await this.updateURIMapsSearchHistory();
     }
 
 
@@ -195,6 +227,20 @@ export class PersistentStorage {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
             settings[PersistentStorage.loadedCICSProfile] = this.mLoadedCICSProfile;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+    private async updateTCPIPSSearchHistory() {
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if (settings.persistence) {
+            settings[PersistentStorage.tcpipsSearchHistory] = this.mTCPIPSSearchHistory;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+    private async updateURIMapsSearchHistory() {
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if (settings.persistence) {
+            settings[PersistentStorage.urimapsSearchHistory] = this.mURIMapsSearchHistory;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
@@ -299,6 +345,36 @@ export class PersistentStorage {
 
             this.mLoadedCICSProfile.unshift(name);
             await this.updateLoadedCICSProfile();
+        }
+    }
+
+    public async addTCPIPSSearchHistory(criteria: string) {
+        if (criteria) {
+            this.mTCPIPSSearchHistory = this.mTCPIPSSearchHistory.filter((element) => {
+                return element.trim() !== criteria.trim();
+            });
+
+            this.mTCPIPSSearchHistory.unshift(criteria);
+
+            if (this.mTCPIPSSearchHistory.length > 10) {
+                this.mTCPIPSSearchHistory.pop();
+            }
+            await this.updateTCPIPSSearchHistory();
+        }
+    }
+
+    public async addURIMapsSearchHistory(criteria: string) {
+        if (criteria) {
+            this.mURIMapsSearchHistory = this.mURIMapsSearchHistory.filter((element) => {
+                return element.trim() !== criteria.trim();
+            });
+
+            this.mURIMapsSearchHistory.unshift(criteria);
+
+            if (this.mURIMapsSearchHistory.length > 10) {
+                this.mURIMapsSearchHistory.pop();
+            }
+            await this.updateURIMapsSearchHistory();
         }
     }
 

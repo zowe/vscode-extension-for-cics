@@ -10,20 +10,20 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
-import { CICSPlexTree } from "./CICSPlexTree";
-import { CICSLibraryTreeItem } from "./treeItems/CICSLibraryTreeItem";
-import { CICSRegionTree } from "./CICSRegionTree";
-import { CICSTree } from "./CICSTree";
-import { ProfileManagement } from "../utils/profileManagement";
-import { ViewMore } from "./treeItems/utils/ViewMore";
+import { CICSPlexTree } from "../CICSPlexTree";
+import { CICSProgramTreeItem } from "../treeItems/CICSProgramTreeItem";
+import { CICSRegionTree } from "../CICSRegionTree";
+import { CICSTree } from "../CICSTree";
+import { ProfileManagement } from "../../utils/profileManagement";
+import { ViewMore } from "../treeItems/utils/ViewMore";
 import { CicsCmciConstants } from "@zowe/cics-for-zowe-cli";
-import { toEscapedCriteriaString } from "../utils/filterUtils";
-import { CICSRegionsContainer } from "./CICSRegionsContainer";
-import { TextTreeItem } from "./treeItems/utils/TextTreeItem";
-import { getIconPathInResources } from "../utils/profileUtils";
+import { toEscapedCriteriaString } from "../../utils/filterUtils";
+import { CICSRegionsContainer } from "../CICSRegionsContainer";
+import { TextTreeItem } from "../treeItems/utils/TextTreeItem";
+import { getIconPathInResources } from "../../utils/profileUtils";
 
-export class CICSCombinedLibraryTree extends TreeItem {
-  children: (CICSLibraryTreeItem | ViewMore ) [] | [TextTreeItem] | null;
+export class CICSCombinedProgramTree extends TreeItem {
+  children: (CICSProgramTreeItem | ViewMore ) [] | [TextTreeItem] | null;
   parentPlex: CICSPlexTree;
   activeFilter: string | undefined;
   currentCount: number;
@@ -34,19 +34,19 @@ export class CICSCombinedLibraryTree extends TreeItem {
     parentPlex: CICSPlexTree,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
-    super("All Libraries", TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicscombinedlibrarytree.`;
+    super("All Programs", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicscombinedprogramtree.`;
     this.parentPlex = parentPlex;
-    this.children = [new TextTreeItem("Use the search button to display libraries", "applyfiltertext.")];
+    this.children = [new TextTreeItem("Use the search button to display programs", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allLibraries.recordCountIncrement')}`;
-    this.constant = "CICSLibrary";
+    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allPrograms.recordCountIncrement')}`; 
+    this.constant = CicsCmciConstants.CICS_PROGRAM_RESOURCE;
     }
 
     public async loadContents(tree: CICSTree){
       window.withProgress({
-        title: 'Loading Libraries',
+        title: 'Loading Programs',
         location: ProgressLocation.Notification,
         cancellable: true
       }, async (_, token) => {
@@ -56,7 +56,7 @@ export class CICSCombinedLibraryTree extends TreeItem {
         try {
           let criteria;
           if (this.activeFilter) {
-            criteria = toEscapedCriteriaString(this.activeFilter, 'NAME');
+            criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
           }
           let count;
           const cacheTokenInfo = await ProfileManagement.generateCacheToken(
@@ -69,34 +69,34 @@ export class CICSCombinedLibraryTree extends TreeItem {
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
-              let allLibraries;
+              let allPrograms;
               if (recordsCount <= this.incrementCount) {
-                allLibraries = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
+                allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
               } else {
-                allLibraries = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+                allPrograms = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
                 count = parseInt(recordsCount);
               }
-              this.addLibrariesUtil([], allLibraries, count);
+              this.addProgramsUtil([], allPrograms, count);
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
             } else {
               this.children = [];
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
-              window.showInformationMessage(`No libraries found`);
-              this.label = `All Libraries${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
+              window.showInformationMessage(`No programs found`);
+              this.label = `All Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
             }
           }
         } catch (error) {
-          window.showErrorMessage(`Something went wrong when fetching libraries - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
         }
         }
       );
     }
 
-    public addLibrariesUtil(newChildren:(CICSLibraryTreeItem | ViewMore) [], allLibraries:any, count:number|undefined){
-      for (const library of allLibraries) {
-        // Regions container must exist if all libraries tree exists
+    public addProgramsUtil(newChildren:(CICSProgramTreeItem | ViewMore) [], allPrograms:any, count:number|undefined){
+      for (const program of allPrograms) {
+        // Regions container must exist if all programs tree exists
         const regionsContainer = this.parentPlex.children.filter(child => {
           if (child instanceof CICSRegionsContainer) {
             return child;
@@ -104,18 +104,18 @@ export class CICSCombinedLibraryTree extends TreeItem {
         })[0];
         const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
-            return child.getRegionName() === library.eyu_cicsname;
+            return child.getRegionName() === program.eyu_cicsname;
           }
         })[0] as CICSRegionTree;
-        const libraryTree = new CICSLibraryTreeItem(library,parentRegion, this);
-        libraryTree.setLabel(libraryTree.label!.toString().replace(library.name, `${library.name} (${library.eyu_cicsname})`));
-        newChildren.push(libraryTree);
+        const progamTree = new CICSProgramTreeItem(program,parentRegion, this);
+        progamTree.setLabel(progamTree.label!.toString().replace(program.program, `${program.program} (${program.eyu_cicsname})`));
+        newChildren.push(progamTree);
       }
       if (!count) {
         count = newChildren.length;
       }
       this.currentCount = newChildren.length;
-      this.label = `All Libraries ${this.activeFilter?`(${this.activeFilter}) `: " "}[${this.currentCount} of ${count}]`;
+      this.label = `All Programs ${this.activeFilter?`(${this.activeFilter}) `: " "}[${this.currentCount} of ${count}]`;
       if (count !== this.currentCount) {
         newChildren.push(new ViewMore(this, Math.min(this.incrementCount, count-this.currentCount)));
       }
@@ -124,13 +124,13 @@ export class CICSCombinedLibraryTree extends TreeItem {
 
     public async addMoreCachedResources(tree: CICSTree) {
       window.withProgress({
-        title: 'Loading more libraries',
+        title: 'Loading more programs',
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {
           let criteria;
           if (this.activeFilter) {
-            criteria = toEscapedCriteriaString(this.activeFilter, 'NAME');
+            criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
           }
           const cacheTokenInfo = await ProfileManagement.generateCacheToken(
             this.parentPlex.getProfile(),
@@ -143,17 +143,17 @@ export class CICSCombinedLibraryTree extends TreeItem {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
             const count = parseInt(recordsCount);
-            const allLibraries = await ProfileManagement.getCachedResources(
+            const allPrograms = await ProfileManagement.getCachedResources(
               this.parentPlex.getProfile(),
               cacheTokenInfo.cacheToken,
               this.constant,
               this.currentCount+1,
               this.incrementCount
               );
-            if (allLibraries) {
+            if (allPrograms) {
               // @ts-ignore
-              this.addLibrariesUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSLibraryTreeItem):[], 
-                allLibraries,
+              this.addProgramsUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSProgramTreeItem):[], 
+                allPrograms,
                 count
                 );
               tree._onDidChangeTreeData.fire(undefined);
@@ -164,15 +164,15 @@ export class CICSCombinedLibraryTree extends TreeItem {
 
     public clearFilter() {
       this.activeFilter = undefined;
-      this.label = `All Libraries`;
-      this.contextValue = `cicscombinedlibrarytree.unfiltered`;
+      this.label = `All Programs`;
+      this.contextValue = `cicscombinedprogramtree.unfiltered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
-      this.label = `All Libraries (${this.activeFilter})`;
-      this.contextValue = `cicscombinedlibrarytree.filtered`;
+      this.label = `All Programs (${this.activeFilter})`;
+      this.contextValue = `cicscombinedprogramtree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 

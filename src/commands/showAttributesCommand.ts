@@ -17,6 +17,9 @@ import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem"
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
 import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
+import { CICSTCPIPServiceTree } from "../trees/treeItems/web/CICSTCPIPService";
+import { CICSTCPIPServiceTreeItem } from "../trees/treeItems/web/treeItems/CICSTCPIPServiceTreeItem";
+import { CICSURIMapTreeItem } from "../trees/treeItems/web/treeItems/CICSURIMapTreeItem";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { getAttributesHtml } from "../utils/webviewHTML";
 
@@ -261,6 +264,76 @@ export function getShowLibraryDatasetsAttributesCommand(treeview: TreeView<any>)
         const panel: WebviewPanel = window.createWebviewPanel(
           "zowe",
           `CICS Dataset ${datasetTreeItem.parentRegion.label}(${dataset.dsname})`,
+          column || 1,
+          { enableScripts: true }
+          );
+          panel.webview.html = webviewHTML;
+        }
+      }
+  );
+}
+
+export function getShowTCPIPServiceAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showTCPIPServiceAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSTCPIPServiceTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS TCPIP Service selected");
+        return;
+      }
+      for (const tcpipsTreeItem of allSelectedNodes) {
+        const tcpips = tcpipsTreeItem.tcpips;
+        const attributeHeadings = Object.keys(tcpips);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${tcpips[heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+        
+        const webviewHTML = getAttributesHtml(tcpips.name, webText);
+        const column = window.activeTextEditor
+        ? window.activeTextEditor.viewColumn
+        : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS TCPIPS ${tcpipsTreeItem.parentRegion.label}(${tcpips.name})`,
+          column || 1,
+          { enableScripts: true }
+          );
+          panel.webview.html = webviewHTML;
+        }
+      }
+  );
+}
+
+export function getShowURIMapAttributesCommand(treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.showURIMapAttributes",
+    async (node) => {
+      const allSelectedNodes = findSelectedNodes(treeview, CICSURIMapTreeItem, node);
+      if (!allSelectedNodes || !allSelectedNodes.length) {
+        window.showErrorMessage("No CICS URIMap selected");
+        return;
+      }
+      for (const urimapTreeItem of allSelectedNodes) {
+        const urimap = urimapTreeItem.urimap;
+        const attributeHeadings = Object.keys(urimap);
+        let webText = `<thead><tr><th class="headingTH">Attribute <input type="text" id="searchBox" placeholder="Search Attribute..."/></th><th class="valueHeading">Value</th></tr></thead>`;
+        webText += "<tbody>";
+        for (const heading of attributeHeadings) {
+          webText += `<tr><th class="colHeading">${heading.toUpperCase()}</th><td>${urimap [heading]}</td></tr>`;
+        }
+        webText += "</tbody>";
+        
+        const webviewHTML = getAttributesHtml(urimap.name, webText);
+        const column = window.activeTextEditor
+        ? window.activeTextEditor.viewColumn
+        : undefined;
+        const panel: WebviewPanel = window.createWebviewPanel(
+          "zowe",
+          `CICS URIMap ${urimapTreeItem.parentRegion.label}(${urimap.name})`,
           column || 1,
           { enableScripts: true }
           );

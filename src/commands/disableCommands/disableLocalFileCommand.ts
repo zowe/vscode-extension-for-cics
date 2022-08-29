@@ -16,13 +16,13 @@ import {
 } from "@zowe/cics-for-zowe-cli";
 import { AbstractSession } from "@zowe/imperative";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
-import { CICSRegionTree } from "../trees/CICSRegionTree";
-import { CICSTree } from "../trees/CICSTree";
+import { CICSRegionTree } from "../../trees/CICSRegionTree";
+import { CICSTree } from "../../trees/CICSTree";
 import * as https from "https";
-import { CICSRegionsContainer } from "../trees/CICSRegionsContainer";
-import { findSelectedNodes } from "../utils/commandUtils";
-import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem";
-import { CICSCombinedLocalFileTree } from "../trees/CICSCombinedLocalFileTree";
+import { CICSRegionsContainer } from "../../trees/CICSRegionsContainer";
+import { findSelectedNodes } from "../../utils/commandUtils";
+import { CICSLocalFileTreeItem } from "../../trees/treeItems/CICSLocalFileTreeItem";
+import { CICSCombinedLocalFileTree } from "../../trees/CICSCombinedTrees/CICSCombinedLocalFileTree";
 
 export function getDisableLocalFileCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
