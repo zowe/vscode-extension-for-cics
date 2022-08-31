@@ -16,10 +16,12 @@ import { CICSProgramTree } from "../trees/CICSProgramTree";
 import { CICSTaskTree } from "../trees/CICSTaskTree";
 import { CICSTransactionTree } from "../trees/CICSTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
+import { CICSTCPIPServiceTree } from "../trees/treeItems/web/CICSTCPIPServiceTree";
 import { CICSLibraryDatasets } from "../trees/treeItems/CICSLibraryDatasets";
 import { CICSLibraryTreeItem } from "../trees/treeItems/CICSLibraryTreeItem";
 import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
+import { CICSURIMapTree } from "../trees/treeItems/web/CICSURIMapTree";
 
 export function getFilterLibrariesCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -265,6 +267,78 @@ export function getFilterTransactionCommand(tree: CICSTree, treeview: TreeView<a
       }, async (_, token) => {
         token.onCancellationRequested(() => {
           console.log("Cancelling the loading of transactions");
+        });
+        await chosenNode.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
+      });
+    }
+  );
+}
+
+export function getFilterTCPIPSCommand(tree: CICSTree, treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.filterTCPIPServices",
+    async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: CICSTCPIPServiceTree;
+      if (node) {
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSTCPIPServiceTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS TCPIP Service tree selected");
+        return;
+      }
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
+      const pattern = await getPatternFromFilter("TCPIP Services", persistentStorage.getTCPIPSSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addTCPIPSSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      window.withProgress({
+        title: 'Loading TCPIP Services',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of TCPIP Services");
+        });
+        await chosenNode.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
+      });
+    }
+  );
+}
+
+export function getFilterURIMapsCommand(tree: CICSTree, treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.filterURIMaps",
+    async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: CICSURIMapTree;
+      if (node) {
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSURIMapTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS URI Maps tree selected");
+        return;
+      }
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
+      const pattern = await getPatternFromFilter("URI Maps", persistentStorage.getURIMapsSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addURIMapsSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      window.withProgress({
+        title: 'Loading URI Maps',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of URI Maps");
         });
         await chosenNode.loadContents();
         tree._onDidChangeTreeData.fire(undefined);

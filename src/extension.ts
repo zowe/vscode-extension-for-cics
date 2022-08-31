@@ -28,7 +28,7 @@ import {
   getShowTaskAttributesCommand
 } from "./commands/showAttributesCommand";
 import { getShowRegionSITParametersCommand} from "./commands/showParameterCommand";
-import { getFilterProgramsCommand, getFilterDatasetProgramsCommand, getFilterLibrariesCommand, getFilterDatasetsCommand, getFilterTransactionCommand, getFilterLocalFilesCommand, getFilterTasksCommand } from "./commands/filterResourceCommands";
+import { getFilterProgramsCommand, getFilterDatasetProgramsCommand, getFilterLibrariesCommand, getFilterDatasetsCommand, getFilterTransactionCommand, getFilterLocalFilesCommand, getFilterTasksCommand, getFilterTCPIPSCommand, getFilterURIMapsCommand } from "./commands/filterResourceCommands";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
 import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
@@ -253,7 +253,7 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
     // URIMap folder node expanded
-    } else if (node.element.contextValue.includes("cicstreeurimap.")) {
+    } else if (node.element.contextValue.includes("cicstreeurimaps.")) {
       window.withProgress({
         title: 'Loading URIMaps',
         location: ProgressLocation.Notification,
@@ -361,7 +361,7 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetcpips.")) {
       setIconClosed(node, treeDataProv);
-    } else if (node.element.contextValue.includes("cicstreeurimap.")) {
+    } else if (node.element.contextValue.includes("cicstreeurimaps.")) {
       setIconClosed(node, treeDataProv);
     } 
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
@@ -410,13 +410,16 @@ export async function activate(context: ExtensionContext) {
     getFilterTransactionCommand(treeDataProv, treeview),
     getFilterLocalFilesCommand(treeDataProv, treeview),
     getFilterTasksCommand(treeDataProv, treeview),
+    getFilterTCPIPSCommand(treeDataProv, treeview),
+    getFilterURIMapsCommand(treeDataProv, treeview),
+
     getFilterAllProgramsCommand(treeDataProv, treeview),
     getFilterAllLibrariesCommand(treeDataProv, treeview),
     getFilterAllTransactionsCommand(treeDataProv, treeview),
     getFilterAllLocalFilesCommand(treeDataProv, treeview),
     getFilterAllTasksCommand(treeDataProv, treeview),
-    getFilterAllURIMapsCommand(treeDataProv, treeview),
     getFilterAllTCPIPServicesCommand(treeDataProv, treeview),
+    getFilterAllURIMapsCommand(treeDataProv, treeview),
     
     getFilterPlexResources(treeDataProv, treeview),
 

@@ -19,6 +19,8 @@ import { CICSTransactionTree } from "../trees/CICSTransactionTree";
 import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
 import { CICSLibraryTreeItem } from "../trees/treeItems/CICSLibraryTreeItem";
+import { CICSTCPIPServiceTree } from "../trees/treeItems/web/CICSTCPIPServiceTree";
+import { CICSURIMapTree } from "../trees/treeItems/web/CICSURIMapTree";
 
 export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -31,7 +33,9 @@ export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView
       const allSelectedLibraryTreeNodes = findSelectedNodes(treeview, CICSLibraryTree, node);
       const allSelectedDatasetTreeNodes = findSelectedNodes(treeview, CICSLibraryTreeItem, node);
       const allSelectedDatasetProgramTreeNodes = findSelectedNodes(treeview, CICSLibraryDatasets, node);
-      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes, ...allSelectedLibraryTreeNodes, ...allSelectedDatasetTreeNodes, ...allSelectedDatasetProgramTreeNodes];
+      const allSelectedTCPIPServicesTreeNodes = findSelectedNodes(treeview, CICSTCPIPServiceTree, node);
+      const allSelectedURIMapsTreeNodes = findSelectedNodes(treeview, CICSURIMapTree, node);
+      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes, ...allSelectedLibraryTreeNodes, ...allSelectedDatasetTreeNodes, ...allSelectedDatasetProgramTreeNodes, ...allSelectedTCPIPServicesTreeNodes, ...allSelectedURIMapsTreeNodes];
       if (!allSelectedNodes || !allSelectedNodes.length) {
         window.showErrorMessage("No CICS resource tree selected");
         return;

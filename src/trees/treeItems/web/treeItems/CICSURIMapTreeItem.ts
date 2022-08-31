@@ -33,7 +33,7 @@ export class CICSURIMapTreeItem extends TreeItem {
       this.urimap = urimap;
       this.parentRegion = parentRegion;
       this.directParent = directParent;
-      this.contextValue = `cicsurimap.${urimap.name}`;
+      this.contextValue = `cicsurimaps.${urimap.name}`;
     }
   
     public setLabel(newLabel: string) {

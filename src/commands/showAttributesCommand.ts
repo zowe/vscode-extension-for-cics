@@ -17,7 +17,7 @@ import { CICSLocalFileTreeItem } from "../trees/treeItems/CICSLocalFileTreeItem"
 import { CICSProgramTreeItem } from "../trees/treeItems/CICSProgramTreeItem";
 import { CICSTaskTreeItem } from "../trees/treeItems/CICSTaskTreeItem";
 import { CICSTransactionTreeItem } from "../trees/treeItems/CICSTransactionTreeItem";
-import { CICSTCPIPServiceTree } from "../trees/treeItems/web/CICSTCPIPService";
+import { CICSTCPIPServiceTree } from "../trees/treeItems/web/CICSTCPIPServiceTree";
 import { CICSTCPIPServiceTreeItem } from "../trees/treeItems/web/treeItems/CICSTCPIPServiceTreeItem";
 import { CICSURIMapTreeItem } from "../trees/treeItems/web/treeItems/CICSURIMapTreeItem";
 import { findSelectedNodes } from "../utils/commandUtils";
