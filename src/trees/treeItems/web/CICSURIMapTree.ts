@@ -26,7 +26,7 @@ export class CICSURIMapTree extends TreeItem {
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
     super('URI Maps', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreeurimap.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimaps`;
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimaps`;
     this.parentRegion = parentRegion;
   }
 
@@ -77,13 +77,13 @@ export class CICSURIMapTree extends TreeItem {
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreeurimap.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimap`;
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimap`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreeurimap.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimap`;
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimap`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 

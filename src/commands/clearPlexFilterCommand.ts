@@ -72,6 +72,14 @@ export function getClearPlexFilterCommand(tree: CICSTree, treeview: TreeView<any
                       treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreelibrary."))[0];
                       treeToClear.clearFilter();
                       await treeToClear.loadContents();
+                    } else if (resourceToClear === "TCPIP Services"){
+                      treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreetcpips."))[0];
+                      treeToClear.clearFilter();
+                      await treeToClear.loadContents();
+                    } else if (resourceToClear === "URI Maps"){
+                      treeToClear = region.children.filter((child: any) => child.contextValue.includes("cicstreeurimaps."))[0];
+                      treeToClear.clearFilter();
+                      await treeToClear.loadContents();
                     } else if (resourceToClear === "All"){
                       for (const child of region.children){
                         child.clearFilter();

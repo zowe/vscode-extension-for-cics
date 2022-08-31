@@ -14,8 +14,8 @@ import { CICSSessionTree } from "./CICSSessionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
 import { getIconPathInResources } from "../utils/profileUtils";
 import { CICSRegionTree } from "./CICSRegionTree";
-import { CICSURIMapTree } from "./treeItems/web/CICSURIMap";
-import { CICSTCPIPServiceTree } from "./treeItems/web/CICSTCPIPService";
+import { CICSURIMapTree } from "./treeItems/web/CICSURIMapTree";
+import { CICSTCPIPServiceTree } from "./treeItems/web/CICSTCPIPServiceTree";
 
 export class CICSWebTree extends TreeItem {
   children: [CICSTCPIPServiceTree, CICSURIMapTree] | null;
