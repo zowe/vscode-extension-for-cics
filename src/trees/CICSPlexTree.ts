@@ -24,9 +24,13 @@ import { CICSCombinedTaskTree } from "./CICSCombinedTrees/CICSCombinedTaskTree";
 import { CICSCombinedLibraryTree } from "./CICSCombinedTrees/CICSCombinedLibraryTree";
 import { CICSCombinedTCPIPServiceTree } from "./CICSCombinedTrees/CICSCombinedTCPIPServiceTree";
 import { CICSCombinedURIMapTree } from "./CICSCombinedTrees/CICSCombinedURIMapTree";
+import { CICSCombinedPipelineTree } from "./CICSCombinedTrees/CICSCombinedPipelineTree";
+import { CICSCombinedWebServiceTree } from "./CICSCombinedTrees/CICSCombinedWebServiceTree";
+import { CICSPipelineTree } from "./treeItems/web/CICSPipelineTree";
+
 
 export class CICSPlexTree extends TreeItem {
-  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer | CICSCombinedTCPIPServiceTree | CICSCombinedURIMapTree) [] = [];
+  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer | CICSCombinedTCPIPServiceTree | CICSCombinedURIMapTree | CICSCombinedPipelineTree | CICSCombinedWebServiceTree) [] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
@@ -162,6 +166,8 @@ export class CICSPlexTree extends TreeItem {
     this.children.push(new CICSCombinedLibraryTree(this));
     this.children.push(new CICSCombinedTCPIPServiceTree(this));
     this.children.push(new CICSCombinedURIMapTree(this));
+    this.children.push(new CICSCombinedWebServiceTree(this));
+    this.children.push(new CICSCombinedPipelineTree(this));
   }
 
   public addRegionContainer() {

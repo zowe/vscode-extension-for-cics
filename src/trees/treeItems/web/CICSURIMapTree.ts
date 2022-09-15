@@ -58,6 +58,7 @@ export class CICSURIMapTree extends TreeItem {
       this.label = `URI Maps${this.activeFilter?` (${this.activeFilter}) `: " "}[${ urimapArray.length}]`;
       for (const urimap of  urimapArray) {
         const newURIMapItem = new CICSURIMapTreeItem(urimap, this.parentRegion, this);
+        newURIMapItem.setLabel(newURIMapItem.label!.toString().replace(urimap.name, `${urimap.name} [${newURIMapItem.urimap.scheme}] (${newURIMapItem.urimap.path})`));
         this.addURIMAP(newURIMapItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
@@ -77,13 +78,13 @@ export class CICSURIMapTree extends TreeItem {
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimap`;
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimaps`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimap`;
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimaps`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 

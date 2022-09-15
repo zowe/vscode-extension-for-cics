@@ -22,6 +22,8 @@ import { CICSLibraryTreeItem } from "../trees/treeItems/CICSLibraryTreeItem";
 import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { CICSURIMapTree } from "../trees/treeItems/web/CICSURIMapTree";
+import { CICSPipelineTree } from "../trees/treeItems/web/CICSPipelineTree";
+import { CICSWebServiceTree } from "../trees/treeItems/web/CICSWebServiceTree";
 
 export function getFilterLibrariesCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -326,7 +328,7 @@ export function getFilterURIMapsCommand(tree: CICSTree, treeview: TreeView<any>)
         return;
       }
       const persistentStorage = new PersistentStorage("zowe.cics.persistent");
-      const pattern = await getPatternFromFilter("URI Maps", persistentStorage.getURIMapsSearchHistory());
+      const pattern = await getPatternFromFilter("URI Maps", persistentStorage.getURIMapSearchHistory());
       if (!pattern) {
         return;
       }
@@ -339,6 +341,78 @@ export function getFilterURIMapsCommand(tree: CICSTree, treeview: TreeView<any>)
       }, async (_, token) => {
         token.onCancellationRequested(() => {
           console.log("Cancelling the loading of URI Maps");
+        });
+        await chosenNode.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
+      });
+    }
+  );
+}
+
+export function getFilterPipelinesCommand(tree: CICSTree, treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.filterPipelines",
+    async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: CICSPipelineTree;
+      if (node) {
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSPipelineTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS Pipelines tree selected");
+        return;
+      }
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
+      const pattern = await getPatternFromFilter("Pipelines", persistentStorage.getPipelineSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addPipelineSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      window.withProgress({
+        title: 'Loading Pipelines',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of Pipelines");
+        });
+        await chosenNode.loadContents();
+        tree._onDidChangeTreeData.fire(undefined);
+      });
+    }
+  );
+}
+
+export function getFilterWebServicesCommand(tree: CICSTree, treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.filterWebServices",
+    async (node) => {
+      const selection = treeview.selection;
+      let chosenNode: CICSWebServiceTree;
+      if (node) {
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSWebServiceTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS Web Services tree selected");
+        return;
+      }
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
+      const pattern = await getPatternFromFilter("Web Services", persistentStorage.getWebServiceSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addWebServiceSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      window.withProgress({
+        title: 'Loading Web Services',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of Web Services");
         });
         await chosenNode.loadContents();
         tree._onDidChangeTreeData.fire(undefined);

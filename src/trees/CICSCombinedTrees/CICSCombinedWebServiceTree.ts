@@ -11,7 +11,6 @@
 
 import { TreeItemCollapsibleState, TreeItem, window, ProgressLocation, workspace } from "vscode";
 import { CICSPlexTree } from "../CICSPlexTree";
-import { CICSTCPIPServiceTreeItem } from "../treeItems/web/treeItems/CICSTCPIPServiceTreeItem";
 import { CICSRegionTree } from "../CICSRegionTree";
 import { CICSTree } from "../CICSTree";
 import { ProfileManagement } from "../../utils/profileManagement";
@@ -21,9 +20,10 @@ import { toEscapedCriteriaString } from "../../utils/filterUtils";
 import { CICSRegionsContainer } from "../CICSRegionsContainer";
 import { TextTreeItem } from "../treeItems/utils/TextTreeItem";
 import { getIconPathInResources } from "../../utils/profileUtils";
+import { CICSWebServiceTreeItem } from "../treeItems/web/treeItems/CICSWebServiceTreeItem";
 
-export class CICSCombinedTCPIPServiceTree extends TreeItem {
-  children: (CICSTCPIPServiceTreeItem | ViewMore ) [] | [TextTreeItem] | null;
+export class CICSCombinedWebServiceTree extends TreeItem {
+  children: (CICSWebServiceTreeItem | ViewMore ) [] | [TextTreeItem] | null;
   parentPlex: CICSPlexTree;
   activeFilter: string | undefined;
   currentCount: number;
@@ -34,19 +34,19 @@ export class CICSCombinedTCPIPServiceTree extends TreeItem {
     parentPlex: CICSPlexTree,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
-    super("All TCPIP Services", TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicscombinedtcpipstree.`;
+    super("All Web Services", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicscombinedwebservicetree.`;
     this.parentPlex = parentPlex;
-    this.children = [new TextTreeItem("Use the search button to display TCPIP Services", "applyfiltertext.")];
+    this.children = [new TextTreeItem("Use the search button to display web services", "applyfiltertext.")];
     this.activeFilter = undefined;
     this.currentCount = 0;
-    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allTCPIPS.recordCountIncrement')}`; 
-    this.constant = "CICSTCPIPService";
+    this.incrementCount = +`${workspace.getConfiguration().get('zowe.cics.allWebServices.recordCountIncrement')}`; 
+    this.constant = "CICSWebService";
     }
 
     public async loadContents(tree: CICSTree){
       window.withProgress({
-        title: 'Loading TCPIP Services',
+        title: 'Loading Web Services',
         location: ProgressLocation.Notification,
         cancellable: true
       }, async (_, token) => {
@@ -69,34 +69,34 @@ export class CICSCombinedTCPIPServiceTree extends TreeItem {
           if (cacheTokenInfo) {
             const recordsCount = cacheTokenInfo.recordCount;
             if (parseInt(recordsCount, 10)) {
-              let allTCPIPS;
+              let allWebServices;
               if (recordsCount <= this.incrementCount) {
-                allTCPIPS = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
+                allWebServices = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, parseInt(recordsCount, 10));
               } else {
-                allTCPIPS = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
+                allWebServices = await ProfileManagement.getCachedResources(this.parentPlex.getProfile(), cacheTokenInfo.cacheToken, this.constant, 1, this.incrementCount);
                 count = parseInt(recordsCount);
               }
-              this.addTCPIPSUtil([], allTCPIPS, count);
+              this.addWebServicesUtil([], allWebServices, count);
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
             } else {
               this.children = [];
               this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
               tree._onDidChangeTreeData.fire(undefined);
-              window.showInformationMessage(`No TCPIP Services found`);
-              this.label = `All TCPIP Services${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
+              window.showInformationMessage(`No Web Services found`);
+              this.label = `All Web Services${this.activeFilter?` (${this.activeFilter}) `: " "}[${recordsCount}]`;
             }
           }
         } catch (error) {
-          window.showErrorMessage(`Something went wrong when fetching TCPIP Services TEST - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          window.showErrorMessage(`Something went wrong when fetching web services - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
         }
         }
       );
     }
 
-    public addTCPIPSUtil(newChildren:(CICSTCPIPServiceTreeItem | ViewMore) [], allTCPIPS:any, count:number|undefined){
-      for (const tcpips of allTCPIPS) {
-        // Regions container must exist if all TCPIP Services tree exists
+    public addWebServicesUtil(newChildren:(CICSWebServiceTreeItem | ViewMore) [], allWebServices:any, count:number|undefined){
+      for (const webservice of allWebServices) {
+        // Regions container must exist if all web services tree exists
         const regionsContainer = this.parentPlex.children.filter(child => {
           if (child instanceof CICSRegionsContainer) {
             return child;
@@ -104,18 +104,18 @@ export class CICSCombinedTCPIPServiceTree extends TreeItem {
         })[0];
         const parentRegion = regionsContainer.getChildren()!.filter(child => {
           if (child instanceof CICSRegionTree) {
-            return child.getRegionName() === tcpips.eyu_cicsname;
+            return child.getRegionName() === webservice.eyu_cicsname;
           }
         })[0] as CICSRegionTree;
-        const tcpipsTree = new CICSTCPIPServiceTreeItem(tcpips,parentRegion, this);
-        tcpipsTree.setLabel(tcpipsTree.label!.toString().replace(tcpips.name, `${tcpips.name} (${tcpips.eyu_cicsname}) [Port #${tcpipsTree.tcpips.port}]`));
-        newChildren.push(tcpipsTree);
+        const webserviceTree = new CICSWebServiceTreeItem(webservice,parentRegion, this);
+        webserviceTree.setLabel(webserviceTree.label!.toString().replace(webservice.name, `${webservice.name} (${webservice.eyu_cicsname})`));
+        newChildren.push(webserviceTree);
       }
       if (!count) {
         count = newChildren.length;
       }
       this.currentCount = newChildren.length;
-      this.label = `All TCPIP Services ${this.activeFilter?`(${this.activeFilter}) `: " "}[${this.currentCount} of ${count}]`;
+      this.label = `All Web Services ${this.activeFilter?`(${this.activeFilter}) `: " "}[${this.currentCount} of ${count}]`;
       if (count !== this.currentCount) {
         newChildren.push(new ViewMore(this, Math.min(this.incrementCount, count-this.currentCount)));
       }
@@ -124,7 +124,7 @@ export class CICSCombinedTCPIPServiceTree extends TreeItem {
 
     public async addMoreCachedResources(tree: CICSTree) {
       window.withProgress({
-        title: 'Loading more TCPIP Services',
+        title: 'Loading more pipelins',
         location: ProgressLocation.Notification,
         cancellable: false
       }, async () => {
@@ -143,17 +143,17 @@ export class CICSCombinedTCPIPServiceTree extends TreeItem {
             // record count may have updated
             const recordsCount = cacheTokenInfo.recordCount;
             const count = parseInt(recordsCount);
-            const allTCPIPS = await ProfileManagement.getCachedResources(
+            const allWebServices = await ProfileManagement.getCachedResources(
               this.parentPlex.getProfile(),
               cacheTokenInfo.cacheToken,
               this.constant,
               this.currentCount+1,
               this.incrementCount
               );
-            if (allTCPIPS) {
+            if (allWebServices) {
               // @ts-ignore
-              this.addTCPIPSUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSTCPIPServiceTreeItem):[], 
-                allTCPIPS,
+              this.addWebServicesUtil(this.getChildren() ? this.getChildren().filter((child) => child instanceof CICSWebServiceTreeItem):[], 
+                allWebServices,
                 count
                 );
               tree._onDidChangeTreeData.fire(undefined);
@@ -164,15 +164,15 @@ export class CICSCombinedTCPIPServiceTree extends TreeItem {
 
     public clearFilter() {
       this.activeFilter = undefined;
-      this.label = `All TCPIP Services`;
-      this.contextValue = `cicscombinedtcpipstree.unfiltered`;
+      this.label = `All Web Services`;
+      this.contextValue = `cicscombinedwebservicetree.unfiltered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   
     public setFilter(newFilter: string) {
       this.activeFilter = newFilter;
-      this.label = `All TCPIP Services (${this.activeFilter})`;
-      this.contextValue = `cicscombinedtcpipstree.filtered`;
+      this.label = `All Web Services (${this.activeFilter})`;
+      this.contextValue = `cicscombinedwebservicetree.filtered`;
       this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
 

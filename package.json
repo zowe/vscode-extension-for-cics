@@ -125,6 +125,24 @@
         }
       },
       {
+        "command": "cics-extension-for-zowe.filterPipelines",
+        "title": "Filter Pipelines",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterWebServices",
+        "title": "Filter Web Services",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
         "command": "cics-extension-for-zowe.filterTransactions",
         "title": "Filter Transactions",
         "category": "Zowe Explorer for IBM CICS",
@@ -172,6 +190,24 @@
       {
         "command": "cics-extension-for-zowe.filterAllLibraries",
         "title": "Filter All Libraries",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterAllPipelines",
+        "title": "Filter All Pipelines",
+        "category": "Zowe Explorer for IBM CICS",
+        "icon": {
+          "light": "resources/imgs/filter-dark.svg",
+          "dark": "resources/imgs/filter-light.svg"
+        }
+      },
+      {
+        "command": "cics-extension-for-zowe.filterAllWebServices",
+        "title": "Filter All Web Services",
         "category": "Zowe Explorer for IBM CICS",
         "icon": {
           "light": "resources/imgs/filter-dark.svg",
@@ -278,6 +314,16 @@
       },
       {
         "command": "cics-extension-for-zowe.showTaskAttributes",
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
+        "command": "cics-extension-for-zowe.showPipelineAttributes",
+        "title": "Show Attributes",
+        "category": "Zowe Explorer for IBM CICS"
+      },
+      {
+        "command": "cics-extension-for-zowe.showWebServiceAttributes",
         "title": "Show Attributes",
         "category": "Zowe Explorer for IBM CICS"
       },
@@ -446,6 +492,16 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicstreepipeline.*/",
+          "command": "cics-extension-for-zowe.filterPipelines",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreewebservice.*/",
+          "command": "cics-extension-for-zowe.filterWebServices",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicslibrary.*/",
           "command": "cics-extension-for-zowe.filterDatasets",
           "group": "inline"
@@ -496,6 +552,16 @@
           "group": "inline"
         },
         {
+          "when": "view == cics-view && viewItem =~ /^cicstreepipeline.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicstreewebservice.filtered.*/",
+          "command": "cics-extension-for-zowe.clearFilter",
+          "group": "inline"
+        },
+        {
           "when": "view == cics-view && viewItem =~ /^cicstreetransaction.*/",
           "command": "cics-extension-for-zowe.filterTransactions",
           "group": "inline"
@@ -523,6 +589,16 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicscombinedlibrarytree.*/",
           "command": "cics-extension-for-zowe.filterAllLibraries",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicscombinedpipelinetree.*/",
+          "command": "cics-extension-for-zowe.filterAllPipelines",
+          "group": "inline"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicscombinedwebservicetree.*/",
+          "command": "cics-extension-for-zowe.filterAllWebServices",
           "group": "inline"
         },
         {
@@ -593,6 +669,16 @@
         {
           "when": "view == cics-view && viewItem =~ /^cicstask.*/",
           "command": "cics-extension-for-zowe.showTaskAttributes",
+          "group": "000_zowecics_main@0"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicspipeline.*/",
+          "command": "cics-extension-for-zowe.showPipelineAttributes",
+          "group": "000_zowecics_main@0"
+        },
+        {
+          "when": "view == cics-view && viewItem =~ /^cicswebservice.*/",
+          "command": "cics-extension-for-zowe.showWebServiceAttributes",
           "group": "000_zowecics_main@0"
         },
         {
@@ -763,6 +849,20 @@
           "type": "number",
           "default": 500,
           "description": "Record count increment criteria for 'All URI Maps'",
+          "scope": "window",
+          "minimum": 1
+        },
+        "zowe.cics.allPipelines.recordCountIncrement": {
+          "type": "number",
+          "default": 500,
+          "description": "Record count increment criteria for 'All Pipelines'",
+          "scope": "window",
+          "minimum": 1
+        },
+        "zowe.cics.allWebServices.recordCountIncrement": {
+          "type": "number",
+          "default": 500,
+          "description": "Record count increment criteria for 'All Web Services'",
           "scope": "window",
           "minimum": 1
         }

@@ -12,11 +12,13 @@
 import { commands, TreeView, window } from "vscode";
 import { CICSCombinedLibraryTree } from "../trees/CICSCombinedTrees/CICSCombinedLibraryTree";
 import { CICSCombinedLocalFileTree } from "../trees/CICSCombinedTrees/CICSCombinedLocalFileTree";
+import { CICSCombinedPipelineTree } from "../trees/CICSCombinedTrees/CICSCombinedPipelineTree";
 import { CICSCombinedProgramTree } from "../trees/CICSCombinedTrees/CICSCombinedProgramTree";
 import { CICSCombinedTaskTree } from "../trees/CICSCombinedTrees/CICSCombinedTaskTree";
 import { CICSCombinedTCPIPServiceTree } from "../trees/CICSCombinedTrees/CICSCombinedTCPIPServiceTree";
 import { CICSCombinedTransactionsTree } from "../trees/CICSCombinedTrees/CICSCombinedTransactionTree";
 import { CICSCombinedURIMapTree } from "../trees/CICSCombinedTrees/CICSCombinedURIMapTree";
+import { CICSCombinedWebServiceTree } from "../trees/CICSCombinedTrees/CICSCombinedWebServiceTree";
 import { CICSTree } from "../trees/CICSTree";
 import { getPatternFromFilter } from "../utils/filterUtils";
 import { PersistentStorage } from "../utils/PersistentStorage";
@@ -198,11 +200,65 @@ export function getFilterAllURIMapsCommand(tree: CICSTree, treeview: TreeView<an
         return;
       }
       const persistentStorage = new PersistentStorage("zowe.cics.persistent");
-      const pattern = await getPatternFromFilter("URI Maps", persistentStorage.getURIMapsSearchHistory());
+      const pattern = await getPatternFromFilter("URI Map", persistentStorage.getURIMapSearchHistory());
       if (!pattern) {
         return;
       }
       await persistentStorage.addURIMapsSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      await chosenNode.loadContents(tree);
+      tree._onDidChangeTreeData.fire(undefined);
+    }
+  );
+}
+
+export function getFilterAllPipelinesCommand(tree: CICSTree, treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.filterAllPipelines",
+    async (node) => {
+      const selection = treeview.selection;
+      let chosenNode;
+      if (node) {
+        chosenNode = node;
+      } else if (selection[selection.length-1] && selection[selection.length-1] instanceof CICSCombinedPipelineTree) {
+        chosenNode = selection[selection.length-1];
+      } else { 
+        window.showErrorMessage("No CICS 'All Pipelines' tree selected");
+        return;
+      }
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
+      const pattern = await getPatternFromFilter("Pipeline", persistentStorage.getPipelineSearchHistory());
+      if (!pattern) {
+        return;
+      }
+      await persistentStorage.addPipelineSearchHistory(pattern!);
+      chosenNode.setFilter(pattern!);
+      await chosenNode.loadContents(tree);
+      tree._onDidChangeTreeData.fire(undefined);
+    }
+  );
+}
+
+export function getFilterAllWebServicesCommand(tree: CICSTree, treeview: TreeView<any>) {
+  return commands.registerCommand(
+    "cics-extension-for-zowe.filterAllWebServices",
+    async (node) => {
+      const selection = treeview.selection;
+      let chosenNode;
+      if(node) {
+        chosenNode = node;
+      } else if(selection[selection.length-1] && selection[selection.length-1] instanceof CICSCombinedWebServiceTree) {
+        chosenNode = selection[selection.length-1];
+      } else {
+        window.showErrorMessage("No CICS 'All Web Services' tree selected");
+        return;
+      }
+      const persistentStorage = new PersistentStorage("zowe.cics.persistent");
+      const pattern = await getPatternFromFilter("Web Service", persistentStorage.getWebServiceSearchHistory());
+      if(!pattern) {
+        return;
+      }
+      await persistentStorage.addWebServiceSearchHistory(pattern!);
       chosenNode.setFilter(pattern!);
       await chosenNode.loadContents(tree);
       tree._onDidChangeTreeData.fire(undefined);

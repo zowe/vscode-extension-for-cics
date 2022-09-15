@@ -108,7 +108,7 @@ export class CICSCombinedURIMapTree extends TreeItem {
           }
         })[0] as CICSRegionTree;
         const urimapsTree = new CICSURIMapTreeItem(urimaps,parentRegion, this);
-        urimapsTree.setLabel(urimapsTree.label!.toString().replace(urimaps.name, `${urimaps.name} (${urimaps.eyu_cicsname})`));
+        urimapsTree.setLabel(urimapsTree.label!.toString().replace(urimaps.name, `${urimaps.name} (${urimaps.eyu_cicsname}) [${urimapsTree.urimap.scheme}] (${urimapsTree.urimap.path})`));
         newChildren.push(urimapsTree);
       }
       if (!count) {

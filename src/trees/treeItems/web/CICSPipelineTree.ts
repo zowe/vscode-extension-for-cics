@@ -10,14 +10,14 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
-import { CICSTCPIPServiceTreeItem } from "./treeItems/CICSTCPIPServiceTreeItem";
+import { CICSPipelineTreeItem } from "./treeItems/CICSPipelineTreeItem";
 import { CICSRegionTree } from "../../CICSRegionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 import { toEscapedCriteriaString } from "../../../utils/filterUtils";
 import { getIconPathInResources } from "../../../utils/profileUtils";
-export class CICSTCPIPServiceTree extends TreeItem {
-  children: CICSTCPIPServiceTreeItem[] = [];
+export class CICSPipelineTree extends TreeItem {
+  children: CICSPipelineTreeItem[] = [];
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
 
@@ -25,13 +25,13 @@ export class CICSTCPIPServiceTree extends TreeItem {
     parentRegion: CICSRegionTree,
     public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
   ) {
-    super('TCPIP Services', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreetcpips.${this.activeFilter ? 'filtered' : 'unfiltered'}.tcpips`;
+    super('Pipelines', TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreepipeline.${this.activeFilter ? 'filtered' : 'unfiltered'}.pipelines`;
     this.parentRegion = parentRegion;
   }
 
-  public addTCPIPS(tcpips: CICSTCPIPServiceTreeItem) {
-    this.children.push(tcpips);
+  public addPipeline(pipeline: CICSPipelineTreeItem) {
+    this.children.push(pipeline);
   }
 
   public async loadContents() {
@@ -47,30 +47,30 @@ export class CICSTCPIPServiceTree extends TreeItem {
 
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
-      const tcpipsResponse = await getResource(this.parentRegion.parentSession.session, {
-        name: "CICSTCPIPService",
+      const pipelineResponse = await getResource(this.parentRegion.parentSession.session, {
+        name: "CICSPipeline",
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      const tcpipservicesArray = Array.isArray(tcpipsResponse.response.records.cicstcpipservice) ? tcpipsResponse.response.records.cicstcpipservice : [tcpipsResponse.response.records.cicstcpipservice];
-      this.label = `TCPIP Services${this.activeFilter?` (${this.activeFilter}) `: " "}[${ tcpipservicesArray.length}]`;
-      for (const tcpips of  tcpipservicesArray) {
-        const newTCPIPServiceItem = new CICSTCPIPServiceTreeItem(tcpips, this.parentRegion, this);
-        newTCPIPServiceItem.setLabel(newTCPIPServiceItem.label!.toString().replace(tcpips.name, `${tcpips.name} [Port #${newTCPIPServiceItem.tcpips.port}]`));
-        this.addTCPIPS(newTCPIPServiceItem);
+      const pipelinesArray = Array.isArray(pipelineResponse.response.records.cicspipeline) ? pipelineResponse.response.records.cicspipeline : [pipelineResponse.response.records.cicspipeline];
+      this.label = `Pipelines${this.activeFilter?` (${this.activeFilter}) `: " "}[${ pipelinesArray.length}]`;
+      for (const pipeline of  pipelinesArray) {
+        const newPipelineItem = new CICSPipelineTreeItem(pipeline, this.parentRegion, this);
+        newPipelineItem.setLabel(newPipelineItem.label!.toString().replace(pipeline.name, `${pipeline.name}`));
+        this.addPipeline(newPipelineItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
       if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
-        window.showErrorMessage(`Resource Limit Exceeded - Set a TCPIPService filter to narrow search`);
+        window.showErrorMessage(`Resource Limit Exceeded - Set a Pipeline filter to narrow search`);
       } else if ((this.children.length == 0)) {
-        window.showInformationMessage(`No TCPIP Services found`);
-        this.label = `TCPIP Services${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        window.showInformationMessage(`No Pipelines found`);
+        this.label = `Pipelines${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching TCPIP services - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(`Something went wrong when fetching Pipelines - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
       }
     }
 
@@ -78,13 +78,13 @@ export class CICSTCPIPServiceTree extends TreeItem {
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreetcpips.${this.activeFilter ? 'filtered' : 'unfiltered'}.tcpips`;
+    this.contextValue = `cicstreepipeline.${this.activeFilter ? 'filtered' : 'unfiltered'}.pipelines`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreetcpips.${this.activeFilter ? 'filtered' : 'unfiltered'}.tcpips`;
+    this.contextValue = `cicstreepipeline.${this.activeFilter ? 'filtered' : 'unfiltered'}.pipelines`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 

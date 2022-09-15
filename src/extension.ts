@@ -25,10 +25,12 @@ import {
   getShowRegionAttributes,
   getShowTransactionAttributesCommand,
   getShowLocalFileAttributesCommand,
-  getShowTaskAttributesCommand
+  getShowTaskAttributesCommand,
+  getShowPipelineAttributesCommand,
+  getShowWebServiceAttributesCommand
 } from "./commands/showAttributesCommand";
 import { getShowRegionSITParametersCommand} from "./commands/showParameterCommand";
-import { getFilterProgramsCommand, getFilterDatasetProgramsCommand, getFilterLibrariesCommand, getFilterDatasetsCommand, getFilterTransactionCommand, getFilterLocalFilesCommand, getFilterTasksCommand, getFilterTCPIPSCommand, getFilterURIMapsCommand } from "./commands/filterResourceCommands";
+import { getFilterProgramsCommand, getFilterDatasetProgramsCommand, getFilterLibrariesCommand, getFilterDatasetsCommand, getFilterTransactionCommand, getFilterLocalFilesCommand, getFilterTasksCommand, getFilterTCPIPSCommand, getFilterURIMapsCommand, getFilterPipelinesCommand, getFilterWebServicesCommand } from "./commands/filterResourceCommands";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
 import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
@@ -46,7 +48,7 @@ import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
 import { getFilterAllProgramsCommand } from "./commands/filterAllResourceCommand";
-import { getFilterAllLibrariesCommand, getFilterAllTransactionsCommand, getFilterAllLocalFilesCommand, getFilterAllURIMapsCommand, getFilterAllTCPIPServicesCommand, getFilterAllTasksCommand} from "./commands/filterAllResourceCommand";
+import { getFilterAllLibrariesCommand, getFilterAllTransactionsCommand, getFilterAllLocalFilesCommand, getFilterAllURIMapsCommand, getFilterAllTCPIPServicesCommand, getFilterAllTasksCommand, getFilterAllPipelinesCommand, getFilterAllWebServicesCommand} from "./commands/filterAllResourceCommand";
 import { getIconPathInResources, setIconClosed } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
@@ -252,6 +254,36 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+    // Web Services folder node expanded
+    } else if (node.element.contextValue.includes("cicstreewebservice.")) {
+      window.withProgress({
+        title: 'Loading Web Services',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of Web Services");
+        });
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+    // Pipeline folder node expanded
+    }else if (node.element.contextValue.includes("cicstreepipeline.")) {
+      window.withProgress({
+        title: 'Loading Pipeline',
+        location: ProgressLocation.Notification,
+        cancellable: false
+      }, async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the loading of Pipelines");
+        });
+      await node.element.loadContents();
+      treeDataProv._onDidChangeTreeData.fire(undefined);
+      });
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
     // URIMap folder node expanded
     } else if (node.element.contextValue.includes("cicstreeurimaps.")) {
       window.withProgress({
@@ -320,6 +352,20 @@ export async function activate(context: ExtensionContext) {
     }
     node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
+    // All Pipeline folder node expanded
+    } else if (node.element.contextValue.includes("cicscombinedpipelinetree.")) {
+      if (node.element.getActiveFilter()) {
+        await node.element.loadContents(treeDataProv);
+      }
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+  
+    // All Web Services folder node expanded
+    } else if (node.element.contextValue.includes("cicscombinedwebservicetree.")) {
+      if (node.element.getActiveFilter()) {
+        await node.element.loadContents(treeDataProv);
+      }
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+  
     // Regions container folder node expanded
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
       node.element.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
@@ -345,6 +391,10 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedurimapstree.")) {
       setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicscombinedpipelinetree.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicscombinedwebservicetree.")) {
+      setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
@@ -360,6 +410,10 @@ export async function activate(context: ExtensionContext) {
     } else if (node.element.contextValue.includes("cicstreeweb.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreetcpips.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicstreepipeline.")) {
+      setIconClosed(node, treeDataProv);
+    } else if (node.element.contextValue.includes("cicstreewebservice.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreeurimaps.")) {
       setIconClosed(node, treeDataProv);
@@ -400,6 +454,8 @@ export async function activate(context: ExtensionContext) {
     getShowTransactionAttributesCommand(treeview),
     getShowLocalFileAttributesCommand(treeview),
     getShowTaskAttributesCommand(treeview),
+    getShowPipelineAttributesCommand(treeview),
+    getShowWebServiceAttributesCommand(treeview),
 
     getShowRegionSITParametersCommand(treeview),
     
@@ -412,9 +468,13 @@ export async function activate(context: ExtensionContext) {
     getFilterTasksCommand(treeDataProv, treeview),
     getFilterTCPIPSCommand(treeDataProv, treeview),
     getFilterURIMapsCommand(treeDataProv, treeview),
+    getFilterPipelinesCommand(treeDataProv, treeview),
+    getFilterWebServicesCommand(treeDataProv, treeview),
 
     getFilterAllProgramsCommand(treeDataProv, treeview),
     getFilterAllLibrariesCommand(treeDataProv, treeview),
+    getFilterAllWebServicesCommand(treeDataProv, treeview),
+    getFilterAllPipelinesCommand(treeDataProv, treeview),
     getFilterAllTransactionsCommand(treeDataProv, treeview),
     getFilterAllLocalFilesCommand(treeDataProv, treeview),
     getFilterAllTasksCommand(treeDataProv, treeview),
