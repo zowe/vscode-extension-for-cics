@@ -16,9 +16,11 @@ import { getIconPathInResources } from "../utils/profileUtils";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSURIMapTree } from "./treeItems/web/CICSURIMapTree";
 import { CICSTCPIPServiceTree } from "./treeItems/web/CICSTCPIPServiceTree";
+import { CICSPipelineTree } from "./treeItems/web/CICSPipelineTree";
+import { CICSWebServiceTree } from "./treeItems/web/CICSWebServiceTree";
 
 export class CICSWebTree extends TreeItem {
-  children: [CICSTCPIPServiceTree, CICSURIMapTree] | null;
+  children: [CICSTCPIPServiceTree, CICSURIMapTree, CICSPipelineTree, CICSWebServiceTree] | null;
   parentRegion: CICSRegionTree | undefined;
   //activeFilter: string | undefined = undefined;
 
@@ -30,7 +32,7 @@ export class CICSWebTree extends TreeItem {
     this.contextValue = `cicstreeweb.web`;
     this.parentRegion = parentRegion;
 
-    this.children = [new CICSTCPIPServiceTree(parentRegion), new CICSURIMapTree(parentRegion)];
+    this.children = [new CICSTCPIPServiceTree(parentRegion), new CICSURIMapTree(parentRegion), new CICSPipelineTree(parentRegion), new CICSWebServiceTree(parentRegion)];
     }
 
   public async loadContents()

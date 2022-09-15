@@ -22,6 +22,8 @@ export class PersistentStorage {
     private static readonly loadedCICSProfile: string = "loadedCICSProfile";
     private static readonly tcpipsSearchHistory: string = "tcpipsSearchHistory";
     private static readonly urimapsSearchHistory: string = "urimapsSearchHistory";
+    private static readonly pipelineSearchHistory: string = "pipelineSearchHistory";
+    private static readonly webserviceSearchHistory: string = "webserviceSearchHistory";
 
 
     private mProgramSearchHistory: string[] = [];
@@ -33,6 +35,8 @@ export class PersistentStorage {
     private mLoadedCICSProfile: string[] = [];
     private mTCPIPSSearchHistory: string[] = [];
     private mURIMapsSearchHistory: string[] = [];
+    private mPipelineSearchHistory: string[] = [];
+    private mWebServiceSearchHistory: string[] = [];
 
     constructor(
         schema: string,
@@ -51,6 +55,8 @@ export class PersistentStorage {
         let loadedCICSProfileLines: string[] | undefined;
         let tcpipsSearchHistoryLines: string[] | undefined;
         let urimapsSearchHistoryLines: string[] | undefined;
+        let pipelineSearchHistoryLines: string[] | undefined;
+        let webserviceSearchHistoryLines: string[] | undefined; 
 
         if (workspace.getConfiguration(this.schema)) {
             programSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.programSearchHistory);
@@ -62,6 +68,8 @@ export class PersistentStorage {
             loadedCICSProfileLines = workspace.getConfiguration(this.schema).get(PersistentStorage.loadedCICSProfile);
             tcpipsSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.tcpipsSearchHistory);
             urimapsSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.urimapsSearchHistory);
+            pipelineSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.pipelineSearchHistory);
+            webserviceSearchHistoryLines = workspace.getConfiguration(this.schema).get(PersistentStorage.webserviceSearchHistory);
         }
         if (programSearchHistoryLines) {
             this.mProgramSearchHistory = programSearchHistoryLines;
@@ -108,6 +116,16 @@ export class PersistentStorage {
         } else {
             await this.resetURIMapsSearchHistory();
         }
+        if (pipelineSearchHistoryLines) {
+            this.mPipelineSearchHistory = pipelineSearchHistoryLines;
+        } else {
+            await this.resetPipelineSearchHistory();
+        }
+        if(webserviceSearchHistoryLines) {
+            this.mWebServiceSearchHistory = webserviceSearchHistoryLines;
+        } else {
+            await this.resetWebServiceSearchHistory();
+        }
     }
 
 
@@ -136,8 +154,14 @@ export class PersistentStorage {
     public getTCPIPSSearchHistory(): string[] {
         return this.mTCPIPSSearchHistory;
     }
-    public getURIMapsSearchHistory(): string[] {
+    public getURIMapSearchHistory(): string[] {
         return this.mURIMapsSearchHistory;
+    }
+    public getPipelineSearchHistory(): string[] {
+        return this.mPipelineSearchHistory;
+    }
+    public getWebServiceSearchHistory(): string[] {
+        return this.mWebServiceSearchHistory;
     }
 
 
@@ -177,6 +201,14 @@ export class PersistentStorage {
     public async resetURIMapsSearchHistory() {
         this.mURIMapsSearchHistory = [];
         await this.updateURIMapsSearchHistory();
+    }
+    public async resetPipelineSearchHistory() {
+        this.mPipelineSearchHistory = [];
+        await this.updatePipelineSearchHistory();
+    }
+    public async resetWebServiceSearchHistory() {
+        this.mWebServiceSearchHistory = [];
+        await this.updateWebServiceSearchHistory();
     }
 
 
@@ -241,6 +273,22 @@ export class PersistentStorage {
         const settings: any = { ...workspace.getConfiguration(this.schema) };
         if (settings.persistence) {
             settings[PersistentStorage.urimapsSearchHistory] = this.mURIMapsSearchHistory;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+
+    private async updatePipelineSearchHistory() {
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if(settings.persistence) {
+            settings[PersistentStorage.pipelineSearchHistory] = this.mPipelineSearchHistory;
+            await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
+        }
+    }
+
+    private async updateWebServiceSearchHistory() {
+        const settings: any = { ...workspace.getConfiguration(this.schema) };
+        if(settings.persistence) {
+            settings[PersistentStorage.webserviceSearchHistory] = this.mWebServiceSearchHistory;
             await workspace.getConfiguration().update(this.schema, settings, ConfigurationTarget.Global);
         }
     }
@@ -375,6 +423,36 @@ export class PersistentStorage {
                 this.mURIMapsSearchHistory.pop();
             }
             await this.updateURIMapsSearchHistory();
+        }
+    }
+
+    public async addPipelineSearchHistory(criteria: string) {
+        if (criteria) {
+            this.mPipelineSearchHistory = this.mPipelineSearchHistory.filter((element) => {
+                return element.trim() !== criteria.trim();
+            });
+
+            this.mPipelineSearchHistory.unshift(criteria);
+
+            if(this.mPipelineSearchHistory.length > 10) {
+                this.mPipelineSearchHistory.pop();
+            }
+            await this.updatePipelineSearchHistory();
+        }
+    }
+
+    public async addWebServiceSearchHistory(criteria: string) {
+        if(criteria) {
+            this.mWebServiceSearchHistory = this.mWebServiceSearchHistory.filter((element) => {
+                return element.trim() !== criteria.trim();
+            });
+
+            this.mWebServiceSearchHistory.unshift(criteria);
+
+            if(this.mWebServiceSearchHistory.length > 10){
+                this.mWebServiceSearchHistory.pop();
+            }
+            await this.updateWebServiceSearchHistory();
         }
     }
 
