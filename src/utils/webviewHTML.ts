@@ -424,11 +424,13 @@ export const getAttributesHtml = (title: string, webText: string) => {
       }
       .colHeading {
         width: 30%;
+        word-wrap:break-word;
       }
       td {
         border:1px solid var(--vscode-editor-foreground);
         padding: 0.3rem 0.5rem;
         word-wrap:break-word;
+        text-align:center;
       }
       h1 {
         width: 100%;
@@ -438,7 +440,8 @@ export const getAttributesHtml = (title: string, webText: string) => {
       }
       .valueHeading {
         padding: 0.7rem 0.5rem;
-        text-align: left;
+        text-align: center;
+        align-items: center;
       }
       .headingTH {
         padding: 0.7rem 0.5rem;
