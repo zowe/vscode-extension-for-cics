@@ -2,6 +2,20 @@
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
+## `2.3.0`
+- Provided the ability to view relevant programs beneath the library dataset resource [#295](https://github.com/zowe/vscode-extension-for-cics/pull/295).
+- Provided search filter functionality for programs associated with datasets and for datasets associated with libraries [#295](https://github.com/zowe/vscode-extension-for-cics/pull/295).
+- Removed the ability to 'kill' a task but kept Purge and Purge Wait [#296](https://github.com/zowe/vscode-extension-for-cics/pull/296).
+- Enabled the applied filter for programs to appear on the dataset tree node (for plex and single region systems) [#300](https://github.com/zowe/vscode-extension-for-cics/pull/300).
+- Added filter option from Regions tree node to filter for Tasks and Library Resources [#300](https://github.com/zowe/vscode-extension-for-cics/pull/300).
+- Integrated a 'Web' folder containing four added resources: TCPIP Service, URIMap, Pipeline and Web Service [#305](https://github.com/zowe/vscode-extension-for-cics/pull/305) & [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
+- Integrated search functionality for TCPIP Services and URI Maps for both stand-alone regions and plex systems [#305](https://github.com/zowe/vscode-extension-for-cics/pull/305) & [#306](https://github.com/zowe/vscode-extension-for-cics/pull/306).
+- Fixed an error with the `Show Attributes` command associated with Web Service resource [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
+- Integrated search functionality for Pipelines and Web Services for both stand-alone regions and plex systems) [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
+- Incorporated `Show Attributes` Command for all resources under the web folder [#305](https://github.com/zowe/vscode-extension-for-cics/pull/305) & [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
+- Integrated the ability to show key attributes on the TCPIPS and URIMAPS resource tree node [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
+- Fixed alignment inconsistency for attributes table for all resources [#318](https://github.com/zowe/vscode-extension-for-cics/pull/318). 
+
 ## `2.2.0`
 - Added the ability to carry user input in the subsequent search filter for all resources [#258](https://github.com/zowe/vscode-extension-for-cics/pull/258).
 - Added a new CICS Library resource type [#260](https://github.com/zowe/vscode-extension-for-cics/pull/260).

@@ -27,6 +27,7 @@ This CICS Extension for Zowe Explorer adds additional functionality to the popul
     - [Purge Task](#purge-task)
     - [Inquire Functionality](#inquire-functionality)
     - [View Datasets under Libraries](#view-datasets-under-libraries)
+    - [View four CICS Web Resources under the Web Folder](#view-four-cics-web-resources-under-the-web-folder)
 - [Untrusted TLS Certificates](#untrusted-tls-certificates)
 - [Usage Tips](#usage-tips)
 - [Providing feedback or help contributing](#providing-feedback-or-help-contributing)
@@ -307,6 +308,14 @@ Expand libraries of a region to view specific datasets belonging to a library. R
 
 <p align="center">
 <img src="./docs/images/datasets.gif" alt="Zowe CICS Explorer View Datasets functionality" width="600px"/> 
+</p>
+
+### View four CICS Web Resources under the Web Folder
+
+Expand the Web folder to view TCPIP Services, URI Maps, Pipelines and Web Services. Each of these resources can be expanded and allows for right-click functionality on the specific resource to execute the `Show Attributes` command. Use the search icon to filter down specific resources by applying a filter. 
+
+<p align="center">
+<img src="./docs/images/webResources.gif" alt="Zowe CICS Explorer Web resources under the Web folder" width="600px"/> 
 </p>
 
 ## Untrusted TLS Certificates
