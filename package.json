@@ -21,7 +21,7 @@
     "zowe.vscode-extension-for-zowe"
   ],
   "main": "./out/extension.js",
-  "icon": "resources/zowe_cics_logo.png",
+  "icon": "resources/zowe-cics-color.png",
   "keywords": [
     "Zowe",
     "explorer",
