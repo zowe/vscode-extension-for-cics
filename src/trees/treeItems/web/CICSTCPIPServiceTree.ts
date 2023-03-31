@@ -66,7 +66,7 @@ export class CICSTCPIPServiceTree extends TreeItem {
       https.globalAgent.options.rejectUnauthorized = undefined;
       if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a TCPIPService filter to narrow search`);
-      } else if ((this.children.length == 0)) {
+      } else if ((this.children.length === 0)) {
         window.showInformationMessage(`No TCPIP Services found`);
         this.label = `TCPIP Services${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {

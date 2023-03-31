@@ -53,9 +53,8 @@ import { getIconPathInResources, setIconClosed } from "./utils/profileUtils";
 import { plexExpansionHandler } from "./utils/expansionHandler";
 import { sessionExpansionHandler } from "./utils/expansionHandler";
 import { regionContainerExpansionHandler } from "./utils/expansionHandler";
-import { getZoweExplorerVersion, isTheia } from "./utils/workspaceUtils";
-import { CredentialManagerFactory, Logger } from "@zowe/imperative";
-import { KeytarApi } from "@zowe/zowe-explorer-api";
+import { getZoweExplorerVersion } from "./utils/workspaceUtils";
+
 import { getInquireTransactionCommand } from "./commands/inquireTransaction";
 import { getPurgeTaskCommand } from "./commands/purgeTaskCommand";
 import { getInquireProgramCommand } from "./commands/inquireProgram";
@@ -66,9 +65,6 @@ import { getInquireProgramCommand } from "./commands/inquireProgram";
  * @returns 
  */
 export async function activate(context: ExtensionContext) {
-  const log = Logger.getAppLogger();
-  const keytarApi = new KeytarApi(log);
-  await keytarApi.activateKeytar(CredentialManagerFactory.initialized,isTheia());
   const zeVersion = getZoweExplorerVersion();
   if (!zeVersion){
     window.showErrorMessage("Zowe Explorer was not found: Please ensure Zowe Explorer v2.0.0 or higher is installed");
