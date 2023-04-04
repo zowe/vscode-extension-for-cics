@@ -18,11 +18,11 @@ import { xml2json } from "xml-js";
 import cicsProfileMeta from "./profileDefinition";
 import * as https from "https";
 import { CICSPlexTree } from "../trees/CICSPlexTree";
-import { LoggerUtil } from "./loggerUtils";
+import { LoggerUtils } from "./loggerUtils";
 
 export class ProfileManagement {
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
-  private static ProfilesCache = new ProfilesCache(LoggerUtil.instance.getImperativeLogger());
+  private static ProfilesCache = new ProfilesCache(LoggerUtils.instance.getImperativeLogger());
   
   constructor() { }
 
