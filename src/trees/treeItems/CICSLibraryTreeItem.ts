@@ -84,7 +84,7 @@ export class CICSLibraryTreeItem extends TreeItem {
       https.globalAgent.options.rejectUnauthorized = undefined;
       if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a datasets filter to narrow search`);
-      } else if (this.children.length == 0) {
+      } else if (this.children.length === 0) {
         window.showInformationMessage(`No datasets found`);
         this.label = `${this.library.name}${this.parentRegion.parentPlex ? ` (${this.library.eyu_cicsname})` : ""}${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
       } else {
