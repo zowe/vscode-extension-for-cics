@@ -8,7 +8,7 @@
   },
   "version": "2.3.0",
   "engines": {
-    "vscode": "^1.50.0"
+    "vscode": "^1.53.2"
   },
   "categories": [
     "Other"
@@ -870,47 +870,47 @@
     }
   },
   "resolutions": {
-    "**/ansi-regex": "^5.0.1",
-    "**/log4js": "6.4.6",
-    "**/glob-parent": "^5.1.2",
-    "**/minimist": "^1.2.6",
-    "**/moment": "^2.29.4",
-    "**/tar": "^6.1.9"
+    "**/ansi-regex": "~5.0.1",
+    "**/log4js": "~6.4.6",
+    "**/glob-parent": "~5.1.2",
+    "**/minimist": "~1.2.6",
+    "**/moment": "~2.29.4",
+    "**/nanoid": "~3.1.30",
+    "**/tar": "~6.1.9"
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
     "build": "run-script-os",
-    "build:win32": "rd /s /q out && npm run lint && npm run licenses && tsc -p ./",
-    "build:default": "rm -rf out && npm run lint && npm run licenses && tsc -p ./",
+    "build:win32": "rd /s /q out && npm run licenses && tsc -p ./",
+    "build:default": "rm -rf out && npm run licenses && tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run build && npm run lint",
     "test": "node ./out/test/runTest.js",
     "licenses": "node ./update.licenses.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.0",
-    "@types/node": "^12.11.7",
-    "@types/vscode": "^1.50.0",
-    "@typescript-eslint/eslint-plugin": "^4.1.1",
-    "@typescript-eslint/parser": "^4.1.1",
-    "eslint": "^7.9.0",
-    "glob": "^7.1.6",
-    "mocha": "^8.1.3",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^8.2.3",
+    "@types/node": "^12.20.55",
+    "@types/vscode": "^1.77.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "eslint": "^7.32.0",
+    "glob": "^7.2.3",
+    "mocha": "^8.4.0",
     "shebang-regex": "^3.0.0",
-    "typescript": "^4.6.2",
-    "vscode-test": "^1.4.0"
+    "typescript": "^4.9.5",
+    "vscode-test": "^1.6.1"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
-    "@zowe/cics-for-zowe-cli": "^5.0.0",
-    "@zowe/cli": "7.2.3",
-    "@zowe/imperative": "5.3.3",
-    "@zowe/zowe-explorer-api": "2.2.1",
+    "@zowe/cics-for-zowe-cli": "^5.0.1",
+    "@zowe/cli": "^7.14.0",
+    "@zowe/imperative": "^5.13.0",
+    "@zowe/zowe-explorer-api": "^2.7.0",
     "axios": "^0.21.4",
-    "https": "^1.0.0",
-    "run-script-os": "^1.1.6",
-    "xml-js": "^1.6.11"
+    "https": "~1.0.0",
+    "run-script-os": "~1.1.6",
+    "xml-js": "~1.6.11"
   }
 }
