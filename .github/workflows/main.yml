@@ -1,4 +1,4 @@
-name: VSIX
+name: Main CI/CD for Zowe CICS Explorer
 on:
   push:
   workflow_dispatch:
