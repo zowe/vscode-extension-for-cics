@@ -1,20 +1,25 @@
 name: VSIX
 on:
   push:
-    branches: [main]
-
   workflow_dispatch:
+    inputs:
+      version:
+        description: Version to be published
+        required: true
 
 jobs:
   build_vsix:
     name: build_vsix
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
-          registry-url: https://registry.npmjs.org/
+          node-version: lts/*
+          # registry-url: https://registry.npmjs.org/
 
       - name: Install Dependencies
         run: npm i
@@ -25,10 +30,49 @@ jobs:
       - name: Package VSIX
         run: vsce package
 
-      - name: Update Repo
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add cics-extension-for-zowe*
-          git commit -s -m "Auto Update VSIX"
-          git push
+  deploy_vsix:
+    name: deploy_vsix
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.ref }}
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          # registry-url: https://registry.npmjs.org/
+
+      - name: Install VSCE
+        run: npm i -g vsce
+
+      # - name: Publish to Marketplace
+      #   run: vsce publish -p ${{ secrets.VSCODE_TOKEN }}
+
+      - uses: zowe-actions/octorelease@master
+        id: octorelease
+        if: ${{ !contains(github.event.inputs.version, '-SNAPSHOT') }}
+        env:
+          GIT_COMMITTER_NAME: ${{ secrets.ZOWE_ROBOT_USER }}
+          GIT_COMMITTER_EMAIL: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+          GIT_CREDENTIALS: x-access-token:${{ secrets.ZOWE_ROBOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # OVSX_PAT: ${{ secrets.VSCODE_ZOWE_ROBOT_PUBLISH_TOKEN }}
+          VSCE_PAT: ${{ secrets.VSCODE_TOKEN }}
+        with:
+          config-dir: .github
+          new-version: ${{ github.event.inputs.version }}
+
+      - name: Create Snapshot Version
+        if: steps.octorelease.outcome == 'success'
+        uses: zowe-actions/octorelease/script@master
+        env:
+          VERSION_STRING: "%s-SNAPSHOT"
+        with:
+          config-dir: .github
+          script: prepareRelease
