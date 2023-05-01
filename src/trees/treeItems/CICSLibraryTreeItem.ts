@@ -16,7 +16,6 @@ import * as https from "https";
 import { getIconPathInResources } from "../../utils/profileUtils";
 import { CICSLibraryDatasets } from "./CICSLibraryDatasets";
 import { toEscapedCriteriaString } from "../../utils/filterUtils";
-import { systemDefaultPlatform } from "vscode-test/out/util";
 
 export class CICSLibraryTreeItem extends TreeItem {
   children: CICSLibraryDatasets[] = [];
@@ -60,7 +59,7 @@ export class CICSLibraryTreeItem extends TreeItem {
     } else {
       criteria = defaultCriteria;
     }
-    
+
     this.children = [];
     try {
 
@@ -71,7 +70,7 @@ export class CICSLibraryTreeItem extends TreeItem {
         regionName: this.parentRegion.getRegionName(),
         cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
         criteria: criteria
-      }); 
+      });
       https.globalAgent.options.rejectUnauthorized = undefined;
       const datasetArray = Array.isArray(libraryResponse.response.records.cicslibrarydatasetname) ? libraryResponse.response.records.cicslibrarydatasetname : [libraryResponse.response.records.cicslibrarydatasetname];
       this.label = `${this.library.name}${this.parentRegion.parentPlex ? ` (${this.library.eyu_cicsname})` : ""}${this.activeFilter?` (${this.activeFilter}) `: " "}[${datasetArray.length}]`;

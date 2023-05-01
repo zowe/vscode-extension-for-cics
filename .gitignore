@@ -4,3 +4,4 @@ out/
 logs/
 dist/*.vsix
 .vscode-test/
+results/
