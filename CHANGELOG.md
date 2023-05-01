@@ -3,6 +3,7 @@
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
 ## `2.3.0`
+
 - Provided the ability to view relevant programs beneath the library dataset resource [#295](https://github.com/zowe/vscode-extension-for-cics/pull/295).
 - Provided search filter functionality for programs associated with datasets and for datasets associated with libraries [#295](https://github.com/zowe/vscode-extension-for-cics/pull/295).
 - Removed the ability to 'kill' a task but kept Purge and Purge Wait [#296](https://github.com/zowe/vscode-extension-for-cics/pull/296).
@@ -14,9 +15,10 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Integrated search functionality for Pipelines and Web Services for both stand-alone regions and plex systems) [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
 - Incorporated `Show Attributes` Command for all resources under the web folder [#305](https://github.com/zowe/vscode-extension-for-cics/pull/305) & [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
 - Integrated the ability to show key attributes on the TCPIPS and URIMAPS resource tree node [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
-- Fixed alignment inconsistency for attributes table for all resources [#318](https://github.com/zowe/vscode-extension-for-cics/pull/318). 
+- Fixed alignment inconsistency for attributes table for all resources [#318](https://github.com/zowe/vscode-extension-for-cics/pull/318).
 
 ## `2.2.0`
+
 - Added the ability to carry user input in the subsequent search filter for all resources [#258](https://github.com/zowe/vscode-extension-for-cics/pull/258).
 - Added a new CICS Library resource type [#260](https://github.com/zowe/vscode-extension-for-cics/pull/260).
 - Provided the ability to right-click on `Show Attributes` command on libraries to view library attributes [#260](https://github.com/zowe/vscode-extension-for-cics/pull/260).
@@ -31,6 +33,7 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Renamed `Reveal Tansaction` and `Reveal Program` to `Inquire Tansaction` and `Inquire Program` for better user clarity [#281](https://github.com/zowe/vscode-extension-for-cics/pull/281).
 
 ## `2.1.0`
+
 - Added a the ability to view CICS Tasks [#224](https://github.com/zowe/vscode-extension-for-cics/pull/224).
 - Added right-click menu action to reveal the associated program from a transaction [#240](https://github.com/zowe/vscode-extension-for-cics/pull/240).
 - Added right-click menu action to reveal the associated transaction from a task [#246](https://github.com/zowe/vscode-extension-for-cics/issues/246).
@@ -43,6 +46,7 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Updated the `Show Attributes` table to consistently show uppercase values for headings [#239](https://github.com/zowe/vscode-extension-for-cics/pull/239).
 
 ## `2.0.0`
+
 - **Major**: Introduced the ability to access Team Profiles.
 - Added v1 backwards compatibility [#180](https://github.com/zowe/vscode-extension-for-cics/pull/180) & [#212](https://github.com/zowe/vscode-extension-for-cics/pull/212).
 - Added error message on activation if compatible Zowe Explorer extension is not found [#162](https://github.com/zowe/vscode-extension-for-cics/issues/162).
@@ -52,12 +56,15 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Added a progress bar and fixed the refresh command [#210](https://github.com/zowe/vscode-extension-for-cics/issues/210).
 
 ## `1.3.0`
+
 - Added the option to specify CICS System Groups instead of a region name when creating a profile [#146](https://github.com/zowe/vscode-extension-for-cics/pull/146).
 - Added new icons for CICS System Groups and improved existing CICS Plex icon[#154](https://github.com/zowe/vscode-extension-for-cics/pull/154)
 - Fixed all command palette actions to work with their associated resource [#151](https://github.com/zowe/vscode-extension-for-cics/pull/151).
 - Added progress bar to indicate the loading of resources when filtering [#152](https://github.com/zowe/vscode-extension-for-cics/pull/152).
-- Updated the filtering prompts to be consistent with Zowe Explorer [#149](https://github.com/zowe/vscode-extension-for-cics/pull/149). 
+- Updated the filtering prompts to be consistent with Zowe Explorer [#149](https://github.com/zowe/vscode-extension-for-cics/pull/149).
+
 ## `1.2.0`
+
 - Updated tree nodes to lazily load contents so that resources are only fetched when necessary [#124](https://github.com/zowe/vscode-extension-for-cics/issues/124).
 - Added 'All Programs', 'All Local Transactions' and 'All Local Files' trees to show all resources under a plex [#138](https://github.com/zowe/vscode-extension-for-cics/pull/138).
 - Limited the number of resources shown in the 'All' trees at one time and included a 'View X more...' item to fetch more data [#138](https://github.com/zowe/vscode-extension-for-cics/pull/138).
@@ -67,10 +74,13 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Added progress bar to indicate the loading of resources [#118](https://github.com/zowe/vscode-extension-for-cics/issues/118)
 - Improved error messages.
 - Updated resource icons.
+
 ## `1.1.1`
+
 - Fixed the bug that cause z/OSMF profiles with untrusted CA to be invalidated [#116](https://github.com/zowe/vscode-extension-for-cics/issues/116).
 - Added 'Zowe Explorer for IBM CICS' in `category` section of the `contributes.commands` section in `package.json` for Zowe Explorer conformance.
 - Updated README.md file with 'Providing feedback or help contributing' chapter for Zowe Explorer conformance.
+
 ## `1.1.0`
 
 - Added new icons for unverified, connected and disconnected profiles.
@@ -98,6 +108,7 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Further improved compatibility with theia by making resource commands and filtering work.
 
 ## `1.0.1`
+
 - Fixed the bug that prevented enable/disable status changing on the program label.
 - Updated documentation.
 - Updated graphics.

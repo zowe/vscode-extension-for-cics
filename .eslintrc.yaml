@@ -30,15 +30,23 @@ plugins:
 rules:
   "@typescript-eslint/await-thenable": off
   "@typescript-eslint/consistent-type-assertions": warn
-  "@typescript-eslint/explicit-function-return-type": error
-  "@typescript-eslint/explicit-member-accessibility": error
+  "@typescript-eslint/restrict-plus-operands": warn
+  "@typescript-eslint/explicit-member-accessibility": warn
+  "@typescript-eslint/explicit-function-return-type": warn
+  "@typescript-eslint/restrict-template-expressions": warn
+  indent": off
+  "@typescript-eslint/indent":
+    - error
+    - 2
 
   # There are several errors falling under these rules; resolve
+  "@typescript-eslint/no-for-in-array": off
   "@typescript-eslint/no-floating-promises": off
   "@typescript-eslint/no-unsafe-assignment": off
   "@typescript-eslint/no-unsafe-argument": off
   "@typescript-eslint/no-unsafe-call": off
   "@typescript-eslint/no-unsafe-member-access": off
+  "@typescript-eslint/no-unsafe-return": off
 
   "@typescript-eslint/no-shadow": error
   "@typescript-eslint/no-unused-expressions": error
@@ -54,7 +62,7 @@ rules:
     - warn
     - code: 150
   # no-array-constructor: off
-  no-console: error
+  no-console: warn
   no-const-assign: error
   no-dupe-keys: error
   no-duplicate-case: error
@@ -83,9 +91,4 @@ rules:
   # prefer-const: warn
   prefer-object-spread: warn
   space-in-parens: warn
-  zowe-explorer/no-unmocked-core-modules:
-    - error
-    - coreModuleNames:
-        - fs
-      filePathPattern: ".*\\.unit\\.test\\..*"
 root: true

@@ -18,28 +18,30 @@ import { ProfileManagement } from "../utils/profileManagement";
 import { openConfigFile } from "../utils/workspaceUtils";
 
 export function getDeleteSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
-  return commands.registerCommand(
-    "cics-extension-for-zowe.deleteSession",
-    async (node) => {
-      const allSelectedNodes = findSelectedNodes(treeview, CICSSessionTree, node);
-      if (!allSelectedNodes || !allSelectedNodes.length) {
-        window.showErrorMessage("No profile selected to delete");
-        return;
-      }
-      try {
-        const configInstance = await ProfileManagement.getConfigInstance();
-        if (configInstance.usingTeamConfig) {
-          const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
-          if (currentProfile) {
-            const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
-            await openConfigFile(filePath);
-          }
-        } else {
-          await tree.deleteSession(allSelectedNodes);
-        }
-      } catch (error) {
-        window.showErrorMessage(`Something went wrong when deleting the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
-      }
+  return commands.registerCommand("cics-extension-for-zowe.deleteSession", async (node) => {
+    const allSelectedNodes = findSelectedNodes(treeview, CICSSessionTree, node);
+    if (!allSelectedNodes || !allSelectedNodes.length) {
+      window.showErrorMessage("No profile selected to delete");
+      return;
     }
-  );
+    try {
+      const configInstance = await ProfileManagement.getConfigInstance();
+      if (configInstance.usingTeamConfig) {
+        const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length - 1].label);
+        if (currentProfile) {
+          const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+          await openConfigFile(filePath);
+        }
+      } else {
+        await tree.deleteSession(allSelectedNodes);
+      }
+    } catch (error) {
+      window.showErrorMessage(
+        `Something went wrong when deleting the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+          /(\\n\t|\\n|\\t)/gm,
+          " "
+        )}`
+      );
+    }
+  });
 }

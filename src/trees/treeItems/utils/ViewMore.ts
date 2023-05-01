@@ -14,19 +14,13 @@ import { TreeItemCollapsibleState, TreeItem } from "vscode";
 export class ViewMore extends TreeItem {
   parent: any;
 
-  constructor(
-    parent: any,
-    numberLeft: number
-  ) {
-    super(
-      `View ${numberLeft} more ...`,
-      TreeItemCollapsibleState.None
-    );
+  constructor(parent: any, numberLeft: number) {
+    super(`View ${numberLeft} more ...`, TreeItemCollapsibleState.None);
     this.parent = parent;
-    this.contextValue = 'viewmore.';
+    this.contextValue = "viewmore.";
     this.command = {
-      title: 'View more',
-      command: 'cics-extension-for-zowe.viewMore'
+      title: "View more",
+      command: "cics-extension-for-zowe.viewMore",
     };
   }
 }

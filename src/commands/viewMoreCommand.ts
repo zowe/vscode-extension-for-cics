@@ -14,12 +14,9 @@ import { CICSTree } from "../trees/CICSTree";
 import { ViewMore } from "../trees/treeItems/utils/ViewMore";
 
 export function viewMoreCommand(tree: CICSTree, treeview: TreeView<any>) {
-  return commands.registerCommand(
-    "cics-extension-for-zowe.viewMore",
-    () => {
-      const selectedNode = treeview.selection.filter((item) => item instanceof ViewMore)[0];
-      selectedNode.parent.addMoreCachedResources(tree);
-      tree._onDidChangeTreeData.fire(undefined);
-    }
-  );
+  return commands.registerCommand("cics-extension-for-zowe.viewMore", () => {
+    const selectedNode = treeview.selection.filter((item) => item instanceof ViewMore)[0];
+    selectedNode.parent.addMoreCachedResources(tree);
+    tree._onDidChangeTreeData.fire(undefined);
+  });
 }

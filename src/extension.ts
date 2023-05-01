@@ -27,10 +27,22 @@ import {
   getShowLocalFileAttributesCommand,
   getShowTaskAttributesCommand,
   getShowPipelineAttributesCommand,
-  getShowWebServiceAttributesCommand
+  getShowWebServiceAttributesCommand,
 } from "./commands/showAttributesCommand";
-import { getShowRegionSITParametersCommand} from "./commands/showParameterCommand";
-import { getFilterProgramsCommand, getFilterDatasetProgramsCommand, getFilterLibrariesCommand, getFilterDatasetsCommand, getFilterTransactionCommand, getFilterLocalFilesCommand, getFilterTasksCommand, getFilterTCPIPSCommand, getFilterURIMapsCommand, getFilterPipelinesCommand, getFilterWebServicesCommand } from "./commands/filterResourceCommands";
+import { getShowRegionSITParametersCommand } from "./commands/showParameterCommand";
+import {
+  getFilterProgramsCommand,
+  getFilterDatasetProgramsCommand,
+  getFilterLibrariesCommand,
+  getFilterDatasetsCommand,
+  getFilterTransactionCommand,
+  getFilterLocalFilesCommand,
+  getFilterTasksCommand,
+  getFilterTCPIPSCommand,
+  getFilterURIMapsCommand,
+  getFilterPipelinesCommand,
+  getFilterWebServicesCommand,
+} from "./commands/filterResourceCommands";
 import { ProfileManagement } from "./utils/profileManagement";
 import { CICSTree } from "./trees/CICSTree";
 import { getClearResourceFilterCommand } from "./commands/clearResourceFilterCommand";
@@ -47,12 +59,19 @@ import { getCloseLocalFileCommand } from "./commands/closeLocalFileCommand";
 import { getOpenLocalFileCommand } from "./commands/openLocalFileCommand";
 import { CICSSessionTree } from "./trees/CICSSessionTree";
 import { viewMoreCommand } from "./commands/viewMoreCommand";
-import { getFilterAllProgramsCommand } from "./commands/filterAllResourceCommand";
-import { getFilterAllLibrariesCommand, getFilterAllTransactionsCommand, getFilterAllLocalFilesCommand, getFilterAllURIMapsCommand, getFilterAllTCPIPServicesCommand, getFilterAllTasksCommand, getFilterAllPipelinesCommand, getFilterAllWebServicesCommand} from "./commands/filterAllResourceCommand";
+import {
+  getFilterAllProgramsCommand,
+  getFilterAllLibrariesCommand,
+  getFilterAllTransactionsCommand,
+  getFilterAllLocalFilesCommand,
+  getFilterAllURIMapsCommand,
+  getFilterAllTCPIPServicesCommand,
+  getFilterAllTasksCommand,
+  getFilterAllPipelinesCommand,
+  getFilterAllWebServicesCommand,
+} from "./commands/filterAllResourceCommand";
 import { getIconPathInResources, setIconClosed } from "./utils/profileUtils";
-import { plexExpansionHandler } from "./utils/expansionHandler";
-import { sessionExpansionHandler } from "./utils/expansionHandler";
-import { regionContainerExpansionHandler } from "./utils/expansionHandler";
+import { plexExpansionHandler, sessionExpansionHandler, regionContainerExpansionHandler } from "./utils/expansionHandler";
 import { getZoweExplorerVersion } from "./utils/workspaceUtils";
 
 import { getInquireTransactionCommand } from "./commands/inquireTransaction";
@@ -61,15 +80,15 @@ import { getInquireProgramCommand } from "./commands/inquireProgram";
 
 /**
  * Initialises extension
- * @param context 
- * @returns 
+ * @param context
+ * @returns
  */
 export async function activate(context: ExtensionContext) {
   const zeVersion = getZoweExplorerVersion();
-  if (!zeVersion){
+  if (!zeVersion) {
     window.showErrorMessage("Zowe Explorer was not found: Please ensure Zowe Explorer v2.0.0 or higher is installed");
     return;
-  } else if (zeVersion[0] !== "2"){
+  } else if (zeVersion[0] !== "2") {
     window.showErrorMessage(`Current version of Zowe Explorer is ${zeVersion}. Please ensure Zowe Explorer v2.0.0 or higher is installed`);
     return;
   }
@@ -77,28 +96,27 @@ export async function activate(context: ExtensionContext) {
     try {
       // Register 'cics' profiles as a ZE extender
       await ProfileManagement.registerCICSProfiles();
-      ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
+      ProfileManagement.getProfilesCache().registerCustomProfilesType("cics");
       await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
-      window.showInformationMessage(
-        "Zowe Explorer was modified for the CICS Extension."
-      );
+      window.showInformationMessage("Zowe Explorer was modified for the CICS Extension.");
     } catch (error) {
       console.log(error);
       window.showErrorMessage("Zowe Explorer for IBM CICS was not initiliaized correctly");
       return;
     }
   } else {
-    window.showErrorMessage("Zowe Explorer was not found: either it is not installed or you are using an older version without extensibility API. Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed");
+    window.showErrorMessage(
+      "Zowe Explorer was not found: either it is not installed or you are using an older version without extensibility API. Please ensure Zowe Explorer v2.0.0-next.202202221200 or higher is installed"
+    );
     return;
   }
 
   const treeDataProv = new CICSTree();
-  const treeview = window
-    .createTreeView("cics-view", {
-      treeDataProvider: treeDataProv,
-      showCollapseAll: true,
-      canSelectMany: true
-    });
+  const treeview = window.createTreeView("cics-view", {
+    treeDataProvider: treeDataProv,
+    showCollapseAll: true,
+    canSelectMany: true,
+  });
 
   treeview.onDidExpandElement(async (node) => {
     // Profile node expanded
@@ -108,7 +126,7 @@ export async function activate(context: ExtensionContext) {
       } catch (error) {
         console.log(error);
       }
-    // Plex node expanded
+      // Plex node expanded
     } else if (node.element.contextValue.includes("cicsplex.")) {
       try {
         await plexExpansionHandler(node.element, treeDataProv);
@@ -116,186 +134,220 @@ export async function activate(context: ExtensionContext) {
         console.log(error);
         const newSessionTree = new CICSSessionTree(
           node.element.getParent().profile,
-          getIconPathInResources("profile-disconnected-dark.svg","profile-disconnected-light.svg")
-          );
+          getIconPathInResources("profile-disconnected-dark.svg", "profile-disconnected-light.svg")
+        );
         treeDataProv.loadedProfiles.splice(treeDataProv.getLoadedProfiles().indexOf(node.element.getParent()), 1, newSessionTree);
         treeDataProv._onDidChangeTreeData.fire(undefined);
       }
-    // Region node expanded
+      // Region node expanded
     } else if (node.element.contextValue.includes("cicsregion.")) {
-
-    // Web folder node expanded
+      // Web folder node expanded
     } else if (node.element.contextValue.includes("cicstreeweb.")) {
-      window.withProgress({
-        title: 'Loading Resources',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of resources");
-        });
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Resources",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of resources");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
       // Programs folder node expanded
     } else if (node.element.contextValue.includes("cicstreeprogram.")) {
-      window.withProgress({
-        title: 'Loading Programs',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of programs");
-        });
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Programs",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of programs");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Transaction folder node expanded
+      // Transaction folder node expanded
     } else if (node.element.contextValue.includes("cicstreetransaction.")) {
-      window.withProgress({
-        title: 'Loading Transactions',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of transactions");
-        });
-        await node.element.loadContents();
-        treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Transactions",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of transactions");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Local file folder node expanded
+      // Local file folder node expanded
     } else if (node.element.contextValue.includes("cicstreelocalfile.")) {
-      window.withProgress({
-        title: 'Loading Local Files',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of local files");
-        });
-        await node.element.loadContents();
-        treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Local Files",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of local files");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Task folder node expanded
+      // Task folder node expanded
     } else if (node.element.contextValue.includes("cicstreetask.")) {
-      window.withProgress({
-        title: 'Loading Tasks',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of tasks");
-        });
-        await node.element.loadContents();
-        treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Tasks",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of tasks");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Library folder node expanded
+      // Library folder node expanded
     } else if (node.element.contextValue.includes("cicstreelibrary.")) {
-      window.withProgress({
-        title: 'Loading Libraries',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async () => {
-        await node.element.loadContents();
-        treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Libraries",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async () => {
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Library tree item node expanded to view datasets
-    } 
-    else if (node.element.contextValue.includes("cicslibrary.")) {
-      window.withProgress({
-        title: 'Loading Datasets',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async () => {
-        await node.element.loadContents();
-        treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      // Library tree item node expanded to view datasets
+    } else if (node.element.contextValue.includes("cicslibrary.")) {
+      window.withProgress(
+        {
+          title: "Loading Datasets",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async () => {
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Dataset node expanded 
+      // Dataset node expanded
     } else if (node.element.contextValue.includes("cicsdatasets.")) {
-      window.withProgress({
-        title: 'Loading Programs',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async () => {
-        await node.element.loadContents();
-        treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Programs",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async () => {
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // TCPIP folder node expanded
+      // TCPIP folder node expanded
     } else if (node.element.contextValue.includes("cicstreetcpips.")) {
-      window.withProgress({
-        title: 'Loading TCPIP Services',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of TCPIP services");
-        });
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading TCPIP Services",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of TCPIP services");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Web Services folder node expanded
+      // Web Services folder node expanded
     } else if (node.element.contextValue.includes("cicstreewebservice.")) {
-      window.withProgress({
-        title: 'Loading Web Services',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of Web Services");
-        });
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading Web Services",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of Web Services");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Pipeline folder node expanded
-    }else if (node.element.contextValue.includes("cicstreepipeline.")) {
-      window.withProgress({
-        title: 'Loading Pipeline',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of Pipelines");
-        });
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      // Pipeline folder node expanded
+    } else if (node.element.contextValue.includes("cicstreepipeline.")) {
+      window.withProgress(
+        {
+          title: "Loading Pipeline",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of Pipelines");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // URIMap folder node expanded
+      // URIMap folder node expanded
     } else if (node.element.contextValue.includes("cicstreeurimaps.")) {
-      window.withProgress({
-        title: 'Loading URIMaps',
-        location: ProgressLocation.Notification,
-        cancellable: false
-      }, async (_, token) => {
-        token.onCancellationRequested(() => {
-          console.log("Cancelling the loading of URIMaps");
-        });
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
-      });
+      window.withProgress(
+        {
+          title: "Loading URIMaps",
+          location: ProgressLocation.Notification,
+          cancellable: false,
+        },
+        async (_, token) => {
+          token.onCancellationRequested(() => {
+            console.log("Cancelling the loading of URIMaps");
+          });
+          await node.element.loadContents();
+          treeDataProv._onDidChangeTreeData.fire(undefined);
+        }
+      );
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // All programs folder node expanded
+      // All programs folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
       // Children only loaded if filter has been applied
       if (node.element.getActiveFilter()) {
@@ -303,21 +355,21 @@ export async function activate(context: ExtensionContext) {
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // All transactions folder node expanded
+      // All transactions folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedtransactiontree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // All local files folder node expanded
+      // All local files folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedlocalfiletree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // All tasks folder node expanded
+      // All tasks folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedtasktree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
@@ -326,43 +378,43 @@ export async function activate(context: ExtensionContext) {
     }
 
     // All libraries folder node expanded
-      else if (node.element.contextValue.includes("cicscombinedlibrarytree.")) {
-        if (node.element.getActiveFilter()) {
-          await node.element.loadContents(treeDataProv);
-        }
-        node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    } 
-
-    // All TCPIP Services node expanded 
-      else if (node.element.contextValue.includes("cicscombinedtcpipstree.")) {
+    else if (node.element.contextValue.includes("cicscombinedlibrarytree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    }  
-    
-    // All URI Maps node expanded 
-    else if (node.element.contextValue.includes("cicscombinedurimapstree.")) {
-    if (node.element.getActiveFilter()) {
-      await node.element.loadContents(treeDataProv);
     }
-    node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // All Pipeline folder node expanded
+    // All TCPIP Services node expanded
+    else if (node.element.contextValue.includes("cicscombinedtcpipstree.")) {
+      if (node.element.getActiveFilter()) {
+        await node.element.loadContents(treeDataProv);
+      }
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    }
+
+    // All URI Maps node expanded
+    else if (node.element.contextValue.includes("cicscombinedurimapstree.")) {
+      if (node.element.getActiveFilter()) {
+        await node.element.loadContents(treeDataProv);
+      }
+      node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+
+      // All Pipeline folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedpipelinetree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-  
-    // All Web Services folder node expanded
+
+      // All Web Services folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedwebservicetree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-  
-    // Regions container folder node expanded
+
+      // Regions container folder node expanded
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
       node.element.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
       await regionContainerExpansionHandler(node.element, treeDataProv);
@@ -370,7 +422,7 @@ export async function activate(context: ExtensionContext) {
     }
   });
 
-  treeview.onDidCollapseElement(async (node) => {
+  treeview.onDidCollapseElement((node) => {
     if (node.element.contextValue.includes("cicsregionscontainer.")) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicscombinedprogramtree.")) {
@@ -413,10 +465,9 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreeurimaps.")) {
       setIconClosed(node, treeDataProv);
-    } 
+    }
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
-  }
-  );
+  });
 
   context.subscriptions.push(
     getAddSessionCommand(treeDataProv),
@@ -454,7 +505,7 @@ export async function activate(context: ExtensionContext) {
     getShowWebServiceAttributesCommand(treeview),
 
     getShowRegionSITParametersCommand(treeview),
-    
+
     getFilterProgramsCommand(treeDataProv, treeview),
     getFilterDatasetProgramsCommand(treeDataProv, treeview),
     getFilterLibrariesCommand(treeDataProv, treeview),
@@ -476,16 +527,15 @@ export async function activate(context: ExtensionContext) {
     getFilterAllTasksCommand(treeDataProv, treeview),
     getFilterAllTCPIPServicesCommand(treeDataProv, treeview),
     getFilterAllURIMapsCommand(treeDataProv, treeview),
-    
+
     getFilterPlexResources(treeDataProv, treeview),
 
     getClearResourceFilterCommand(treeDataProv, treeview),
     getClearPlexFilterCommand(treeDataProv, treeview),
-    
+
     viewMoreCommand(treeDataProv, treeview),
 
     getInquireTransactionCommand(treeDataProv, treeview),
     getInquireProgramCommand(treeDataProv, treeview)
   );
 }
-

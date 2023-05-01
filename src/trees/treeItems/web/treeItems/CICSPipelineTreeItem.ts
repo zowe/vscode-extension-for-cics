@@ -14,33 +14,29 @@ import { CICSRegionTree } from "../../../CICSRegionTree";
 import { getIconPathInResources } from "../../../../utils/profileUtils";
 
 export class CICSPipelineTreeItem extends TreeItem {
-    pipeline: any;
-    parentRegion: CICSRegionTree;
-    directParent: any;
-  
-    constructor(
-      pipeline: any,
-      parentRegion: CICSRegionTree,
-      directParent: any,
-      public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
-    ) {
-  
-      super(
-        `${pipeline.name}`,
-        TreeItemCollapsibleState.None
-      );
-      
-      this.pipeline= pipeline;
-      this.parentRegion = parentRegion;
-      this.directParent = directParent;
-      this.contextValue = `cicspipeline.${pipeline.name}`;
-    }
-  
-    public setLabel(newLabel: string) {
-      this.label = newLabel;
-    }
-  
-    public getParent() {
-      return this.directParent;
-    }
+  pipeline: any;
+  parentRegion: CICSRegionTree;
+  directParent: any;
+
+  constructor(
+    pipeline: any,
+    parentRegion: CICSRegionTree,
+    directParent: any,
+    public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
+  ) {
+    super(`${pipeline.name}`, TreeItemCollapsibleState.None);
+
+    this.pipeline = pipeline;
+    this.parentRegion = parentRegion;
+    this.directParent = directParent;
+    this.contextValue = `cicspipeline.${pipeline.name}`;
+  }
+
+  public setLabel(newLabel: string) {
+    this.label = newLabel;
+  }
+
+  public getParent() {
+    return this.directParent;
+  }
 }

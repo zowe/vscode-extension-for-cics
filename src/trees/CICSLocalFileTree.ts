@@ -22,12 +22,9 @@ export class CICSLocalFileTree extends TreeItem {
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
 
-  constructor(
-    parentRegion: CICSRegionTree,
-    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
-  ) {
-    super('Local Files', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
+  constructor(parentRegion: CICSRegionTree, public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")) {
+    super("Local Files", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreelocalfile.${this.activeFilter ? "filtered" : "unfiltered"}.localFiles`;
     this.parentRegion = parentRegion;
   }
 
@@ -36,31 +33,32 @@ export class CICSLocalFileTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = `${await workspace.getConfiguration().get('zowe.cics.localFile.filter')}`;
+    let defaultCriteria = `${await workspace.getConfiguration().get("zowe.cics.localFile.filter")}`;
     if (!defaultCriteria || defaultCriteria.length === 0) {
-      await workspace.getConfiguration().update('zowe.cics.localFile.filter', 'file=*');
-      defaultCriteria = 'file=*';
+      await workspace.getConfiguration().update("zowe.cics.localFile.filter", "file=*");
+      defaultCriteria = "file=*";
     }
     let criteria;
     if (this.activeFilter) {
-      criteria = toEscapedCriteriaString(this.activeFilter, 'file');
+      criteria = toEscapedCriteriaString(this.activeFilter, "file");
     } else {
       criteria = defaultCriteria;
     }
     this.children = [];
     try {
-
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-      
+
       const localFileResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalFile",
         regionName: this.parentRegion.getRegionName(),
-        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: criteria
+        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex.getPlexName() : undefined,
+        criteria: criteria,
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      const localFileArray = Array.isArray(localFileResponse.response.records.cicslocalfile) ? localFileResponse.response.records.cicslocalfile : [localFileResponse.response.records.cicslocalfile];
-      this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[${localFileArray.length}]`;
+      const localFileArray = Array.isArray(localFileResponse.response.records.cicslocalfile)
+        ? localFileResponse.response.records.cicslocalfile
+        : [localFileResponse.response.records.cicslocalfile];
+      this.label = `Local Files${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[${localFileArray.length}]`;
       for (const localFile of localFileArray) {
         const newLocalFileItem = new CICSLocalFileTreeItem(localFile, this.parentRegion, this);
         this.addLocalFile(newLocalFileItem);
@@ -69,27 +67,32 @@ export class CICSLocalFileTree extends TreeItem {
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
-      if (error!.mMessage!.includes('exceeded a resource limit')) {
+      if (error.mMessage!.includes("exceeded a resource limit")) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a local file filter to narrow search`);
         // @ts-ignore
       } else if (this.children.length === 0) {
         window.showInformationMessage(`No local files found`);
-        this.label = `Local Files${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        this.label = `Local Files${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching local files - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(
+          `Something went wrong when fetching local files - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+            /(\\n\t|\\n|\\t)/gm,
+            " "
+          )}`
+        );
       }
     }
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
+    this.contextValue = `cicstreelocalfile.${this.activeFilter ? "filtered" : "unfiltered"}.localFiles`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreelocalfile.${this.activeFilter ? 'filtered' : 'unfiltered'}.localFiles`;
+    this.contextValue = `cicstreelocalfile.${this.activeFilter ? "filtered" : "unfiltered"}.localFiles`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 

@@ -12,5 +12,5 @@
 describe("extension test", () => {
   it("should pass", () => {
     expect(true).not.toBeFalsy();
-  })
+  });
 });

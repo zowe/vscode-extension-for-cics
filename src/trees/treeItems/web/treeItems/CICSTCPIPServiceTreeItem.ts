@@ -14,33 +14,29 @@ import { CICSRegionTree } from "../../../CICSRegionTree";
 import { getIconPathInResources } from "../../../../utils/profileUtils";
 
 export class CICSTCPIPServiceTreeItem extends TreeItem {
-    tcpips: any;
-    parentRegion: CICSRegionTree;
-    directParent: any;
-  
-    constructor(
-      tcpips: any,
-      parentRegion: CICSRegionTree,
-      directParent: any,
-      public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
-    ) {
-  
-      super(
-        `${tcpips.name}`,
-        TreeItemCollapsibleState.None
-      );
-      
-      this.tcpips= tcpips;
-      this.parentRegion = parentRegion;
-      this.directParent = directParent;
-      this.contextValue = `cicstcpips.${tcpips.name}`;
-    }
-  
-    public setLabel(newLabel: string) {
-      this.label = newLabel;
-    }
-  
-    public getParent() {
-      return this.directParent;
-    }
+  tcpips: any;
+  parentRegion: CICSRegionTree;
+  directParent: any;
+
+  constructor(
+    tcpips: any,
+    parentRegion: CICSRegionTree,
+    directParent: any,
+    public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
+  ) {
+    super(`${tcpips.name}`, TreeItemCollapsibleState.None);
+
+    this.tcpips = tcpips;
+    this.parentRegion = parentRegion;
+    this.directParent = directParent;
+    this.contextValue = `cicstcpips.${tcpips.name}`;
+  }
+
+  public setLabel(newLabel: string) {
+    this.label = newLabel;
+  }
+
+  public getParent() {
+    return this.directParent;
+  }
 }

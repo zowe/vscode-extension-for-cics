@@ -18,36 +18,43 @@ import { openConfigFile } from "../utils/workspaceUtils";
 import { ProfileManagement } from "../utils/profileManagement";
 
 export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
-  return commands.registerCommand(
-    "cics-extension-for-zowe.updateSession",
-    async (node) => {
-      const allSelectedNodes = findSelectedNodes(treeview, CICSSessionTree, node);
-      if (!allSelectedNodes || !allSelectedNodes.length) {
-        window.showErrorMessage("No profile selected to update");
+  return commands.registerCommand("cics-extension-for-zowe.updateSession", async (node) => {
+    const allSelectedNodes = findSelectedNodes(treeview, CICSSessionTree, node);
+    if (!allSelectedNodes || !allSelectedNodes.length) {
+      window.showErrorMessage("No profile selected to update");
+      return;
+    }
+    const configInstance = await ProfileManagement.getConfigInstance();
+    if (configInstance.usingTeamConfig) {
+      try {
+        const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length - 1].label);
+        if (currentProfile) {
+          const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+          await openConfigFile(filePath);
+        }
+      } catch (error) {
+        window.showErrorMessage(
+          `Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+            /(\\n\t|\\n|\\t)/gm,
+            " "
+          )}`
+        );
         return;
       }
-      const configInstance = await ProfileManagement.getConfigInstance();
-      if (configInstance.usingTeamConfig) {
+    } else {
+      for (const sessionTree of allSelectedNodes) {
         try {
-          const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
-          if (currentProfile) {
-            const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
-            await openConfigFile(filePath);
-          }
+          await tree.updateSession(sessionTree);
         } catch (error) {
-          window.showErrorMessage(`Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+          window.showErrorMessage(
+            `Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+              /(\\n\t|\\n|\\t)/gm,
+              " "
+            )}`
+          );
           return;
-        }
-      } else {
-        for (const sessionTree of allSelectedNodes) {
-          try {
-            await tree.updateSession(sessionTree);
-          } catch (error) {
-            window.showErrorMessage(`Something went wrong when updating the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
-            return;
-          }
         }
       }
     }
-  );
+  });
 }

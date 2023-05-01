@@ -19,16 +19,13 @@ import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
 
 export class CICSRegionsContainer extends TreeItem {
-  children: (CICSRegionTree)[];
+  children: CICSRegionTree[];
   parent: CICSPlexTree;
   resourceFilters: any;
   activeFilter: string;
 
-  constructor(
-    parent: CICSPlexTree,
-    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
-  ) {
-    super('Regions', TreeItemCollapsibleState.Collapsed);
+  constructor(parent: CICSPlexTree, public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")) {
+    super("Regions", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicsregionscontainer.`;
     this.parent = parent;
     this.children = [];
@@ -39,38 +36,43 @@ export class CICSRegionsContainer extends TreeItem {
     this.children = [];
     this.activeFilter = pattern;
     this.setLabel(this.activeFilter === "*" ? `Regions` : `Regions (${this.activeFilter})`);
-    window.withProgress({
-      title: 'Filtering regions',
-      location: ProgressLocation.Notification,
-      cancellable: true
-    }, async (_, token) => {
-      token.onCancellationRequested(() => {
-        console.log("Cancelling the filter");
-      });
-      const regionInfo = await ProfileManagement.getRegionInfoInPlex(this.parent);
-      this.addRegionsUtility(regionInfo);
-      this.collapsibleState = TreeItemCollapsibleState.Expanded;
-      this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
-      tree._onDidChangeTreeData.fire(undefined);
-      if (!this.children.length){
-        window.showInformationMessage(`No regions found for ${this.parent.getPlexName()}`);
+    await window.withProgress(
+      {
+        title: "Filtering regions",
+        location: ProgressLocation.Notification,
+        cancellable: true,
+      },
+      async (_, token) => {
+        token.onCancellationRequested(() => {
+          console.log("Cancelling the filter");
+        });
+        const regionInfo = await ProfileManagement.getRegionInfoInPlex(this.parent);
+        this.addRegionsUtility(regionInfo);
+        this.collapsibleState = TreeItemCollapsibleState.Expanded;
+        this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
+        tree._onDidChangeTreeData.fire(undefined);
+        if (!this.children.length) {
+          window.showInformationMessage(`No regions found for ${this.parent.getPlexName()}`);
+        }
       }
-    });
+    );
   }
 
   public async loadRegionsInCICSGroup(tree: CICSTree) {
     const parentPlex = this.getParent();
     const plexProfile = parentPlex.getProfile();
-    https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;
+    https.globalAgent.options.rejectUnauthorized = plexProfile.profile.rejectUnauthorized;
     const session = parentPlex.getParent().getSession();
     const regionsObtained = await getResource(session, {
-        name: "CICSManagedRegion",
-        cicsPlex: plexProfile.profile!.cicsPlex,
-        regionName: plexProfile.profile!.regionName
+      name: "CICSManagedRegion",
+      cicsPlex: plexProfile.profile.cicsPlex,
+      regionName: plexProfile.profile.regionName,
     });
     https.globalAgent.options.rejectUnauthorized = undefined;
-    this.clearChildren(); 
-    const regionsArray = Array.isArray(regionsObtained.response.records.cicsmanagedregion) ? regionsObtained.response.records.cicsmanagedregion : [regionsObtained.response.records.cicsmanagedregion];
+    this.clearChildren();
+    const regionsArray = Array.isArray(regionsObtained.response.records.cicsmanagedregion)
+      ? regionsObtained.response.records.cicsmanagedregion
+      : [regionsObtained.response.records.cicsmanagedregion];
     this.addRegionsUtility(regionsArray);
     // Keep container open after label change
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
@@ -80,35 +82,36 @@ export class CICSRegionsContainer extends TreeItem {
   public async loadRegionsInPlex() {
     const parentPlex = this.getParent();
     const regionInfo = await ProfileManagement.getRegionInfoInPlex(parentPlex);
-    if (regionInfo) {   
-        this.addRegionsUtility(regionInfo);
-        // Keep container open after label change
-        this.collapsibleState = TreeItemCollapsibleState.Expanded;
+    if (regionInfo) {
+      this.addRegionsUtility(regionInfo);
+      // Keep container open after label change
+      this.collapsibleState = TreeItemCollapsibleState.Expanded;
     }
   }
 
   /**
    * Count the number of total and active regions
-   * @param regionsArray 
+   * @param regionsArray
    */
-  private addRegionsUtility(regionsArray: [any]){
+  private addRegionsUtility(regionsArray: [any]) {
     let activeCount = 0;
     let totalCount = 0;
     const parentPlex = this.getParent();
-    const regionFilterRegex = this.activeFilter ? new RegExp(this.patternIntoRegex(this.activeFilter)) : ''; //parentPlex.getActiveFilter() ? RegExp(parentPlex.getActiveFilter()!) : undefined;
+    const regionFilterRegex = this.activeFilter ? new RegExp(this.patternIntoRegex(this.activeFilter)) : ""; //parentPlex.getActiveFilter() ? RegExp(parentPlex.getActiveFilter()!) : undefined;
     for (const region of regionsArray) {
       // If region filter exists then match it
       if (!regionFilterRegex || region.cicsname.match(regionFilterRegex)) {
         const newRegionTree = new CICSRegionTree(region.cicsname, region, parentPlex.getParent(), parentPlex, this);
         this.addRegion(newRegionTree);
         totalCount += 1;
-        if (region.cicsstate === 'ACTIVE') {
+        if (region.cicsstate === "ACTIVE") {
           activeCount += 1;
         }
       }
     }
     // Don't show the applied filter if no filters applied i.e. '*'
-    const newLabel = this.activeFilter === "*" ? `Regions [${activeCount}/${totalCount}]` : `Regions (${this.activeFilter}) [${activeCount}/${totalCount}]`;
+    const newLabel =
+      this.activeFilter === "*" ? `Regions [${activeCount}/${totalCount}]` : `Regions (${this.activeFilter}) [${activeCount}/${totalCount}]`;
     this.setLabel(newLabel);
   }
 
@@ -116,8 +119,8 @@ export class CICSRegionsContainer extends TreeItem {
     const patternList = pattern.split(",");
     let patternString = "";
     for (const index in patternList) {
-      patternString += `(^${patternList[index].trim().replace("*","(.*)")})`;
-      if (parseInt(index) !== patternList.length-1) {
+      patternString += `(^${patternList[index].trim().replace("*", "(.*)")})`;
+      if (parseInt(index) !== patternList.length - 1) {
         patternString += "|";
       }
     }

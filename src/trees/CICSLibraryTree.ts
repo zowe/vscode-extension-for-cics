@@ -22,12 +22,9 @@ export class CICSLibraryTree extends TreeItem {
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
 
-  constructor(
-    parentRegion: CICSRegionTree,
-    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
-  ) {
-    super('Libraries', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreelibrary.${this.activeFilter ? 'filtered' : 'unfiltered'}.libraries`;
+  constructor(parentRegion: CICSRegionTree, public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")) {
+    super("Libraries", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreelibrary.${this.activeFilter ? "filtered" : "unfiltered"}.libraries`;
     this.parentRegion = parentRegion;
   }
 
@@ -36,27 +33,28 @@ export class CICSLibraryTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = '(name=*)';
+    const defaultCriteria = "(name=*)";
     let criteria;
     if (this.activeFilter) {
-      criteria = toEscapedCriteriaString(this.activeFilter, 'NAME');
+      criteria = toEscapedCriteriaString(this.activeFilter, "NAME");
     } else {
       criteria = defaultCriteria;
     }
     this.children = [];
     try {
-
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
       const libraryResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLibrary",
         regionName: this.parentRegion.getRegionName(),
-        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: criteria
+        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex.getPlexName() : undefined,
+        criteria: criteria,
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      const librariesArray = Array.isArray(libraryResponse.response.records.cicslibrary) ? libraryResponse.response.records.cicslibrary : [libraryResponse.response.records.cicslibrary];
-      this.label = `Libraries${this.activeFilter?` (${this.activeFilter}) `: " "}[${librariesArray.length}]`;
+      const librariesArray = Array.isArray(libraryResponse.response.records.cicslibrary)
+        ? libraryResponse.response.records.cicslibrary
+        : [libraryResponse.response.records.cicslibrary];
+      this.label = `Libraries${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[${librariesArray.length}]`;
       for (const library of librariesArray) {
         const newLibraryItem = new CICSLibraryTreeItem(library, this.parentRegion, this);
         this.addLibrary(newLibraryItem);
@@ -64,33 +62,38 @@ export class CICSLibraryTree extends TreeItem {
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
+      if (error.mMessage!.includes("exceeded a resource limit")) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a library filter to narrow search`);
       } else if (this.children.length === 0) {
         window.showInformationMessage(`No libraries found`);
-        this.label = `Libraries${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        this.label = `Libraries${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching libraries - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(
+          `Something went wrong when fetching libraries - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+            /(\\n\t|\\n|\\t)/gm,
+            " "
+          )}`
+        );
       }
     }
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreelibrary.${this.activeFilter ? 'filtered' : 'unfiltered'}.libraries`;
+    this.contextValue = `cicstreelibrary.${this.activeFilter ? "filtered" : "unfiltered"}.libraries`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreelibrary.${this.activeFilter ? 'filtered' : 'unfiltered'}.libraries`;
+    this.contextValue = `cicstreelibrary.${this.activeFilter ? "filtered" : "unfiltered"}.libraries`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public getFilter() {
     return this.activeFilter;
   }
-  
+
   public getParent() {
     return this.parentRegion;
   }

@@ -56,9 +56,15 @@ export class CICSRegionTree extends TreeItem {
       this.collapsibleState = TreeItemCollapsibleState.None;
       this.iconPath = getIconPathInResources("region-dark-disabled.svg", "region-light-disabled.svg");
     } else {
-      this.children = [new CICSProgramTree(this), new CICSTransactionTree(this), new CICSLocalFileTree(this), new CICSTaskTree(this), new CICSLibraryTree(this), new CICSWebTree(this)];
+      this.children = [
+        new CICSProgramTree(this),
+        new CICSTransactionTree(this),
+        new CICSLocalFileTree(this),
+        new CICSTaskTree(this),
+        new CICSLibraryTree(this),
+        new CICSWebTree(this),
+      ];
     }
-
   }
 
   public getRegionName() {
@@ -68,7 +74,7 @@ export class CICSRegionTree extends TreeItem {
   public getIsActive() {
     return this.isActive;
   }
-  
+
   public getChildren() {
     return this.children;
   }

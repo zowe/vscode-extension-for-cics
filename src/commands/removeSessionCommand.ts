@@ -15,19 +15,19 @@ import { CICSTree } from "../trees/CICSTree";
 import { findSelectedNodes } from "../utils/commandUtils";
 
 export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>) {
-  return commands.registerCommand(
-    "cics-extension-for-zowe.removeSession",
-    async (node) => {
-      const allSelectedNodes = findSelectedNodes(treeview, CICSSessionTree, node);
-      if (!allSelectedNodes || !allSelectedNodes.length) {
-        window.showErrorMessage("No profile selected to remove");
-        return;
-      }
-      window.withProgress({
-        title: 'Hide Profile',
+  return commands.registerCommand("cics-extension-for-zowe.removeSession", async (node) => {
+    const allSelectedNodes = findSelectedNodes(treeview, CICSSessionTree, node);
+    if (!allSelectedNodes || !allSelectedNodes.length) {
+      await window.showErrorMessage("No profile selected to remove");
+      return;
+    }
+    window.withProgress(
+      {
+        title: "Hide Profile",
         location: ProgressLocation.Notification,
-        cancellable: true
-      }, async (progress, token) => {
+        cancellable: true,
+      },
+      async (progress, token) => {
         token.onCancellationRequested(() => {
           console.log("Cancelling the hide command");
         });
@@ -40,12 +40,16 @@ export function getRemoveSessionCommand(tree: CICSTree, treeview: TreeView<any>)
             const currentNode = allSelectedNodes[parseInt(index)];
 
             await tree.removeSession(currentNode);
-
           } catch (error) {
-            window.showErrorMessage(`Something went wrong when hiding the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+            window.showErrorMessage(
+              `Something went wrong when hiding the profile - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+                /(\\n\t|\\n|\\t)/gm,
+                " "
+              )}`
+            );
           }
         }
-      });
-    }
-  );
+      }
+    );
+  });
 }

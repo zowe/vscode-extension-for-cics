@@ -25,39 +25,51 @@ import { CICSWebServiceTree } from "../trees/treeItems/web/CICSWebServiceTree";
 import { CICSPipelineTree } from "../trees/treeItems/web/CICSPipelineTree";
 
 export function getClearResourceFilterCommand(tree: CICSTree, treeview: TreeView<any>) {
-  return commands.registerCommand(
-    "cics-extension-for-zowe.clearFilter",
-    async (node) => {
-      const allSelectedProgramTreeNodes = findSelectedNodes(treeview, CICSProgramTree, node);
-      const allSelectedTransactionTreeNodes = findSelectedNodes(treeview, CICSTransactionTree, node);
-      const allSelectedLocalFileTreeNodes = findSelectedNodes(treeview, CICSLocalFileTree, node);
-      const allSelectedTaskTreeNodes = findSelectedNodes(treeview, CICSTaskTree, node);
-      const allSelectedLibraryTreeNodes = findSelectedNodes(treeview, CICSLibraryTree, node);
-      const allSelectedDatasetTreeNodes = findSelectedNodes(treeview, CICSLibraryTreeItem, node);
-      const allSelectedDatasetProgramTreeNodes = findSelectedNodes(treeview, CICSLibraryDatasets, node);
-      const allSelectedTCPIPServicesTreeNodes = findSelectedNodes(treeview, CICSTCPIPServiceTree, node);
-      const allSelectedURIMapsTreeNodes = findSelectedNodes(treeview, CICSURIMapTree, node);
-      const allSelectedWebServiceTreeNodes = findSelectedNodes(treeview, CICSWebServiceTree, node);
-      const allSelectedPipelineTreeNodes = findSelectedNodes(treeview, CICSPipelineTree, node);
-      const allSelectedNodes = [...allSelectedProgramTreeNodes, ...allSelectedTransactionTreeNodes, ...allSelectedLocalFileTreeNodes, ...allSelectedTaskTreeNodes, ...allSelectedLibraryTreeNodes, ...allSelectedDatasetTreeNodes, ...allSelectedDatasetProgramTreeNodes, ...allSelectedTCPIPServicesTreeNodes, ...allSelectedURIMapsTreeNodes, ...allSelectedPipelineTreeNodes, ...allSelectedWebServiceTreeNodes];
-      if (!allSelectedNodes || !allSelectedNodes.length) {
-        window.showErrorMessage("No CICS resource tree selected");
-        return;
-      }
-      for (const node of allSelectedNodes) {
-        node.clearFilter();
-        window.withProgress({
-          title: 'Loading Resources',
+  return commands.registerCommand("cics-extension-for-zowe.clearFilter", async (node) => {
+    const allSelectedProgramTreeNodes = findSelectedNodes(treeview, CICSProgramTree, node);
+    const allSelectedTransactionTreeNodes = findSelectedNodes(treeview, CICSTransactionTree, node);
+    const allSelectedLocalFileTreeNodes = findSelectedNodes(treeview, CICSLocalFileTree, node);
+    const allSelectedTaskTreeNodes = findSelectedNodes(treeview, CICSTaskTree, node);
+    const allSelectedLibraryTreeNodes = findSelectedNodes(treeview, CICSLibraryTree, node);
+    const allSelectedDatasetTreeNodes = findSelectedNodes(treeview, CICSLibraryTreeItem, node);
+    const allSelectedDatasetProgramTreeNodes = findSelectedNodes(treeview, CICSLibraryDatasets, node);
+    const allSelectedTCPIPServicesTreeNodes = findSelectedNodes(treeview, CICSTCPIPServiceTree, node);
+    const allSelectedURIMapsTreeNodes = findSelectedNodes(treeview, CICSURIMapTree, node);
+    const allSelectedWebServiceTreeNodes = findSelectedNodes(treeview, CICSWebServiceTree, node);
+    const allSelectedPipelineTreeNodes = findSelectedNodes(treeview, CICSPipelineTree, node);
+    const allSelectedNodes = [
+      ...allSelectedProgramTreeNodes,
+      ...allSelectedTransactionTreeNodes,
+      ...allSelectedLocalFileTreeNodes,
+      ...allSelectedTaskTreeNodes,
+      ...allSelectedLibraryTreeNodes,
+      ...allSelectedDatasetTreeNodes,
+      ...allSelectedDatasetProgramTreeNodes,
+      ...allSelectedTCPIPServicesTreeNodes,
+      ...allSelectedURIMapsTreeNodes,
+      ...allSelectedPipelineTreeNodes,
+      ...allSelectedWebServiceTreeNodes,
+    ];
+    if (!allSelectedNodes || !allSelectedNodes.length) {
+      await window.showErrorMessage("No CICS resource tree selected");
+      return;
+    }
+    for (const selectedNode of allSelectedNodes) {
+      selectedNode.clearFilter();
+      window.withProgress(
+        {
+          title: "Loading Resources",
           location: ProgressLocation.Notification,
-          cancellable: false
-        }, async (_, token) => {
+          cancellable: false,
+        },
+        async (_, token) => {
           token.onCancellationRequested(() => {
             console.log("Cancelling the loading of resources");
           });
-        await node.loadContents();
-        tree._onDidChangeTreeData.fire(undefined);
-        });
-      }
+          await selectedNode.loadContents();
+          tree._onDidChangeTreeData.fire(undefined);
+        }
+      );
     }
-  );
+  });
 }

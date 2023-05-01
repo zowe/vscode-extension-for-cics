@@ -28,9 +28,20 @@ import { CICSCombinedPipelineTree } from "./CICSCombinedTrees/CICSCombinedPipeli
 import { CICSCombinedWebServiceTree } from "./CICSCombinedTrees/CICSCombinedWebServiceTree";
 import { CICSPipelineTree } from "./treeItems/web/CICSPipelineTree";
 
-
 export class CICSPlexTree extends TreeItem {
-  children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer | CICSCombinedTCPIPServiceTree | CICSCombinedURIMapTree | CICSCombinedPipelineTree | CICSCombinedWebServiceTree) [] = [];
+  children: (
+    | CICSRegionTree
+    | CICSCombinedProgramTree
+    | CICSCombinedTransactionsTree
+    | CICSCombinedLocalFileTree
+    | CICSCombinedTaskTree
+    | CICSCombinedLibraryTree
+    | CICSRegionsContainer
+    | CICSCombinedTCPIPServiceTree
+    | CICSCombinedURIMapTree
+    | CICSCombinedPipelineTree
+    | CICSCombinedWebServiceTree
+  )[] = [];
   plexName: string;
   profile: IProfileLoaded;
   parent: CICSSessionTree;
@@ -38,12 +49,7 @@ export class CICSPlexTree extends TreeItem {
   activeFilter: string | undefined;
   groupName: string | undefined;
 
-  constructor(
-    plexName: string,
-    profile: IProfileLoaded,
-    sessionTree: CICSSessionTree,
-    group?: string,
-  ) {
+  constructor(plexName: string, profile: IProfileLoaded, sessionTree: CICSSessionTree, group?: string) {
     super(plexName, TreeItemCollapsibleState.Collapsed);
     this.plexName = plexName;
     this.profile = profile;
@@ -52,10 +58,9 @@ export class CICSPlexTree extends TreeItem {
     this.resourceFilters = {};
     this.activeFilter = undefined;
     this.groupName = group;
-    this.iconPath = 
-      group ? 
-      getIconPathInResources("cics-system-group-dark.svg ", "cics-system-group-light.svg ") : 
-      getIconPathInResources("cics-plex-dark.svg", "cics-plex-light.svg");
+    this.iconPath = group
+      ? getIconPathInResources("cics-system-group-dark.svg ", "cics-system-group-light.svg ")
+      : getIconPathInResources("cics-plex-dark.svg", "cics-plex-light.svg");
   }
 
   public addRegion(region: CICSRegionTree) {
@@ -67,22 +72,22 @@ export class CICSPlexTree extends TreeItem {
    */
   public async loadOnlyRegion() {
     const plexProfile = this.getProfile();
-    https.globalAgent.options.rejectUnauthorized = plexProfile.profile!.rejectUnauthorized;
+    https.globalAgent.options.rejectUnauthorized = plexProfile.profile.rejectUnauthorized;
     const session = this.getParent().getSession();
     const regionsObtained = await getResource(session, {
-        name: "CICSRegion",
-        cicsPlex: plexProfile.profile!.cicsPlex,
-        regionName: plexProfile.profile!.regionName
+      name: "CICSRegion",
+      cicsPlex: plexProfile.profile.cicsPlex,
+      regionName: plexProfile.profile.regionName,
     });
     https.globalAgent.options.rejectUnauthorized = undefined;
     const newRegionTree = new CICSRegionTree(
-      plexProfile.profile!.regionName,
+      plexProfile.profile.regionName,
       regionsObtained.response.records.cicsregion,
       this.getParent(),
       this,
       this
-      );
-    this.clearChildren(); 
+    );
+    this.clearChildren();
     this.addRegion(newRegionTree);
   }
 
@@ -130,7 +135,7 @@ export class CICSPlexTree extends TreeItem {
   }
 
   public getPlexName() {
-    return this.plexName.split(' ')[0];
+    return this.plexName.split(" ")[0];
   }
 
   public getProfile() {
@@ -158,7 +163,7 @@ export class CICSPlexTree extends TreeItem {
     return this.activeFilter;
   }
 
-  public addNewCombinedTrees(){
+  public addNewCombinedTrees() {
     this.children.push(new CICSCombinedProgramTree(this));
     this.children.push(new CICSCombinedTransactionsTree(this));
     this.children.push(new CICSCombinedLocalFileTree(this));

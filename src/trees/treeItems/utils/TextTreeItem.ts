@@ -12,14 +12,8 @@
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 
 export class TextTreeItem extends TreeItem {
-  constructor(
-    label: string,
-    contextValue: string
-  ) {
-    super(
-      label,
-      TreeItemCollapsibleState.None
-    );
+  constructor(label: string, contextValue: string) {
+    super(label, TreeItemCollapsibleState.None);
     this.contextValue = contextValue;
   }
 }

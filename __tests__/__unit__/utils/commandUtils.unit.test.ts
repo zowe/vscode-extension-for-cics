@@ -12,11 +12,9 @@
 import * as commandUtils from "../../../src/utils/commandUtils";
 
 describe("Command Utils tests", () => {
-
   describe("splitCmciErrorMessage", () => {
     const testError = "Test\nCmci Error\nresp:1\nresp2:2\nresp_alt:3\neibfn_alt:4";
     it("should return something", () => {
-
       const response = commandUtils.splitCmciErrorMessage(testError);
       expect(response).toEqual(["1", "2", "3", "4"]);
     });

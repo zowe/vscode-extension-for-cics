@@ -10,5 +10,5 @@
  */
 
 process.on("unhandledRejection", (reason) => {
-    fail(reason);
+  fail(reason);
 });

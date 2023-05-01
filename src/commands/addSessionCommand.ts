@@ -13,8 +13,5 @@ import { commands } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 
 export function getAddSessionCommand(tree: CICSTree) {
-  return commands.registerCommand(
-    "cics-extension-for-zowe.addSession",
-    async () => tree.addProfile()
-  );
+  return commands.registerCommand("cics-extension-for-zowe.addSession", async () => tree.addProfile());
 }

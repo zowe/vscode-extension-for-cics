@@ -10,8 +10,6 @@
 */
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
-import { CICSSessionTree } from "./CICSSessionTree";
-import { CICSPlexTree } from "./CICSPlexTree";
 import { getIconPathInResources } from "../utils/profileUtils";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSURIMapTree } from "./treeItems/web/CICSURIMapTree";
@@ -24,22 +22,23 @@ export class CICSWebTree extends TreeItem {
   parentRegion: CICSRegionTree | undefined;
   //activeFilter: string | undefined = undefined;
 
-  constructor(
-    parentRegion: CICSRegionTree,
-    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
-  ) {
-    super('Web', TreeItemCollapsibleState.Collapsed);
+  constructor(parentRegion: CICSRegionTree, public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")) {
+    super("Web", TreeItemCollapsibleState.Collapsed);
     this.contextValue = `cicstreeweb.web`;
     this.parentRegion = parentRegion;
 
-    this.children = [new CICSTCPIPServiceTree(parentRegion), new CICSURIMapTree(parentRegion), new CICSPipelineTree(parentRegion), new CICSWebServiceTree(parentRegion)];
-    }
+    this.children = [
+      new CICSTCPIPServiceTree(parentRegion),
+      new CICSURIMapTree(parentRegion),
+      new CICSPipelineTree(parentRegion),
+      new CICSWebServiceTree(parentRegion),
+    ];
+  }
 
-  public async loadContents()
-  {
+  public loadContents() {
     this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
   }
-  
+
   public getChildren() {
     return this.children;
   }
@@ -63,5 +62,4 @@ export class CICSWebTree extends TreeItem {
   public getFilter() {
     //return this.activeFilter;
   }
-  
 }

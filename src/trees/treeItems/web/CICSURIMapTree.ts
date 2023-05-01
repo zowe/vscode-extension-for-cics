@@ -21,12 +21,9 @@ export class CICSURIMapTree extends TreeItem {
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
 
-  constructor(
-    parentRegion: CICSRegionTree,
-    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
-  ) {
-    super('URI Maps', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimaps`;
+  constructor(parentRegion: CICSRegionTree, public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")) {
+    super("URI Maps", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? "filtered" : "unfiltered"}.urimaps`;
     this.parentRegion = parentRegion;
   }
 
@@ -35,63 +32,70 @@ export class CICSURIMapTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = '(name=*)';
+    const defaultCriteria = "(name=*)";
     let criteria;
     if (this.activeFilter) {
-      criteria = toEscapedCriteriaString(this.activeFilter, 'NAME');
+      criteria = toEscapedCriteriaString(this.activeFilter, "NAME");
     } else {
       criteria = defaultCriteria;
     }
     this.children = [];
     try {
-
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
       const urimapResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSURIMap",
         regionName: this.parentRegion.getRegionName(),
-        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: criteria
+        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex.getPlexName() : undefined,
+        criteria: criteria,
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      const urimapArray = Array.isArray(urimapResponse.response.records.cicsurimap) ? urimapResponse.response.records.cicsurimap : [urimapResponse.response.records.cicsurimap];
-      this.label = `URI Maps${this.activeFilter?` (${this.activeFilter}) `: " "}[${ urimapArray.length}]`;
-      for (const urimap of  urimapArray) {
+      const urimapArray = Array.isArray(urimapResponse.response.records.cicsurimap)
+        ? urimapResponse.response.records.cicsurimap
+        : [urimapResponse.response.records.cicsurimap];
+      this.label = `URI Maps${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[${urimapArray.length}]`;
+      for (const urimap of urimapArray) {
         const newURIMapItem = new CICSURIMapTreeItem(urimap, this.parentRegion, this);
-        newURIMapItem.setLabel(newURIMapItem.label!.toString().replace(urimap.name, `${urimap.name} [${newURIMapItem.urimap.scheme}] (${newURIMapItem.urimap.path})`));
+        newURIMapItem.setLabel(
+          newURIMapItem.label.toString().replace(urimap.name, `${urimap.name} [${newURIMapItem.urimap.scheme}] (${newURIMapItem.urimap.path})`)
+        );
         this.addURIMAP(newURIMapItem);
       }
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
+      if (error.mMessage!.includes("exceeded a resource limit")) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a URIMap filter to narrow search`);
-      } else if ((this.children.length === 0)) {
+      } else if (this.children.length === 0) {
         window.showInformationMessage(`No URI Maps found`);
-        this.label = `URI Maps${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        this.label = `URI Maps${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching URI Maps - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(
+          `Something went wrong when fetching URI Maps - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+            /(\\n\t|\\n|\\t)/gm,
+            " "
+          )}`
+        );
       }
     }
-
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimaps`;
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? "filtered" : "unfiltered"}.urimaps`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreeurimaps.${this.activeFilter ? 'filtered' : 'unfiltered'}.urimaps`;
+    this.contextValue = `cicstreeurimaps.${this.activeFilter ? "filtered" : "unfiltered"}.urimaps`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public getFilter() {
     return this.activeFilter;
   }
-  
+
   public getParent() {
     return this.parentRegion;
   }

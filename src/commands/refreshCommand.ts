@@ -9,28 +9,28 @@
 *
 */
 
-;
 import { commands, ProgressLocation, window } from "vscode";
 import { CICSTree } from "../trees/CICSTree";
 import { ProfileManagement } from "../utils/profileManagement";
 
 export function getRefreshCommand(tree: CICSTree) {
-  return commands.registerCommand(
-    "cics-extension-for-zowe.refreshTree",
-    async () => {
-      try {
-       await window.withProgress({
-          title: 'Refreshing',
+  return commands.registerCommand("cics-extension-for-zowe.refreshTree", async () => {
+    try {
+      await window.withProgress(
+        {
+          title: "Refreshing",
           location: ProgressLocation.Notification,
-          cancellable: false
-        }, async () => {
+          cancellable: false,
+        },
+        async () => {
           tree.clearLoadedProfiles();
           await ProfileManagement.profilesCacheRefresh();
           await tree.loadStoredProfileNames();
-        });
-      } catch (error) {
-        console.log(error);
-      }
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
       // window.withProgress({
       //   title: 'Refresh',
       //   location: ProgressLocation.Notification,
@@ -68,10 +68,8 @@ export function getRefreshCommand(tree: CICSTree) {
       //     }
       //   }
       // });
-      finally {
-        tree._onDidChangeTreeData.fire(undefined);
-        window.showInformationMessage("Refreshed");
-      }
+      tree._onDidChangeTreeData.fire(undefined);
+      window.showInformationMessage("Refreshed");
     }
-  );
+  });
 }

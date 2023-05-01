@@ -9,9 +9,31 @@
 *
 */
 
+/\*
+
+- This program and the accompanying materials are made available under the terms of the
+- Eclipse Public License v2.0 which accompanies this distribution, and is available at
+- https://www.eclipse.org/legal/epl-v20.html
+-
+- SPDX-License-Identifier: EPL-2.0
+-
+- Copyright Contributors to the Zowe Project.
+- \*/
+
+/\*
+
+- This program and the accompanying materials are made available under the terms of the
+- Eclipse Public License v2.0 which accompanies this distribution, and is available at
+- https://www.eclipse.org/legal/epl-v20.html
+-
+- SPDX-License-Identifier: EPL-2.0
+-
+- Copyright Contributors to the Zowe Project.
+- \*/
+
 # Zowe Conformance Test Evaluation Guide
 
-The Zowe Conformance Test Evaluation Guide is a set of self-certifying and self-service tests to help the development community integrate and extend specific technology into the Zowe framework. 
+The Zowe Conformance Test Evaluation Guide is a set of self-certifying and self-service tests to help the development community integrate and extend specific technology into the Zowe framework.
 
 This guide describes the requirements of the three available conformance programs. Items marked **(required)** are required for an application to be conformant. Items marked **(best practice)** are considered best practices for conformant applications.
 
@@ -23,7 +45,6 @@ These Zowe Conformance criteria are applicable to the lastest Zowe v1 LTS Releas
     - [Extension Accessing Profiles](#extension-accessing-profiles)
     - [Data Provider Extension](#data-provider-extension)
     - [Extension Adding Menus](#extension-adding-menus)
-
 
 ## Zowe Explorer for Visual Studio Code - Zowe v1
 
@@ -328,5 +349,3 @@ Criteria for Visual Studio Code extensions adding menu and commands to Visual St
    <td><b>Context menu items: </b> If contributing commands to Zowe Explorer for Visual Studio Code's views (such as Data Sets, USS, or Jobs), the extension should only add them to the view's right-click context menus.</td>
  </tr>
 </table>
-
-

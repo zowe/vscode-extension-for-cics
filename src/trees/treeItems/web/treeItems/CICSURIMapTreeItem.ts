@@ -14,33 +14,29 @@ import { CICSRegionTree } from "../../../CICSRegionTree";
 import { getIconPathInResources } from "../../../../utils/profileUtils";
 
 export class CICSURIMapTreeItem extends TreeItem {
-    urimap: any;
-    parentRegion: CICSRegionTree;
-    directParent: any;
-  
-    constructor(
-      urimap: any,
-      parentRegion: CICSRegionTree,
-      directParent: any,
-      public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
-    ) {
-  
-      super(
-        `${urimap.name}`,
-        TreeItemCollapsibleState.None
-      );
-      
-      this.urimap = urimap;
-      this.parentRegion = parentRegion;
-      this.directParent = directParent;
-      this.contextValue = `cicsurimaps.${urimap.name}`;
-    }
-  
-    public setLabel(newLabel: string) {
-      this.label = newLabel;
-    }
-  
-    public getParent() {
-      return this.directParent;
-    }
+  urimap: any;
+  parentRegion: CICSRegionTree;
+  directParent: any;
+
+  constructor(
+    urimap: any,
+    parentRegion: CICSRegionTree,
+    directParent: any,
+    public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
+  ) {
+    super(`${urimap.name}`, TreeItemCollapsibleState.None);
+
+    this.urimap = urimap;
+    this.parentRegion = parentRegion;
+    this.directParent = directParent;
+    this.contextValue = `cicsurimaps.${urimap.name}`;
+  }
+
+  public setLabel(newLabel: string) {
+    this.label = newLabel;
+  }
+
+  public getParent() {
+    return this.directParent;
+  }
 }

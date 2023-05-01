@@ -21,12 +21,9 @@ export class CICSProgramTree extends TreeItem {
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
 
-  constructor(
-    parentRegion: CICSRegionTree,
-    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
-  ) {
-    super('Programs', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
+  constructor(parentRegion: CICSRegionTree, public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")) {
+    super("Programs", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreeprogram.${this.activeFilter ? "filtered" : "unfiltered"}.programs`;
     this.parentRegion = parentRegion;
   }
 
@@ -35,27 +32,28 @@ export class CICSProgramTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = await getDefaultProgramFilter();
+    const defaultCriteria = await getDefaultProgramFilter();
     let criteria;
     if (this.activeFilter) {
-      criteria = toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
+      criteria = toEscapedCriteriaString(this.activeFilter, "PROGRAM");
     } else {
       criteria = defaultCriteria;
     }
     this.children = [];
     try {
-
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
       const programResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSProgram",
         regionName: this.parentRegion.getRegionName(),
-        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: criteria
+        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex.getPlexName() : undefined,
+        criteria: criteria,
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      const programsArray = Array.isArray(programResponse.response.records.cicsprogram) ? programResponse.response.records.cicsprogram : [programResponse.response.records.cicsprogram];
-      this.label = `Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[${programsArray.length}]`;
+      const programsArray = Array.isArray(programResponse.response.records.cicsprogram)
+        ? programResponse.response.records.cicsprogram
+        : [programResponse.response.records.cicsprogram];
+      this.label = `Programs${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[${programsArray.length}]`;
       for (const program of programsArray) {
         const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion, this);
         this.addProgram(newProgramItem);
@@ -63,33 +61,38 @@ export class CICSProgramTree extends TreeItem {
       this.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
+      if (error.mMessage!.includes("exceeded a resource limit")) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);
-      } else if ((this.children.length === 0)) {
+      } else if (this.children.length === 0) {
         window.showInformationMessage(`No programs found`);
-        this.label = `Programs${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        this.label = `Programs${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(
+          `Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+            /(\\n\t|\\n|\\t)/gm,
+            " "
+          )}`
+        );
       }
     }
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
+    this.contextValue = `cicstreeprogram.${this.activeFilter ? "filtered" : "unfiltered"}.programs`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreeprogram.${this.activeFilter ? 'filtered' : 'unfiltered'}.programs`;
+    this.contextValue = `cicstreeprogram.${this.activeFilter ? "filtered" : "unfiltered"}.programs`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public getFilter() {
     return this.activeFilter;
   }
-  
+
   public getParent() {
     return this.parentRegion;
   }

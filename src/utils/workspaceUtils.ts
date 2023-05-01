@@ -11,22 +11,21 @@
 
 import { env, extensions, window, workspace } from "vscode";
 
-
 export function isTheia(): boolean {
-    const VSCODE_APPNAME: string[] = ["Visual Studio Code", "VSCodium"];
-    const appName = env.appName;
-    if (appName && !VSCODE_APPNAME.includes(appName)) {
-        return true;
-    }
-    return false;
+  const VSCODE_APPNAME: string[] = ["Visual Studio Code", "VSCodium"];
+  const appName = env.appName;
+  if (appName && !VSCODE_APPNAME.includes(appName)) {
+    return true;
+  }
+  return false;
 }
 
-export async function openConfigFile(filePath: string) {
-    const document = await workspace.openTextDocument(filePath);
-    await window.showTextDocument(document);
+export async function openConfigFile(filePath: string): Promise<void> {
+  const document = await workspace.openTextDocument(filePath);
+  await window.showTextDocument(document);
 }
 
 export function getZoweExplorerVersion(): string | undefined {
-    const extension = extensions.getExtension('zowe.vscode-extension-for-zowe');
-    return extension?.packageJSON?.version;
+  const extension = extensions.getExtension("zowe.vscode-extension-for-zowe");
+  return extension?.packageJSON?.version;
 }

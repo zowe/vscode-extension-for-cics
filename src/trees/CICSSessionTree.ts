@@ -21,10 +21,7 @@ export class CICSSessionTree extends TreeItem {
   profile: any;
   isUnauthorized: boolean | undefined;
 
-  constructor(
-    profile: any,
-    public readonly iconPath = getIconPathInResources("profile-unverified-dark.svg", "profile-unverified-light.svg")
-  ) {
+  constructor(profile: any, public readonly iconPath = getIconPathInResources("profile-unverified-dark.svg", "profile-unverified-light.svg")) {
     super(profile.name, TreeItemCollapsibleState.Collapsed);
     this.children = [];
     this.contextValue = `cicssession.${profile.name}`;

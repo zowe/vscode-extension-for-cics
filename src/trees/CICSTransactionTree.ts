@@ -22,12 +22,9 @@ export class CICSTransactionTree extends TreeItem {
   parentRegion: CICSRegionTree;
   activeFilter: string | undefined = undefined;
 
-  constructor(
-    parentRegion: CICSRegionTree,
-    public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")
-  ) {
-    super('Transactions', TreeItemCollapsibleState.Collapsed);
-    this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
+  constructor(parentRegion: CICSRegionTree, public iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg")) {
+    super("Transactions", TreeItemCollapsibleState.Collapsed);
+    this.contextValue = `cicstreetransaction.${this.activeFilter ? "filtered" : "unfiltered"}.transactions`;
     this.parentRegion = parentRegion;
   }
 
@@ -36,27 +33,28 @@ export class CICSTransactionTree extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = await getDefaultTransactionFilter();
+    const defaultCriteria = await getDefaultTransactionFilter();
     let criteria;
     if (this.activeFilter) {
-      criteria = toEscapedCriteriaString(this.activeFilter, 'tranid');
+      criteria = toEscapedCriteriaString(this.activeFilter, "tranid");
     } else {
       criteria = defaultCriteria;
     }
     this.children = [];
     try {
-
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
 
       const transactionResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSLocalTransaction",
         regionName: this.parentRegion.getRegionName(),
-        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: criteria
+        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex.getPlexName() : undefined,
+        criteria: criteria,
       });
       https.globalAgent.options.rejectUnauthorized = undefined;
-      const transactionArray = Array.isArray(transactionResponse.response.records.cicslocaltransaction) ? transactionResponse.response.records.cicslocaltransaction : [transactionResponse.response.records.cicslocaltransaction];
-      this.label = `Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[${transactionArray.length}]`;
+      const transactionArray = Array.isArray(transactionResponse.response.records.cicslocaltransaction)
+        ? transactionResponse.response.records.cicslocaltransaction
+        : [transactionResponse.response.records.cicslocaltransaction];
+      this.label = `Transactions${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[${transactionArray.length}]`;
       for (const transaction of transactionArray) {
         const newTransactionItem = new CICSTransactionTreeItem(transaction, this.parentRegion, this);
         this.addTransaction(newTransactionItem);
@@ -65,27 +63,32 @@ export class CICSTransactionTree extends TreeItem {
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
       // @ts-ignore
-      if (error!.mMessage!.includes('exceeded a resource limit')) {
+      if (error.mMessage!.includes("exceeded a resource limit")) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a transaction filter to narrow search`);
         // @ts-ignore
-      } else if ((this.children.length === 0)) {
+      } else if (this.children.length === 0) {
         window.showInformationMessage(`No transactions found`);
-        this.label = `Transactions${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        this.label = `Transactions${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching transaction - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(
+          `Something went wrong when fetching transaction - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+            /(\\n\t|\\n|\\t)/gm,
+            " "
+          )}`
+        );
       }
     }
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
+    this.contextValue = `cicstreetransaction.${this.activeFilter ? "filtered" : "unfiltered"}.transactions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicstreetransaction.${this.activeFilter ? 'filtered' : 'unfiltered'}.transactions`;
+    this.contextValue = `cicstreetransaction.${this.activeFilter ? "filtered" : "unfiltered"}.transactions`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 

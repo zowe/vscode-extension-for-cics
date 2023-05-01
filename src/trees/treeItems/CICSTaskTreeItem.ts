@@ -22,15 +22,14 @@ export class CICSTaskTreeItem extends TreeItem {
     task: any,
     parentRegion: CICSRegionTree,
     directParent: any,
-    public readonly iconPath = task.runstatus === 'RUNNING' ? getIconPathInResources("task-running-dark.svg", "task-running-light.svg"): 
-    task.runstatus === 'SUSPENDED' ? getIconPathInResources("task-suspended-dark.svg", "task-suspended-light.svg"):
-    getIconPathInResources("task-dispatched-dark.svg", "task-dispatched-light.svg")
+    public readonly iconPath = task.runstatus === "RUNNING"
+      ? getIconPathInResources("task-running-dark.svg", "task-running-light.svg")
+      : task.runstatus === "SUSPENDED"
+        ? getIconPathInResources("task-suspended-dark.svg", "task-suspended-light.svg")
+        : getIconPathInResources("task-dispatched-dark.svg", "task-dispatched-light.svg")
   ) {
+    super(`${task.task}`, TreeItemCollapsibleState.None);
 
-    super(`${task.task}`,
-      TreeItemCollapsibleState.None
-    );
-    
     this.task = task;
     this.parentRegion = parentRegion;
     this.contextValue = `cicstask.`;

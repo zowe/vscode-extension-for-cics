@@ -887,6 +887,7 @@
     "watch": "tsc -watch -p ./",
     "test:unit": "jest \".*__tests__.*\\.unit\\.test\\.ts\" --coverage",
     "test": "npm run test:unit",
+    "pretty": "prettier --write .",
     "licenses": "node ./update.licenses.js",
     "package": "vsce package && mkdir -p dist && mv *.vsix dist"
   },

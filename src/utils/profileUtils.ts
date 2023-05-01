@@ -13,40 +13,27 @@ import { ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
 import { join } from "path";
 import { CICSTree } from "../trees/CICSTree";
 import { window } from "vscode";
+import { IProfileLoaded } from "@zowe/imperative";
 
-export function missingSessionParameters(profileProfile: any) : (string|undefined)[] {
-    const params = ["host", "port", "user", "password", "rejectUnauthorized", "protocol"];
-    let missing : (string|undefined)[] = [];
-    for (const value of params) {
-        if (profileProfile[value] === undefined) {
-            missing.push(value);
-        }
+export function missingSessionParameters(profileProfile: any): (string | undefined)[] {
+  const params = ["host", "port", "user", "password", "rejectUnauthorized", "protocol"];
+  const missing: (string | undefined)[] = [];
+  for (const value of params) {
+    if (profileProfile[value] === undefined) {
+      missing.push(value);
     }
-    return missing;
+  }
+  return missing;
 }
 
-export function getIconPathInResources(iconFileNameLight: string, iconFileNameDark: string) {
-    return {
-        light: join(
-          __dirname,
-          "..",
-          "..",
-          "resources",
-          "imgs",
-          iconFileNameLight
-        ),
-        dark: join(
-          __dirname,
-          "..",
-          "..",
-          "resources",
-          "imgs",
-          iconFileNameDark
-        ),
-      };
+export function getIconPathInResources(iconFileNameLight: string, iconFileNameDark: string): { light: string; dark: string } {
+  return {
+    light: join(__dirname, "..", "..", "resources", "imgs", iconFileNameLight),
+    dark: join(__dirname, "..", "..", "resources", "imgs", iconFileNameDark),
+  };
 }
 
-export async function promptCredentials(sessionName: string, rePrompt?: boolean){
+export async function promptCredentials(sessionName: string, rePrompt?: boolean): Promise<IProfileLoaded> {
   // const mProfileInfo = new ProfileInfo("zowe", {
   //   requireKeytar: () => getSecurityModules("keytar", isTheia())!,
   // });
@@ -54,7 +41,7 @@ export async function promptCredentials(sessionName: string, rePrompt?: boolean)
   // ProfilesCache.createConfigInstance(mProfileInfo);
   const promptInfo = await ZoweVsCodeExtension.promptCredentials({
     sessionName,
-    rePrompt
+    rePrompt,
   });
   if (!promptInfo) {
     window.showInformationMessage("Input credentials operation Cancelled");
@@ -62,7 +49,7 @@ export async function promptCredentials(sessionName: string, rePrompt?: boolean)
   return promptInfo;
 }
 
-export function setIconClosed(node: any, tree:CICSTree) {
+export function setIconClosed(node: any, tree: CICSTree): void {
   node.element.iconPath = getIconPathInResources("folder-closed-dark.svg", "folder-closed-light.svg");
   tree._onDidChangeTreeData.fire(undefined);
-};
+}

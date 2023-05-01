@@ -14,33 +14,29 @@ import { CICSRegionTree } from "../../../CICSRegionTree";
 import { getIconPathInResources } from "../../../../utils/profileUtils";
 
 export class CICSWebServiceTreeItem extends TreeItem {
-    webservice: any;
-    parentRegion: CICSRegionTree;
-    directParent: any;
-  
-    constructor(
-      webservice: any,
-      parentRegion: CICSRegionTree,
-      directParent: any,
-      public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
-    ) {
-  
-      super(
-        `${webservice.name}`,
-        TreeItemCollapsibleState.None
-      );
-      
-      this.webservice= webservice;
-      this.parentRegion = parentRegion;
-      this.directParent = directParent;
-      this.contextValue = `cicswebservice.${webservice.name}`;
-    }
-  
-    public setLabel(newLabel: string) {
-      this.label = newLabel;
-    }
-  
-    public getParent() {
-      return this.directParent;
-    }
+  webservice: any;
+  parentRegion: CICSRegionTree;
+  directParent: any;
+
+  constructor(
+    webservice: any,
+    parentRegion: CICSRegionTree,
+    directParent: any,
+    public readonly iconPath = getIconPathInResources("program-dark.svg", "program-light.svg")
+  ) {
+    super(`${webservice.name}`, TreeItemCollapsibleState.None);
+
+    this.webservice = webservice;
+    this.parentRegion = parentRegion;
+    this.directParent = directParent;
+    this.contextValue = `cicswebservice.${webservice.name}`;
+  }
+
+  public setLabel(newLabel: string) {
+    this.label = newLabel;
+  }
+
+  public getParent() {
+    return this.directParent;
+  }
 }

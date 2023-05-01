@@ -7,7 +7,7 @@
 
 ## Installation
 
-### From VSIX File 
+### From VSIX File
 
 1. Download Zowe.cics-extension-for-zowe-2.x.x.vsix to your PC that has VS Code already installed.
 

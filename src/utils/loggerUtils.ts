@@ -13,14 +13,14 @@ import { IZoweLogger, getZoweDir } from "@zowe/zowe-explorer-api";
 import { join as joinPaths } from "path";
 
 export class LoggerUtils {
-    // Explicit null typing used to satisfy linter rule "eqeqeq"
-    static loggerObj: IZoweLogger | null = null;
+  // Explicit null typing used to satisfy linter rule "eqeqeq"
+  static loggerObj: IZoweLogger | null = null;
 
-    public static get instance(): IZoweLogger {
-        if (LoggerUtils.loggerObj === null) {
-            LoggerUtils.loggerObj = new IZoweLogger("vscode-extension-for-cics", joinPaths(getZoweDir(), "vscode-extension-for-cics"));
-        }
-
-        return LoggerUtils.loggerObj;
+  public static get instance(): IZoweLogger {
+    if (LoggerUtils.loggerObj === null) {
+      LoggerUtils.loggerObj = new IZoweLogger("vscode-extension-for-cics", joinPaths(getZoweDir(), "vscode-extension-for-cics"));
     }
+
+    return LoggerUtils.loggerObj;
+  }
 }

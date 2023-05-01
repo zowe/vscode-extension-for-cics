@@ -12,15 +12,13 @@
 import { TreeItemCollapsibleState, TreeItem, window } from "vscode";
 import { CICSRegionTree } from "../CICSRegionTree";
 import { getIconPathInResources } from "../../utils/profileUtils";
-import { CICSLibraryTreeItem } from "./CICSLibraryTreeItem";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
-import { CICSLibraryTree } from "../CICSLibraryTree";
 import { CICSProgramTreeItem } from "./CICSProgramTreeItem";
 import { toEscapedCriteriaString } from "../../utils/filterUtils";
 
 export class CICSLibraryDatasets extends TreeItem {
-  children: CICSProgramTreeItem[] =[];
+  children: CICSProgramTreeItem[] = [];
   dataset: any;
   parentRegion: CICSRegionTree;
   directParent: any;
@@ -32,16 +30,12 @@ export class CICSLibraryDatasets extends TreeItem {
     directParent: any,
     public iconPath = getIconPathInResources("library-dark.svg", "library-light.svg")
   ) {
+    super(`${dataset.dsname}`, TreeItemCollapsibleState.Collapsed);
 
-    super(
-      `${dataset.dsname}`,
-      TreeItemCollapsibleState.Collapsed
-    );
-    
     this.dataset = dataset;
     this.parentRegion = parentRegion;
     this.directParent = directParent;
-    this.contextValue = `cicsdatasets.${this.activeFilter ? 'filtered' : 'unfiltered'}${dataset.dsname}`;
+    this.contextValue = `cicsdatasets.${this.activeFilter ? "filtered" : "unfiltered"}${dataset.dsname}`;
   }
 
   public setLabel(newlabel: string) {
@@ -53,56 +47,61 @@ export class CICSLibraryDatasets extends TreeItem {
   }
 
   public async loadContents() {
-    let defaultCriteria = "(librarydsn=" + "'" + this.dataset.dsname + "'" + ")";
+    const defaultCriteria = `(librarydsn='${this.dataset.dsname}')`;
     let criteria;
 
     if (this.activeFilter) {
-      criteria = defaultCriteria + " AND " + toEscapedCriteriaString(this.activeFilter, 'PROGRAM');
+      criteria = defaultCriteria + " AND " + toEscapedCriteriaString(this.activeFilter, "PROGRAM");
     } else {
       criteria = defaultCriteria;
     }
 
     this.children = [];
     try {
-
       https.globalAgent.options.rejectUnauthorized = this.parentRegion.parentSession.session.ISession.rejectUnauthorized;
       const datasetResponse = await getResource(this.parentRegion.parentSession.session, {
         name: "CICSProgram",
         regionName: this.parentRegion.getRegionName(),
-        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex!.getPlexName() : undefined,
-        criteria: criteria
-      }); 
+        cicsPlex: this.parentRegion.parentPlex ? this.parentRegion.parentPlex.getPlexName() : undefined,
+        criteria: criteria,
+      });
       https.globalAgent.options.rejectUnauthorized = undefined;
 
-      const programsArray = Array.isArray(datasetResponse.response.records.cicsprogram) ? datasetResponse.response.records.cicsprogram: [datasetResponse.response.records.cicsprogram];
-      this.label = `${this.dataset.dsname}${this.activeFilter?` (${this.activeFilter}) `: " "}[${programsArray.length}]`;
+      const programsArray = Array.isArray(datasetResponse.response.records.cicsprogram)
+        ? datasetResponse.response.records.cicsprogram
+        : [datasetResponse.response.records.cicsprogram];
+      this.label = `${this.dataset.dsname}${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[${programsArray.length}]`;
       for (const program of programsArray) {
-        const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion, this); 
+        const newProgramItem = new CICSProgramTreeItem(program, this.parentRegion, this);
         this.addProgram(newProgramItem);
       }
-
     } catch (error) {
       https.globalAgent.options.rejectUnauthorized = undefined;
-      if ((error as any)!.mMessage!.includes('exceeded a resource limit')) {
+      if (error.mMessage!.includes("exceeded a resource limit")) {
         window.showErrorMessage(`Resource Limit Exceeded - Set a program filter to narrow search`);
       } else if (this.children.length === 0) {
         window.showInformationMessage(`No programs found`);
-        this.label = `${this.dataset.dsname}${this.activeFilter?` (${this.activeFilter}) `: " "}[0]`;
+        this.label = `${this.dataset.dsname}${this.activeFilter ? ` (${this.activeFilter}) ` : " "}[0]`;
       } else {
-        window.showErrorMessage(`Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+        window.showErrorMessage(
+          `Something went wrong when fetching programs - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(
+            /(\\n\t|\\n|\\t)/gm,
+            " "
+          )}`
+        );
       }
     }
   }
 
   public clearFilter() {
     this.activeFilter = undefined;
-    this.contextValue = `cicsdatasets.${this.activeFilter ? 'filtered' : 'unfiltered'}${this.dataset.dsname}`;
+    this.contextValue = `cicsdatasets.${this.activeFilter ? "filtered" : "unfiltered"}${this.dataset.dsname}`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
   public setFilter(newFilter: string) {
     this.activeFilter = newFilter;
-    this.contextValue = `cicsdatasets.${this.activeFilter ? 'filtered' : 'unfiltered'}${this.dataset.dsname}`;
+    this.contextValue = `cicsdatasets.${this.activeFilter ? "filtered" : "unfiltered"}${this.dataset.dsname}`;
     this.collapsibleState = TreeItemCollapsibleState.Expanded;
   }
 
