@@ -447,13 +447,14 @@
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "test": "node ./out/test/runTest.js",
-    "licenses": "node ./update.licenses.js"
+    "licenses": "node ./update.licenses.js",
+    "package": "vsce package && mkdir -p dist && mv *.vsix dist"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/mocha": "^8.2.3",
     "@types/node": "^12.20.55",
-    "@types/vscode": "^1.77.0",
+    "@types/vscode": "~1.53.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",

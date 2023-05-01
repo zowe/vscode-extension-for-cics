@@ -107,7 +107,7 @@ export class CICSTree
             });
             try {
                 const plexInfo = await ProfileManagement.getPlexInfo(profile);
-                
+
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
 
                 for (const item of plexInfo) {
@@ -213,7 +213,7 @@ export class CICSTree
                                             const message = {
                                                 name: profile.name,
                                                 profile: {
-                                                    ...profile.profile, 
+                                                    ...profile.profile,
                                                     rejectUnauthorized: false
                                                 }
                                             };
@@ -221,7 +221,7 @@ export class CICSTree
                                             const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.name!, 'cics');
                                             await this.removeSession(sessionTree, updatedProfile, position);
                                         }
-                                        
+
                                     }
                                 }
                                 break;
@@ -249,7 +249,7 @@ export class CICSTree
                 }
                 console.log(error);
 
-                
+
             }
             }
         );
@@ -258,7 +258,7 @@ export class CICSTree
     async createNewProfile() {
         if (isTheia()) {
             const connnectionName = await window.showInputBox({
-                title: "Name of connection",
+                prompt: "Name of connection",
                 placeHolder: "e.g. my-cics-profile",
                 ignoreFocusOut: true
             });
@@ -266,7 +266,7 @@ export class CICSTree
                 return;
             }
             const hostDetails = await window.showInputBox({
-                title: "Input protocol, host and port for connection",
+                prompt: "Input protocol, host and port for connection",
                 placeHolder: "e.g. https://mycicshostname.com:12345",
                 ignoreFocusOut: true
             });
@@ -294,7 +294,7 @@ export class CICSTree
             }
 
             const username = await window.showInputBox({
-                title: "Input Username",
+                prompt: "Input Username",
                 placeHolder: "e.g. user123",
                 ignoreFocusOut: true
             });
@@ -303,7 +303,7 @@ export class CICSTree
             }
 
             const userPassword = await window.showInputBox({
-                title: "Input Password",
+                prompt: "Input Password",
                 placeHolder: "e.g. 12345678",
                 password: true,
                 ignoreFocusOut: true
@@ -313,21 +313,22 @@ export class CICSTree
             }
 
             const plexName = await window.showInputBox({
-                title: "Input Plex Name",
+                prompt: "Input Plex Name",
                 placeHolder: "e.g. PLEX123",
                 ignoreFocusOut: true
             });
 
             let regionName = await window.showInputBox({
-                title: "Input Region Name",
+                prompt: "Input Region Name",
                 placeHolder: "e.g. REGION123",
                 ignoreFocusOut: true
             });
 
 
             const rejectUnauthorized = await window.showQuickPick(["True", "False"], {
-                title: "Reject Unauthorized",
-                ignoreFocusOut: true
+                placeHolder: "Reject Unauthorized",
+                ignoreFocusOut: true,
+                canPickMany: false
             });
             if (!rejectUnauthorized) {
                 return;
