@@ -9,16 +9,29 @@ on:
 
 jobs:
   build_vsix:
-    name: build_vsix
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 60
+
+    concurrency:
+      group: ${{ matrix.os }}-node-${{ matrix.node-version }}-ci-${{ github.ref }}
+      cancel-in-progress: true
+
+    strategy:
+      # Continue to run tests on the other systems if one fails
+      fail-fast: false
+      matrix:
+        node-version: [16.x, 18.x]
+        # order operating systems from best to worst
+        os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Use Node.js LTS
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: lts/*
+          node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
         run: npm i
