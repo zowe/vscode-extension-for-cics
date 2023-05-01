@@ -17,7 +17,7 @@
     "experimentalDecorators": true,
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDir": "."
+    "rootDir": "src"
   },
   "exclude": ["node_modules", ".vscode-test"],
   "include": [
