@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: lts/*
-          # registry-url: https://registry.npmjs.org/
 
       - name: Install Dependencies
         run: npm i
@@ -49,10 +48,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: lts/*
-          # registry-url: https://registry.npmjs.org/
 
       - name: Install VSCE
         run: npm i -g vsce
+
+      - name: Package VSIX
+        run: npm run package
 
       # - name: Publish to Marketplace
       #   run: vsce publish -p ${{ secrets.VSCODE_TOKEN }}

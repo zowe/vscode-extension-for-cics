@@ -21,6 +21,7 @@ import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSSessionTree } from "./CICSSessionTree";
 import * as https from "https";
 import { getIconPathInResources, missingSessionParameters, promptCredentials } from "../utils/profileUtils";
+import { Gui } from "@zowe/zowe-explorer-api";
 
 export class CICSTree
     implements TreeDataProvider<CICSSessionTree>{
@@ -63,7 +64,7 @@ export class CICSTree
     }
 
     /**
-     * 
+     *
      * Provides user with prompts and allows them to add a profile after clicking the '+' button
      */
     async addProfile() {
@@ -108,7 +109,7 @@ export class CICSTree
                             window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
                         }
                         const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(profiles[0].profName);
-                        const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+                        const filePath = currentProfile?.profLoc.osLoc?.[0] ?? "";
                         await openConfigFile(filePath);
                     } else {
                         await this.createNewProfile();
@@ -145,15 +146,15 @@ export class CICSTree
     }
 
     /**
-     * 
-     * @param profile 
-     * @param position number that's passed in when updating or expanding profile - needed 
+     *
+     * @param profile
+     * @param position number that's passed in when updating or expanding profile - needed
      * to replace position of current CICSSessionTree.
      * @param sessionTree current CICSSessionTree only passed in if expanding a profile
      */
-    async loadProfile(profile: IProfileLoaded, position?: number | undefined, sessionTree?: CICSSessionTree) {
+    async loadProfile(profile?: IProfileLoaded, position?: number | undefined, sessionTree?: CICSSessionTree) {
         const persistentStorage = new PersistentStorage("zowe.cics.persistent");
-        await persistentStorage.addLoadedCICSProfile(profile.name!);
+        await persistentStorage.addLoadedCICSProfile(profile!.name!);
         let newSessionTree : CICSSessionTree;
         window.withProgress({
             title: 'Load profile',
@@ -161,20 +162,20 @@ export class CICSTree
             cancellable: true
           }, async (progress, token) => {
             token.onCancellationRequested(() => {
-              console.log(`Cancelling the loading of ${profile.name}`);
+              console.log(`Cancelling the loading of ${profile!.name}`);
             });
 
             progress.report({
-            message: `Loading ${profile.name}`
+            message: `Loading ${profile!.name}`
             });
             try {
                 const configInstance = await ProfileManagement.getConfigInstance();
                 if (configInstance.usingTeamConfig){
-                    let missingParamters = missingSessionParameters(profile.profile);
+                    let missingParamters = missingSessionParameters(profile!.profile);
                     if (missingParamters.length) {
                         const userPass = ["user", "password"];
                         if (missingParamters.includes(userPass[0]) || missingParamters.includes(userPass[1])){
-                            const updatedProfile = await promptCredentials(profile.name!, true);
+                            const updatedProfile = await promptCredentials(profile!.name!, true);
                             if (!updatedProfile) {
                                 return;
                             }
@@ -183,19 +184,19 @@ export class CICSTree
                             missingParamters = missingParamters.filter(param => (userPass.indexOf(param!) === -1) || (userPass.indexOf(param!) === -1));
                         }
                         if (missingParamters.length) {
-                            window.showInformationMessage(`The following fields are missing from ${profile.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
+                            window.showInformationMessage(`The following fields are missing from ${profile!.name}: ${missingParamters.join(", ")}. Please update them in your config file.`);
                             return;
                         }
                     // If profile is expanded and it previously had 401 error code
                     } else if (sessionTree && sessionTree.getIsUnauthorized()) {
-                        const updatedProfile = await promptCredentials(profile.name!, true);
+                        const updatedProfile = await promptCredentials(profile!.name!, true);
                         if (!updatedProfile) {
                             return;
                         }
                         profile = updatedProfile;
                     }
                 }
-                const plexInfo: InfoLoaded[] = await ProfileManagement.getPlexInfo(profile);
+                const plexInfo: InfoLoaded[] = await ProfileManagement.getPlexInfo(profile!);
                 // Initialise session tree
                 newSessionTree = new CICSSessionTree(profile, getIconPathInResources("profile-dark.svg", "profile-light.svg"));
                 // For each InfoLoaded object - happens if there are multiple plexes
@@ -204,12 +205,12 @@ export class CICSTree
                     if (item.plexname === null) {
                         const session = new Session({
                             type: "basic",
-                            hostname: profile.profile!.host,
-                            port: Number(profile.profile!.port),
-                            user: profile.profile!.user,
-                            password: profile.profile!.password,
-                            rejectUnauthorized: profile.profile!.rejectUnauthorized,
-                            protocol: profile.profile!.protocol,
+                            hostname: profile!.profile!.host,
+                            port: Number(profile!.profile!.port),
+                            user: profile!.profile!.user,
+                            password: profile!.profile!.password,
+                            rejectUnauthorized: profile!.profile!.rejectUnauthorized,
+                            protocol: profile!.profile!.protocol,
                         });
                         try {
 
@@ -236,12 +237,12 @@ export class CICSTree
                         }
                     } else {
                         if (item.group) {
-                            const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree, profile!.profile!.regionName);
+                            const newPlexTree = new CICSPlexTree(item.plexname, profile!, newSessionTree, profile!.profile!.regionName);
                             newPlexTree.setLabel(`${item.plexname} - ${profile!.profile!.regionName}`);
                             newSessionTree.addPlex(newPlexTree);
                         } else {
                             //Plex
-                            const newPlexTree = new CICSPlexTree(item.plexname, profile, newSessionTree);
+                            const newPlexTree = new CICSPlexTree(item.plexname, profile!, newSessionTree);
                             newSessionTree.addPlex(newPlexTree);
                         }
                     }
@@ -280,16 +281,16 @@ export class CICSTree
                     if ("code" in error!){
                         switch((error as any).code) {
                             case 'ETIMEDOUT':
-                                window.showErrorMessage(`Error: connect ETIMEDOUT ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                window.showErrorMessage(`Error: connect ETIMEDOUT ${profile!.profile!.host}:${profile!.profile!.port} (${profile!.name})`);
                                 break;
                             case "ENOTFOUND":
-                                window.showErrorMessage(`Error: getaddrinfo ENOTFOUND ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                window.showErrorMessage(`Error: getaddrinfo ENOTFOUND ${profile!.profile!.host}:${profile!.profile!.port} (${profile!.name})`);
                                 break;
                             case "ECONNRESET":
-                                window.showErrorMessage(`Error: socket hang up ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                window.showErrorMessage(`Error: socket hang up ${profile!.profile!.host}:${profile!.profile!.port} (${profile!.name})`);
                                 break;
                             case "EPROTO":
-                                window.showErrorMessage(`Error: write EPROTO ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name})`);
+                                window.showErrorMessage(`Error: write EPROTO ${profile!.profile!.host}:${profile!.profile!.port} (${profile!.name})`);
                                 break;
                             case "DEPTH_ZERO_SELF_SIGNED_CERT":
                             case "SELF_SIGNED_CERT_IN_CHAIN":
@@ -305,55 +306,55 @@ export class CICSTree
                                             const configInstance = await ProfileManagement.getConfigInstance();
                                             let updatedProfile;
                                             if (configInstance.usingTeamConfig) {
-                                                const upd = { profileName: profile.name!, profileType: 'cics' };
+                                                const upd = { profileName: profile!.name!, profileType: 'cics' };
                                                 const configInstance = await ProfileManagement.getConfigInstance();
                                                 // flip rejectUnauthorized to false
                                                 await configInstance.updateProperty({ ...upd, property: "rejectUnauthorized", value: false });
-                                                updatedProfile = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profile.name!);
+                                                updatedProfile = await ProfileManagement.getProfilesCache().getLoadedProfConfig(profile!.name!);
                                             } else {
                                                 // flip rejectUnauthorized to false
                                                 const message = {
-                                                    name: profile.name,
+                                                    name: profile!.name,
                                                     profile: {
-                                                        ...profile.profile, 
+                                                        ...profile!.profile,
                                                         rejectUnauthorized: false
                                                     }
                                                 };
                                                 const newProfile = await ProfileManagement.updateProfile(message);
                                                 await ProfileManagement.profilesCacheRefresh();
-                                                updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.name!, 'cics');
+                                                updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile!.name!, 'cics');
                                             }
                                             await this.removeSession(sessionTree, updatedProfile, position);
                                         }
-                                        
+
                                     }
                                 }
                                 break;
                             default:
-                                window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+                                window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile!.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
                         }
 
                     } else if ("response" in error!) {
                         if ((error as any).response !== 'undefined' && (error as any).response.status){
                             switch((error as any).response.status) {
                                 case 401:
-                                    window.showErrorMessage(`Error: Request failed with status code 401 for Profile '${profile.name}'`);
+                                    window.showErrorMessage(`Error: Request failed with status code 401 for Profile '${profile!.name}'`);
                                     // set the unauthorized flag to true for reprompting of credentials.
                                     newSessionTree.setUnauthorized();
                                     // Replace old profile tree with new disconnected profile tree item
                                     this.loadedProfiles.splice(position!, 1, newSessionTree);
                                     break;
                                 case 404:
-                                    window.showErrorMessage(`Error: Request failed with status code 404 for Profile '${profile.name}' - Not Found`);
+                                    window.showErrorMessage(`Error: Request failed with status code 404 for Profile '${profile!.name}' - Not Found`);
                                     break;
                                 case 500:
-                                    window.showErrorMessage(`Error: Request failed with status code 500 for Profile '${profile.name}'`);
+                                    window.showErrorMessage(`Error: Request failed with status code 500 for Profile '${profile!.name}'`);
                                     break;
                                 default:
-                                    window.showErrorMessage(`Error: Request failed with status code ${(error as any).response.status} for Profile '${profile.name}'`);
+                                    window.showErrorMessage(`Error: Request failed with status code ${(error as any).response.status} for Profile '${profile!.name}'`);
                             }
                         } else {
-                            window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
+                            window.showErrorMessage(`Error: An error has occurred ${profile!.profile!.host}:${profile!.profile!.port} (${profile!.name}) - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
                         }
                     }
                 }
@@ -365,20 +366,20 @@ export class CICSTree
 
     /**
      * Method for V1 profile configuration that provides UI for user to enter profile details
-     * and creates a profile. 
+     * and creates a profile.
      */
     async createNewProfile() {
         if (isTheia()) {
-            const connnectionName = await window.showInputBox({
-                title: "Name of connection",
+            const connnectionName = await Gui.showInputBox({
+                prompt: "Name of connection",
                 placeHolder: "e.g. my-cics-profile",
                 ignoreFocusOut: true
             });
             if (!connnectionName) {
                 return;
             }
-            const hostDetails = await window.showInputBox({
-                title: "Input protocol, host and port for connection",
+            const hostDetails = await Gui.showInputBox({
+                prompt: "Input protocol, host and port for connection",
                 placeHolder: "e.g. https://mycicshostname.com:12345",
                 ignoreFocusOut: true
             });
@@ -405,8 +406,8 @@ export class CICSTree
                 return;
             }
 
-            const username = await window.showInputBox({
-                title: "Input Username",
+            const username = await Gui.showInputBox({
+                prompt: "Input Username",
                 placeHolder: "e.g. user123",
                 ignoreFocusOut: true
             });
@@ -414,8 +415,8 @@ export class CICSTree
                 return;
             }
 
-            const userPassword = await window.showInputBox({
-                title: "Input Password",
+            const userPassword = await Gui.showInputBox({
+                prompt: "Input Password",
                 placeHolder: "e.g. 12345678",
                 password: true,
                 ignoreFocusOut: true
@@ -424,21 +425,20 @@ export class CICSTree
                 return;
             }
 
-            const plexName = await window.showInputBox({
-                title: "Input Plex Name",
+            const plexName = await Gui.showInputBox({
+                prompt: "Input Plex Name",
                 placeHolder: "e.g. PLEX123",
                 ignoreFocusOut: true
             });
 
-            let regionName = await window.showInputBox({
-                title: "Input Region Name",
+            let regionName = await Gui.showInputBox({
+                prompt: "Input Region Name",
                 placeHolder: "e.g. REGION123",
                 ignoreFocusOut: true
             });
 
-
-            const rejectUnauthorized = await window.showQuickPick(["True", "False"], {
-                title: "Reject Unauthorized",
+            const rejectUnauthorized = await Gui.showQuickPick(["True", "False"], {
+                placeHolder: "Reject Unauthorized",
                 ignoreFocusOut: true
             });
             if (!rejectUnauthorized) {
@@ -515,7 +515,7 @@ export class CICSTree
 
     /**
      * Delete profile functionality for V1 profile configuration
-     * @param sessions 
+     * @param sessions
      */
     async deleteSession(sessions: CICSSessionTree[]) {
         let answer;
@@ -599,7 +599,7 @@ export class CICSTree
                 const profile = await ProfileManagement.updateProfile(message);
                 const position = this.loadedProfiles.indexOf(session);
                 await ProfileManagement.profilesCacheRefresh();
-                const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.profile!.name, 'cics');
+                const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile!.profile!.name, 'cics');
                 await this.removeSession(session, updatedProfile, position);
 
             } catch (error) {

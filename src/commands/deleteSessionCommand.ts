@@ -29,7 +29,7 @@ export function getDeleteSessionCommand(tree: CICSTree, treeview: TreeView<any>)
       try {
         const configInstance = await ProfileManagement.getConfigInstance();
         if (configInstance.usingTeamConfig) {
-          const currentProfile: IProfAttrs = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
+          const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
           if (currentProfile) {
             const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
             await openConfigFile(filePath);
