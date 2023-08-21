@@ -12,7 +12,7 @@
 const { readFileSync, writeFileSync } = require("fs");
 
 require("glob")(
-  "{src,resources}{/**/*.js,/**/*.ts,/**/*.md}",
+  "{src,resources}{/**/*.js,/**/*.ts}",
   { ignore: ["**/node_modules/**", "**/out/**"] },
   (globErr, filePaths) => {
     if (globErr) {
