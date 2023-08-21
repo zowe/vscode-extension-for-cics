@@ -29,8 +29,8 @@ export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>)
       if (configInstance.usingTeamConfig) {
         try {
           const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
-          if (currentProfile) {
-            const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+          const filePath = currentProfile?.profLoc.osLoc?.[0] ?? "";
+          if (filePath !== "") {
             await openConfigFile(filePath);
           }
         } catch (error) {
