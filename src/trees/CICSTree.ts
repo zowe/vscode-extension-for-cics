@@ -11,7 +11,7 @@
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import { imperative } from "@zowe/zowe-explorer-api";
-import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, window } from "vscode";
+import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, commands, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { InfoLoaded, ProfileManagement } from "../utils/profileManagement";
 import { isTheia, openConfigFile } from "../utils/workspaceUtils";
@@ -31,6 +31,12 @@ export class CICSTree
     }
     public getLoadedProfiles() {
         return this.loadedProfiles;
+    }
+
+    public async refreshLoadedProfiles() {
+        this.clearLoadedProfiles();
+        await this.loadStoredProfileNames();
+        commands.executeCommand('workbench.actions.treeView.cics-view.collapseAll');
     }
 
     public clearLoadedProfiles() {

@@ -43,8 +43,7 @@ export class ProfileManagement {
   }
 
   public static async profilesCacheRefresh() {
-    const apiRegiser: ZoweExplorerApi.IApiRegisterClient = ProfileManagement.getExplorerApis();
-    await ProfileManagement.getProfilesCache().refresh(apiRegiser);
+    await ProfileManagement.getProfilesCache().refresh(ProfileManagement.getExplorerApis());
   }
 
   public static async createNewProfile(formResponse: imperative.ISaveProfile) {

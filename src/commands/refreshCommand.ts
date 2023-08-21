@@ -24,9 +24,7 @@ export function getRefreshCommand(tree: CICSTree) {
           location: ProgressLocation.Notification,
           cancellable: false
         }, async () => {
-          tree.clearLoadedProfiles();
-          await ProfileManagement.profilesCacheRefresh();
-          await tree.loadStoredProfileNames();
+          await tree.refreshLoadedProfiles();
         });
       } catch (error) {
         console.log(error);
