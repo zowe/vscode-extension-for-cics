@@ -63,7 +63,7 @@ export class CICSTree
     }
 
     /**
-     * 
+     *
      * Provides user with prompts and allows them to add a profile after clicking the '+' button
      */
     async addProfile() {
@@ -108,7 +108,7 @@ export class CICSTree
                             window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
                         }
                         const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(profiles[0].profName);
-                        const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+                        const filePath = currentProfile?.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
                         await openConfigFile(filePath);
                     } else {
                         await this.createNewProfile();
@@ -145,9 +145,9 @@ export class CICSTree
     }
 
     /**
-     * 
-     * @param profile 
-     * @param position number that's passed in when updating or expanding profile - needed 
+     *
+     * @param profile
+     * @param position number that's passed in when updating or expanding profile - needed
      * to replace position of current CICSSessionTree.
      * @param sessionTree current CICSSessionTree only passed in if expanding a profile
      */
@@ -315,7 +315,7 @@ export class CICSTree
                                                 const message = {
                                                     name: profile.name,
                                                     profile: {
-                                                        ...profile.profile, 
+                                                        ...profile.profile,
                                                         rejectUnauthorized: false
                                                     }
                                                 };
@@ -325,7 +325,7 @@ export class CICSTree
                                             }
                                             await this.removeSession(sessionTree, updatedProfile, position);
                                         }
-                                        
+
                                     }
                                 }
                                 break;
@@ -365,7 +365,7 @@ export class CICSTree
 
     /**
      * Method for V1 profile configuration that provides UI for user to enter profile details
-     * and creates a profile. 
+     * and creates a profile.
      */
     async createNewProfile() {
         if (isTheia()) {
@@ -515,7 +515,7 @@ export class CICSTree
 
     /**
      * Delete profile functionality for V1 profile configuration
-     * @param sessions 
+     * @param sessions
      */
     async deleteSession(sessions: CICSSessionTree[]) {
         let answer;
@@ -599,7 +599,7 @@ export class CICSTree
                 const profile = await ProfileManagement.updateProfile(message);
                 const position = this.loadedProfiles.indexOf(session);
                 await ProfileManagement.profilesCacheRefresh();
-                const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.profile!.name, 'cics');
+                const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile?.profile!.name, 'cics');
                 await this.removeSession(session, updatedProfile, position);
 
             } catch (error) {

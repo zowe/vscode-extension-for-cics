@@ -10,8 +10,9 @@
 *
 */
 
-import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile, ProfileInfo } from "@zowe/imperative";
+import { IDeleteProfile, IProfileLoaded, ISaveProfile, IUpdateProfile } from "@zowe/imperative";
 import { ProfilesCache, ZoweExplorerApi, ZoweVsCodeExtension } from "@zowe/zowe-explorer-api";
+import { imperative } from "@zowe/zowe-explorer-api/node_modules/@zowe/cli";
 import axios, { AxiosRequestConfig } from "axios";
 import { window } from "vscode";
 import { xml2json } from "xml-js";
@@ -23,7 +24,7 @@ import { LoggerUtils } from "./loggerUtils";
 export class ProfileManagement {
   private static zoweExplorerAPI = ZoweVsCodeExtension.getZoweExplorerApi();
   private static ProfilesCache = new ProfilesCache(LoggerUtils.instance.getImperativeLogger());
-  
+
   constructor() { }
 
   public static apiDoesExist() {
@@ -49,31 +50,31 @@ export class ProfileManagement {
   }
 
   public static async createNewProfile(formResponse: ISaveProfile) {
-    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').save(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics')?.save(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
   public static async updateProfile(formResponse: IUpdateProfile) {
-    const profile = await ProfileManagement.ProfilesCache.getCliProfileManager('cics').update(formResponse);
+    const profile = await ProfileManagement.ProfilesCache.getCliProfileManager('cics')?.update(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
     return profile;
   }
 
   public static async deleteProfile(formResponse: IDeleteProfile) {
-    await ProfileManagement.ProfilesCache.getCliProfileManager('cics').delete(formResponse);
+    await ProfileManagement.ProfilesCache.getCliProfileManager('cics')?.delete(formResponse);
     await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
   }
 
-  public static async getConfigInstance() : Promise<ProfileInfo> {
+  public static async getConfigInstance() : Promise<imperative.ProfileInfo> {
     const mProfileInfo = await ProfileManagement.getProfilesCache().getProfileInfo();
     return mProfileInfo;
   }
 
   /**
    * Makes axios GET request with path and axios config object given
-   * @param path 
-   * @param config 
-   * @returns 
+   * @param path
+   * @param config
+   * @returns
    */
   public static async makeRequest(path:string, config:AxiosRequestConfig) {
     const response = await axios.get(path, config);
@@ -86,10 +87,10 @@ export class ProfileManagement {
 
   /**
    * Populates the info
-   * @param profile 
+   * @param profile
    * @returns Array of type InfoLoaded
    */
-  public static async getPlexInfo(profile: IProfileLoaded) : 
+  public static async getPlexInfo(profile: IProfileLoaded) :
   Promise<InfoLoaded[]> {
     const config: AxiosRequestConfig = {
       baseURL: `${profile!.profile!.protocol}://${profile!.profile!.host}:${profile!.profile!.port}/CICSSystemManagement`,
@@ -112,8 +113,8 @@ export class ProfileManagement {
           config
           );
         const regionGroupJson = ProfileManagement.cmciResponseXml2Json(checkIfSystemGroup.data);
-        if (regionGroupJson.response.resultsummary && 
-          regionGroupJson.response.resultsummary._attributes && 
+        if (regionGroupJson.response.resultsummary &&
+          regionGroupJson.response.resultsummary._attributes &&
           regionGroupJson.response.resultsummary._attributes.recordcount !== '0') {
           // CICSGroup
           const singleGroupResponse = await ProfileManagement.makeRequest(
