@@ -81,8 +81,8 @@ export async function activate(context: ExtensionContext) {
       ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
       const apiRegister = await ProfileManagement.getExplorerApis();
       await apiRegister.getExplorerExtenderApi().reloadProfiles();
-      if (apiRegister.registerProfileChangeCallback) {
-        apiRegister.registerProfileChangeCallback(async () => {
+      if (apiRegister.onProfilesUpdate) {
+        apiRegister.onProfilesUpdate(async () => {
           await treeDataProv.refreshLoadedProfiles();
         });
       }
