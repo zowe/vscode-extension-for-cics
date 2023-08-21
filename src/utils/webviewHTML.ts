@@ -9,15 +9,15 @@
 *
 */
 
-import { IUpdateProfile } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 
 /**
  * Used for both Update and Create webviews. 'message' parameter is passed in when
  * an update profile is performed.
- * @param message 
- * @returns 
+ * @param message
+ * @returns
  */
-export const addProfileHtml = (message?: IUpdateProfile) => {
+export const addProfileHtml = (message?: imperative.IUpdateProfile) => {
   return `<!DOCTYPE html>
   <html lang="en">
     <head>
@@ -25,7 +25,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>${message ? "Update" : "Create"} CICS Profile</title>
-  
+
       <link
         rel="stylesheet"
         href="https://unpkg.com/carbon-components/css/carbon-components.min.css"
@@ -49,7 +49,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
 
         background-color: var(--vscode-editor-background);
       }
-  
+
       .bx--content {
         width: 90%;
         display: flex;
@@ -58,7 +58,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
 
         background-color: var(--vscode-editor-background);
       }
-  
+
       .two-input-container {
         display: flex;
         justify-content: space-between;
@@ -80,17 +80,17 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
         max-width: 20%;
         min-width: 75px;
       }
-  
+
       .host-container {
         max-width: 70%;
         min-width: 250px;
       }
-  
+
       .select-container {
         max-width: 40%;
         padding: 1rem 0;
       }
-  
+
       .user-input {
         max-width: 46%;
       }
@@ -101,13 +101,13 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
         text-align: left;
         width:fit-content;
         padding: 0% 3% 0% 0%;
-      } 
+      }
       .float-child-right {
         width: 65%;
         float: left;
         text-align: left;
         width:fit-content;
-      } 
+      }
 
       h1, h2, h3, h4, p, label {
         color: var(--vscode-editor-foreground) !important;
@@ -123,7 +123,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
 
         </div>
         <h3 style="text-align:left">Connection Details</h3>
-  
+
         <div class="three-input-container">
           <div style="width: 20%; padding: 0% 2% 0% 0%">
               <div class="bx--select">
@@ -167,7 +167,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 />
               </div>
           </div>
-  
+
           <div style="width: 20%; padding: 0% 0% 0% 2%">
             <label for="port-input" class="bx--label">Port</label>
             <div class="bx--text-input__field-wrapper">
@@ -181,7 +181,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
             </div>
           </div>
         </div>
-  
+
 
 
           <div class="TLScontainer" id="ru-selection-container" width:100%">
@@ -224,13 +224,13 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
                 onchange=(function(){inputFieldChanged=true;})()
                 ${message?.name ? `value =${message.name}` : undefined}
                 ${message ? `readonly` : ""}
-                
+
               />
             </div>
           </div>
-  
+
         <h3>User Details</h3>
-  
+
         <div class="two-input-container">
           <div style="width:50%; padding: 0 1.5% 0 0">
             <label for="user-input" class="bx--label">User ID</label>
@@ -244,7 +244,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
               />
             </div>
           </div>
-  
+
           <div style="width:50%; padding: 0 0 0 1.5%">
             <label for="password-input" class="bx--label">Password</label>
             <div class="bx--text-input__field-wrapper">
@@ -259,9 +259,9 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
           </div>
         </div>
         <h3>CICS Details <span style="font-size:20px"><em>(Optional)</em></span></h3>
-  
+
         <p>Narrow down the search by specifying a plex, or a plex AND a region/system group for profiles that contain plexes. Otherwise specify a region/system group.</p>
-  
+
         <div class="two-input-container">
           <div style="width:50%; padding: 0 1.5% 0 0">
             <label for="region-input" class="bx--label">Region Name or System Group</label>
@@ -275,7 +275,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
               />
             </div>
           </div>
-  
+
           <div style="width:50%; padding: 0 0 0 1.5%">
             <label for="plex-input" class="bx--label">Plex Name</label>
             <div class="bx--text-input__field-wrapper">
@@ -295,7 +295,7 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
           style="width:30%"
           type="button">${message ? "Update" : "Create"} Profile</button>
       </div>
-  
+
       <script>
 
         let inputFieldChanged = false;
@@ -385,16 +385,16 @@ export const addProfileHtml = (message?: IUpdateProfile) => {
       </script>
     </body>
   </html>
-  
-  
+
+
 `;
 };
 
 /**
  * show attributes webview
- * @param title 
- * @param webText 
- * @returns 
+ * @param title
+ * @param webText
+ * @returns
  */
 export const getAttributesHtml = (title: string, webText: string) => {
   return `<!DOCTYPE html>
@@ -464,19 +464,19 @@ export const getAttributesHtml = (title: string, webText: string) => {
   </head>
   <body>
   <div>
-  
+
   <table id="resultsTable">
   ${webText}
   </table>
-  
+
   </div>
   <script>
     document.getElementById("searchBox").addEventListener("keyup", (e) => {
       let tableRows = document.getElementsByTagName("tr");
       for(let row of tableRows){
         if(row.children[1].innerText !== 'Value'){
-          row.style.display = 
-              row.children[0].innerText.toUpperCase().includes(e.target.value.toUpperCase()) ? '' : 'none';  
+          row.style.display =
+              row.children[0].innerText.toUpperCase().includes(e.target.value.toUpperCase()) ? '' : 'none';
         }
       }
     });
@@ -487,9 +487,9 @@ export const getAttributesHtml = (title: string, webText: string) => {
 
 /**
  * show attributes webview
- * @param title 
- * @param webText 
- * @returns 
+ * @param title
+ * @param webText
+ * @returns
  */
  export const getParametersHtml = (title: string, webText: string) => {
   return `<!DOCTYPE html>
@@ -564,7 +564,7 @@ export const getAttributesHtml = (title: string, webText: string) => {
   </head>
   <body>
   <div>
-  
+
   <table id="resultsTable">
   <colgroup>
     <col span="1" style="width: 30%;">
@@ -573,7 +573,7 @@ export const getAttributesHtml = (title: string, webText: string) => {
   </colgroup>
   ${webText}
   </table>
-  
+
   </div>
   <script>
   let keyword = '';
@@ -607,7 +607,7 @@ export const getAttributesHtml = (title: string, webText: string) => {
               row.style.display = '';
             } else{
               row.style.display = 'none';
-            }  
+            }
           } else{
             row.style.display = row.children[0].innerText.toUpperCase().includes(keyword) ? '' : 'none';
           }

@@ -10,7 +10,7 @@
 */
 
 import { CicsCmciConstants, CicsCmciRestClient } from "@zowe/cics-for-zowe-cli";
-import { AbstractSession } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
@@ -49,9 +49,9 @@ import { CICSCombinedProgramTree } from "../trees/CICSCombinedTrees/CICSCombined
             increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
           const currentNode = allSelectedNodes[parseInt(index)];
-          
+
           https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-          
+
           try {
             await performPhaseIn(
               currentNode.parentRegion.parentSession.session,
@@ -104,7 +104,7 @@ import { CICSCombinedProgramTree } from "../trees/CICSCombinedTrees/CICSCombined
 }
 
 async function performPhaseIn(
-  session: AbstractSession,
+  session: imperative.AbstractSession,
   parms: { cicsPlex: string | null; regionName: string; name: string; }
 ) {
   const requestBody: any = {

@@ -14,7 +14,7 @@ import {
   CicsCmciRestClient,
   ICMCIApiResponse,
 } from "@zowe/cics-for-zowe-cli";
-import { AbstractSession } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../../trees/CICSRegionTree";
 import { CICSTree } from "../../trees/CICSTree";
@@ -34,7 +34,7 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
         return;
       }
       let parentRegions: CICSRegionTree[] = [];
-      
+
       window.withProgress({
         title: 'Enable',
         location: ProgressLocation.Notification,
@@ -49,9 +49,9 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
             increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
           const currentNode = allSelectedNodes[parseInt(index)];
-          
+
           https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-          
+
           try {
             await enableTransaction(
               currentNode.parentRegion.parentSession.session,
@@ -95,7 +95,7 @@ export function getEnableTransactionCommand(tree: CICSTree, treeview: TreeView<a
 }
 
 async function enableTransaction(
-  session: AbstractSession,
+  session: imperative.AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {

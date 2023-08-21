@@ -9,7 +9,6 @@
 *
 */
 
-import { IProfAttrs } from "@zowe/imperative";
 import { commands, TreeView, window } from "vscode";
 import { CICSSessionTree } from "../trees/CICSSessionTree";
 import { CICSTree } from "../trees/CICSTree";

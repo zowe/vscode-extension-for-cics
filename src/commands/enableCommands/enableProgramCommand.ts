@@ -14,7 +14,7 @@ import {
   CicsCmciRestClient,
   ICMCIApiResponse,
 } from "@zowe/cics-for-zowe-cli";
-import { AbstractSession } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../../trees/CICSRegionTree";
 import { CICSTree } from "../../trees/CICSTree";
@@ -53,9 +53,9 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
             increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
           const currentNode = allSelectedNodes[parseInt(index)];
-          
+
           https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-          
+
           try {
             await enableProgram(
               currentNode.parentRegion.parentSession.session,
@@ -69,7 +69,7 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
             if (!parentRegions.includes(currentNode.parentRegion)) {
               parentRegions.push(currentNode.parentRegion);
             }
-          
+
           } catch (error) {
             https.globalAgent.options.rejectUnauthorized = undefined;
             window.showErrorMessage(`Something went wrong when performing an ENABLE - ${JSON.stringify(error, Object.getOwnPropertyNames(error)).replace(/(\\n\t|\\n|\\t)/gm," ")}`);
@@ -101,7 +101,7 @@ export function getEnableProgramCommand(tree: CICSTree, treeview: TreeView<any>)
 }
 
 async function enableProgram(
-  session: AbstractSession,
+  session: imperative.AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {
