@@ -114,8 +114,10 @@ export class CICSTree
                             window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
                         }
                         const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(profiles[0].profName);
-                        const filePath = currentProfile?.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
-                        await openConfigFile(filePath);
+                        const filePath = currentProfile?.profLoc.osLoc?.[0] ?? "";
+                        if (filePath !== "") {
+                            await openConfigFile(filePath);
+                        }
                     } else {
                         await this.createNewProfile();
                     }
