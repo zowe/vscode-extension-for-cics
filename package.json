@@ -908,7 +908,7 @@
     "@types/axios": "^0.14.0",
     "@zowe/cics-for-zowe-cli": "^5.0.0",
     "@zowe/cli": "7.18.0",
-    "@zowe/zowe-explorer-api": "file:../vscode-extension-for-zowe/dist/zowe-zowe-explorer-api-2.10.0-callback-for-extenders.tgz",
+    "@zowe/zowe-explorer-api": "2.10.0",
     "axios": "^0.21.4",
     "https": "^1.0.0",
     "run-script-os": "^1.1.6",

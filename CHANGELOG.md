@@ -2,6 +2,10 @@
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
+## `2.3.1`
+
+- BugFix: Updated Zowe Explorer API depepdency to leverage the Secrets for Zowe SDK. [#324](https://github.com/zowe/vscode-extension-for-cics/issues/324)
+
 ## `2.3.0`
 - Provided the ability to view relevant programs beneath the library dataset resource [#295](https://github.com/zowe/vscode-extension-for-cics/pull/295).
 - Provided search filter functionality for programs associated with datasets and for datasets associated with libraries [#295](https://github.com/zowe/vscode-extension-for-cics/pull/295).
@@ -14,7 +18,7 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Integrated search functionality for Pipelines and Web Services for both stand-alone regions and plex systems) [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
 - Incorporated `Show Attributes` Command for all resources under the web folder [#305](https://github.com/zowe/vscode-extension-for-cics/pull/305) & [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
 - Integrated the ability to show key attributes on the TCPIPS and URIMAPS resource tree node [#316](https://github.com/zowe/vscode-extension-for-cics/pull/316).
-- Fixed alignment inconsistency for attributes table for all resources [#318](https://github.com/zowe/vscode-extension-for-cics/pull/318). 
+- Fixed alignment inconsistency for attributes table for all resources [#318](https://github.com/zowe/vscode-extension-for-cics/pull/318).
 
 ## `2.2.0`
 - Added the ability to carry user input in the subsequent search filter for all resources [#258](https://github.com/zowe/vscode-extension-for-cics/pull/258).
@@ -56,7 +60,7 @@ All notable changes to the "cics-extension-for-zowe" extension will be documente
 - Added new icons for CICS System Groups and improved existing CICS Plex icon[#154](https://github.com/zowe/vscode-extension-for-cics/pull/154)
 - Fixed all command palette actions to work with their associated resource [#151](https://github.com/zowe/vscode-extension-for-cics/pull/151).
 - Added progress bar to indicate the loading of resources when filtering [#152](https://github.com/zowe/vscode-extension-for-cics/pull/152).
-- Updated the filtering prompts to be consistent with Zowe Explorer [#149](https://github.com/zowe/vscode-extension-for-cics/pull/149). 
+- Updated the filtering prompts to be consistent with Zowe Explorer [#149](https://github.com/zowe/vscode-extension-for-cics/pull/149).
 ## `1.2.0`
 - Updated tree nodes to lazily load contents so that resources are only fetched when necessary [#124](https://github.com/zowe/vscode-extension-for-cics/issues/124).
 - Added 'All Programs', 'All Local Transactions' and 'All Local Files' trees to show all resources under a plex [#138](https://github.com/zowe/vscode-extension-for-cics/pull/138).
