@@ -10,8 +10,8 @@
 */
 
 import { getResource } from "@zowe/cics-for-zowe-cli";
-import { BaseAuthHandler, IProfileLoaded, IUpdateProfile, Session } from "@zowe/imperative";
-import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, TreeItemCollapsibleState, WebviewPanel, window } from "vscode";
+import { imperative } from "@zowe/zowe-explorer-api";
+import { Event, EventEmitter, ProgressLocation, ProviderResult, TreeDataProvider, TreeItem, WebviewPanel, commands, window } from "vscode";
 import { PersistentStorage } from "../utils/PersistentStorage";
 import { InfoLoaded, ProfileManagement } from "../utils/profileManagement";
 import { isTheia, openConfigFile } from "../utils/workspaceUtils";
@@ -31,6 +31,12 @@ export class CICSTree
     }
     public getLoadedProfiles() {
         return this.loadedProfiles;
+    }
+
+    public async refreshLoadedProfiles() {
+        this.clearLoadedProfiles();
+        await this.loadStoredProfileNames();
+        commands.executeCommand('workbench.actions.treeView.cics-view.collapseAll');
     }
 
     public clearLoadedProfiles() {
@@ -63,7 +69,7 @@ export class CICSTree
     }
 
     /**
-     * 
+     *
      * Provides user with prompts and allows them to add a profile after clicking the '+' button
      */
     async addProfile() {
@@ -108,8 +114,10 @@ export class CICSTree
                             window.showErrorMessage("No profiles found in config file. Create a new config file or add a profile to get started");
                         }
                         const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(profiles[0].profName);
-                        const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
-                        await openConfigFile(filePath);
+                        const filePath = currentProfile?.profLoc.osLoc?.[0] ?? "";
+                        if (filePath !== "") {
+                            await openConfigFile(filePath);
+                        }
                     } else {
                         await this.createNewProfile();
                     }
@@ -145,13 +153,13 @@ export class CICSTree
     }
 
     /**
-     * 
-     * @param profile 
-     * @param position number that's passed in when updating or expanding profile - needed 
+     *
+     * @param profile
+     * @param position number that's passed in when updating or expanding profile - needed
      * to replace position of current CICSSessionTree.
      * @param sessionTree current CICSSessionTree only passed in if expanding a profile
      */
-    async loadProfile(profile: IProfileLoaded, position?: number | undefined, sessionTree?: CICSSessionTree) {
+    async loadProfile(profile: imperative.IProfileLoaded, position?: number | undefined, sessionTree?: CICSSessionTree) {
         const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         await persistentStorage.addLoadedCICSProfile(profile.name!);
         let newSessionTree : CICSSessionTree;
@@ -202,7 +210,7 @@ export class CICSTree
                 for (const item of plexInfo) {
                     // No plex
                     if (item.plexname === null) {
-                        const session = new Session({
+                        const session = new imperative.Session({
                             type: "basic",
                             hostname: profile.profile!.host,
                             port: Number(profile.profile!.port),
@@ -315,7 +323,7 @@ export class CICSTree
                                                 const message = {
                                                     name: profile.name,
                                                     profile: {
-                                                        ...profile.profile, 
+                                                        ...profile.profile,
                                                         rejectUnauthorized: false
                                                     }
                                                 };
@@ -325,7 +333,7 @@ export class CICSTree
                                             }
                                             await this.removeSession(sessionTree, updatedProfile, position);
                                         }
-                                        
+
                                     }
                                 }
                                 break;
@@ -365,7 +373,7 @@ export class CICSTree
 
     /**
      * Method for V1 profile configuration that provides UI for user to enter profile details
-     * and creates a profile. 
+     * and creates a profile.
      */
     async createNewProfile() {
         if (isTheia()) {
@@ -503,7 +511,7 @@ export class CICSTree
 
     }
 
-    async removeSession(session: CICSSessionTree, profile?: IProfileLoaded, position?: number) {
+    async removeSession(session: CICSSessionTree, profile?: imperative.IProfileLoaded, position?: number) {
         const persistentStorage = new PersistentStorage("zowe.cics.persistent");
         await persistentStorage.removeLoadedCICSProfile(session.label!.toString());
         this.loadedProfiles = this.loadedProfiles.filter(profile => profile.profile.name !== session.label?.toString());
@@ -515,7 +523,7 @@ export class CICSTree
 
     /**
      * Delete profile functionality for V1 profile configuration
-     * @param sessions 
+     * @param sessions
      */
     async deleteSession(sessions: CICSSessionTree[]) {
         let answer;
@@ -582,7 +590,7 @@ export class CICSTree
         await this.updateSessionHelper(session, message);
     }
 
-    async updateSessionHelper(session: CICSSessionTree, messageToUpdate?: IUpdateProfile) {
+    async updateSessionHelper(session: CICSSessionTree, messageToUpdate?: imperative.IUpdateProfile) {
         const column = window.activeTextEditor
             ? window.activeTextEditor.viewColumn
             : undefined;
@@ -599,7 +607,7 @@ export class CICSTree
                 const profile = await ProfileManagement.updateProfile(message);
                 const position = this.loadedProfiles.indexOf(session);
                 await ProfileManagement.profilesCacheRefresh();
-                const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile.profile!.name, 'cics');
+                const updatedProfile = await ProfileManagement.getProfilesCache().loadNamedProfile(profile?.profile!.name, 'cics');
                 await this.removeSession(session, updatedProfile, position);
 
             } catch (error) {

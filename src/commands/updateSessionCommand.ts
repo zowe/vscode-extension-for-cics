@@ -9,7 +9,6 @@
 *
 */
 
-import { IProfAttrs } from "@zowe/imperative";
 import { commands, TreeView, window } from "vscode";
 import { CICSSessionTree } from "../trees/CICSSessionTree";
 import { CICSTree } from "../trees/CICSTree";
@@ -29,9 +28,9 @@ export function getUpdateSessionCommand(tree: CICSTree, treeview: TreeView<any>)
       const configInstance = await ProfileManagement.getConfigInstance();
       if (configInstance.usingTeamConfig) {
         try {
-          const currentProfile: IProfAttrs = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
-          if (currentProfile) {
-            const filePath = currentProfile.profLoc.osLoc ? currentProfile.profLoc.osLoc[0] : "";
+          const currentProfile = await ProfileManagement.getProfilesCache().getProfileFromConfig(allSelectedNodes[allSelectedNodes.length-1].label);
+          const filePath = currentProfile?.profLoc.osLoc?.[0] ?? "";
+          if (filePath !== "") {
             await openConfigFile(filePath);
           }
         } catch (error) {

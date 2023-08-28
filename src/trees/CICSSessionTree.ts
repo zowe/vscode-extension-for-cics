@@ -12,12 +12,12 @@
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSRegionTree } from "./CICSRegionTree";
 import { CICSPlexTree } from "./CICSPlexTree";
-import { Session } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 import { getIconPathInResources } from "../utils/profileUtils";
 
 export class CICSSessionTree extends TreeItem {
   children: (CICSPlexTree | CICSRegionTree)[];
-  session: Session;
+  session: imperative.Session;
   profile: any;
   isUnauthorized: boolean | undefined;
 
@@ -28,7 +28,7 @@ export class CICSSessionTree extends TreeItem {
     super(profile.name, TreeItemCollapsibleState.Collapsed);
     this.children = [];
     this.contextValue = `cicssession.${profile.name}`;
-    this.session = new Session({
+    this.session = new imperative.Session({
       type: "basic",
       hostname: profile.profile!.host,
       port: Number(profile.profile!.port),

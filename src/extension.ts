@@ -61,11 +61,12 @@ import { getInquireProgramCommand } from "./commands/inquireProgram";
 
 /**
  * Initialises extension
- * @param context 
- * @returns 
+ * @param context
+ * @returns
  */
 export async function activate(context: ExtensionContext) {
   const zeVersion = getZoweExplorerVersion();
+  let treeDataProv: CICSTree;
   if (!zeVersion){
     window.showErrorMessage("Zowe Explorer was not found: Please ensure Zowe Explorer v2.0.0 or higher is installed");
     return;
@@ -78,7 +79,13 @@ export async function activate(context: ExtensionContext) {
       // Register 'cics' profiles as a ZE extender
       await ProfileManagement.registerCICSProfiles();
       ProfileManagement.getProfilesCache().registerCustomProfilesType('cics');
-      await ProfileManagement.getExplorerApis().getExplorerExtenderApi().reloadProfiles();
+      const apiRegister = await ProfileManagement.getExplorerApis();
+      await apiRegister.getExplorerExtenderApi().reloadProfiles();
+      if (apiRegister.onProfilesUpdate) {
+        apiRegister.onProfilesUpdate(async () => {
+          await treeDataProv.refreshLoadedProfiles();
+        });
+      }
       window.showInformationMessage(
         "Zowe Explorer was modified for the CICS Extension."
       );
@@ -92,7 +99,7 @@ export async function activate(context: ExtensionContext) {
     return;
   }
 
-  const treeDataProv = new CICSTree();
+  treeDataProv = new CICSTree();
   const treeview = window
     .createTreeView("cics-view", {
       treeDataProvider: treeDataProv,
@@ -134,8 +141,8 @@ export async function activate(context: ExtensionContext) {
         token.onCancellationRequested(() => {
           console.log("Cancelling the loading of resources");
         });
-      await node.element.loadContents();
-      treeDataProv._onDidChangeTreeData.fire(undefined);
+        await node.element.loadContents();
+        treeDataProv._onDidChangeTreeData.fire(undefined);
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
       // Programs folder node expanded
@@ -211,7 +218,7 @@ export async function activate(context: ExtensionContext) {
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
     // Library tree item node expanded to view datasets
-    } 
+    }
     else if (node.element.contextValue.includes("cicslibrary.")) {
       window.withProgress({
         title: 'Loading Datasets',
@@ -223,7 +230,7 @@ export async function activate(context: ExtensionContext) {
       });
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
 
-    // Dataset node expanded 
+    // Dataset node expanded
     } else if (node.element.contextValue.includes("cicsdatasets.")) {
       window.withProgress({
         title: 'Loading Programs',
@@ -331,17 +338,17 @@ export async function activate(context: ExtensionContext) {
           await node.element.loadContents(treeDataProv);
         }
         node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    } 
+    }
 
-    // All TCPIP Services node expanded 
+    // All TCPIP Services node expanded
       else if (node.element.contextValue.includes("cicscombinedtcpipstree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-    }  
-    
-    // All URI Maps node expanded 
+    }
+
+    // All URI Maps node expanded
     else if (node.element.contextValue.includes("cicscombinedurimapstree.")) {
     if (node.element.getActiveFilter()) {
       await node.element.loadContents(treeDataProv);
@@ -354,14 +361,14 @@ export async function activate(context: ExtensionContext) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-  
+
     // All Web Services folder node expanded
     } else if (node.element.contextValue.includes("cicscombinedwebservicetree.")) {
       if (node.element.getActiveFilter()) {
         await node.element.loadContents(treeDataProv);
       }
       node.element.collapsibleState = TreeItemCollapsibleState.Expanded;
-  
+
     // Regions container folder node expanded
     } else if (node.element.contextValue.includes("cicsregionscontainer.")) {
       node.element.iconPath = getIconPathInResources("folder-open-dark.svg", "folder-open-light.svg");
@@ -413,7 +420,7 @@ export async function activate(context: ExtensionContext) {
       setIconClosed(node, treeDataProv);
     } else if (node.element.contextValue.includes("cicstreeurimaps.")) {
       setIconClosed(node, treeDataProv);
-    } 
+    }
     node.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
   }
   );
@@ -454,7 +461,7 @@ export async function activate(context: ExtensionContext) {
     getShowWebServiceAttributesCommand(treeview),
 
     getShowRegionSITParametersCommand(treeview),
-    
+
     getFilterProgramsCommand(treeDataProv, treeview),
     getFilterDatasetProgramsCommand(treeDataProv, treeview),
     getFilterLibrariesCommand(treeDataProv, treeview),
@@ -476,12 +483,12 @@ export async function activate(context: ExtensionContext) {
     getFilterAllTasksCommand(treeDataProv, treeview),
     getFilterAllTCPIPServicesCommand(treeDataProv, treeview),
     getFilterAllURIMapsCommand(treeDataProv, treeview),
-    
+
     getFilterPlexResources(treeDataProv, treeview),
 
     getClearResourceFilterCommand(treeDataProv, treeview),
     getClearPlexFilterCommand(treeDataProv, treeview),
-    
+
     viewMoreCommand(treeDataProv, treeview),
 
     getInquireTransactionCommand(treeDataProv, treeview),

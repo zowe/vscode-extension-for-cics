@@ -14,7 +14,7 @@ import {
   CicsCmciRestClient,
   ICMCIApiResponse,
 } from "@zowe/cics-for-zowe-cli";
-import { AbstractSession } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../../trees/CICSRegionTree";
 import { CICSTree } from "../../trees/CICSTree";
@@ -48,9 +48,9 @@ export function getEnableLocalFileCommand(tree: CICSTree, treeview: TreeView<any
             increment: (parseInt(index) / allSelectedNodes.length) * 100,
           });
           const currentNode = allSelectedNodes[parseInt(index)];
-          
+
           https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-          
+
           try {
             await enableLocalFile(
               currentNode.parentRegion.parentSession.session,
@@ -95,7 +95,7 @@ export function getEnableLocalFileCommand(tree: CICSTree, treeview: TreeView<any
 }
 
 async function enableLocalFile(
-  session: AbstractSession,
+  session: imperative.AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; }
 ): Promise<ICMCIApiResponse> {
   const requestBody: any = {

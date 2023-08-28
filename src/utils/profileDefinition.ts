@@ -9,7 +9,7 @@
 *
 */
 
-import { ICommandProfileTypeConfiguration } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 
 const cicsProfileMeta = [
     {
@@ -113,4 +113,4 @@ const cicsProfileMeta = [
     }
 ];
 
-export default cicsProfileMeta as ICommandProfileTypeConfiguration[];
+export default cicsProfileMeta as imperative.ICommandProfileTypeConfiguration[];

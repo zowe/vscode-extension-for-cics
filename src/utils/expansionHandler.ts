@@ -18,7 +18,11 @@ import { ProfileManagement } from "./profileManagement";
 
 export async function sessionExpansionHandler(session: CICSSessionTree, tree:CICSTree) {
     const profile = await ProfileManagement.getProfilesCache().getLoadedProfConfig(session.label?.toString()!);
-    await tree.loadProfile(profile, tree.getLoadedProfiles().indexOf(session), session);
+    if (profile === undefined) {
+        throw new Error("sessionExpansionHandler: Profile is not defined");
+    } else {
+        await tree.loadProfile(profile, tree.getLoadedProfiles().indexOf(session), session);
+    }
 }
 
 export function regionContainerExpansionHandler(regionContiner: CICSRegionsContainer, tree:CICSTree) {

@@ -14,7 +14,7 @@ import {
   CicsCmciRestClient,
   ICMCIApiResponse,
 } from "@zowe/cics-for-zowe-cli";
-import { AbstractSession } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 import { commands, ProgressLocation, TreeView, window } from "vscode";
 import { CICSRegionTree } from "../trees/CICSRegionTree";
 import { CICSTree } from "../trees/CICSTree";
@@ -26,9 +26,9 @@ import { CICSCombinedTaskTree } from "../trees/CICSCombinedTrees/CICSCombinedTas
 
 /**
  * Purge a CICS Task and reload the CICS Task tree contents and the combined Task tree contents
- * @param tree 
- * @param treeview 
- * @returns 
+ * @param tree
+ * @param treeview
+ * @returns
  */
 export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
   return commands.registerCommand(
@@ -60,9 +60,9 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
               increment: (parseInt(index) / allSelectedNodes.length) * 100,
             });
             const currentNode = allSelectedNodes[parseInt(index)];
-            
+
             https.globalAgent.options.rejectUnauthorized = currentNode.parentRegion.parentSession.session.ISession.rejectUnauthorized;
-            
+
             try {
               await purgeTask(
                 currentNode.parentRegion.parentSession.session,
@@ -119,13 +119,13 @@ export function getPurgeTaskCommand(tree: CICSTree, treeview: TreeView<any>) {
 
 /**
  * CMCI Purge Task request
- * @param session 
- * @param parms 
- * @param purgeType 
- * @returns 
+ * @param session
+ * @param parms
+ * @param purgeType
+ * @returns
  */
 async function purgeTask(
-  session: AbstractSession,
+  session: imperative.AbstractSession,
   parms: { name: string; regionName: string; cicsPlex: string; },
   purgeType: string
 ): Promise<ICMCIApiResponse> {
@@ -141,7 +141,7 @@ async function purgeTask(
                   value: purgeType
               }
           }
-        }, 
+        },
     }
   };
 

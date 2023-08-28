@@ -11,7 +11,7 @@
 
 import { TreeItemCollapsibleState, TreeItem } from "vscode";
 import { CICSRegionTree } from "./CICSRegionTree";
-import { IProfileLoaded } from "@zowe/imperative";
+import { imperative } from "@zowe/zowe-explorer-api";
 import { CICSSessionTree } from "./CICSSessionTree";
 import { getResource } from "@zowe/cics-for-zowe-cli";
 import * as https from "https";
@@ -26,13 +26,12 @@ import { CICSCombinedTCPIPServiceTree } from "./CICSCombinedTrees/CICSCombinedTC
 import { CICSCombinedURIMapTree } from "./CICSCombinedTrees/CICSCombinedURIMapTree";
 import { CICSCombinedPipelineTree } from "./CICSCombinedTrees/CICSCombinedPipelineTree";
 import { CICSCombinedWebServiceTree } from "./CICSCombinedTrees/CICSCombinedWebServiceTree";
-import { CICSPipelineTree } from "./treeItems/web/CICSPipelineTree";
 
 
 export class CICSPlexTree extends TreeItem {
   children: (CICSRegionTree | CICSCombinedProgramTree | CICSCombinedTransactionsTree | CICSCombinedLocalFileTree | CICSCombinedTaskTree | CICSCombinedLibraryTree | CICSRegionsContainer | CICSCombinedTCPIPServiceTree | CICSCombinedURIMapTree | CICSCombinedPipelineTree | CICSCombinedWebServiceTree) [] = [];
   plexName: string;
-  profile: IProfileLoaded;
+  profile: imperative.IProfileLoaded;
   parent: CICSSessionTree;
   resourceFilters: any;
   activeFilter: string | undefined;
@@ -40,7 +39,7 @@ export class CICSPlexTree extends TreeItem {
 
   constructor(
     plexName: string,
-    profile: IProfileLoaded,
+    profile: imperative.IProfileLoaded,
     sessionTree: CICSSessionTree,
     group?: string,
   ) {
@@ -52,9 +51,9 @@ export class CICSPlexTree extends TreeItem {
     this.resourceFilters = {};
     this.activeFilter = undefined;
     this.groupName = group;
-    this.iconPath = 
-      group ? 
-      getIconPathInResources("cics-system-group-dark.svg ", "cics-system-group-light.svg ") : 
+    this.iconPath =
+      group ?
+      getIconPathInResources("cics-system-group-dark.svg ", "cics-system-group-light.svg ") :
       getIconPathInResources("cics-plex-dark.svg", "cics-plex-light.svg");
   }
 
@@ -82,7 +81,7 @@ export class CICSPlexTree extends TreeItem {
       this,
       this
       );
-    this.clearChildren(); 
+    this.clearChildren();
     this.addRegion(newRegionTree);
   }
 
