@@ -1,7 +1,7 @@
 # Zowe CICS Explorer
 
-[![version](https://vsmarketplacebadge.apphb.com/version-short/zowe.cics-extension-for-zowe.svg)](https://vsmarketplacebadge.apphb.com/version-short/Zowe.cics-extension-for-zowe.svg)
-[![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/zowe.cics-extension-for-zowe.svg)](https://vsmarketplacebadge.apphb.com/downloads-short/Zowe.cics-extension-for-zowe.svg)
+[![version](https://img.shields.io/visual-studio-marketplace/v/zowe.cics-extension-for-zowe.svg)](https://img.shields.io/visual-studio-marketplace/v/zowe.cics-extension-for-zowe.svg)
+[![downloads](https://img.shields.io/visual-studio-marketplace/d/zowe.cics-extension-for-zowe.svg)](https://img.shields.io/visual-studio-marketplace/d/zowe.cics-extension-for-zowe.svg)
 [![slack](https://img.shields.io/badge/chat-on%20Slack-blue)](https://openmainframeproject.slack.com/archives/CUVE37Z5F)
 [![open issues](https://img.shields.io/github/issues/zowe/vscode-extension-for-cics)](https://github.com/zowe/vscode-extension-for-cics/issues)
 
@@ -62,7 +62,7 @@ To Install CICS Extension for Zowe Explorer see [Installation](./docs/installati
 
 ### Create Profile
 
-If you already have a Zowe CICS CLI profile, the CICS tree will load the default profile on startup.  
+If you already have a Zowe CICS CLI profile, the CICS tree will load the default profile on startup.
 
 If you don't have an existing Zowe CICS CLI profile, follow these steps to create one:
 
@@ -79,7 +79,7 @@ If you don't have an existing Zowe CICS CLI profile, follow these steps to creat
 5. Select the **+** button in the CICS tree and click the newly created profile to load it into view.
 
 <p align="center">
-<img src="./docs/images/create-config-profile.gif" alt="Zowe CICS Explorer config profiles" width="700px"/> 
+<img src="./docs/images/create-config-profile.gif" alt="Zowe CICS Explorer config profiles" width="700px"/>
 </p>
 
 Here's an example of a CICS profile entry in the config file:
@@ -109,12 +109,12 @@ Here's an example of a CICS profile entry in the config file:
 
 2. Select the **Create New CICS profile** option to open a panel that defines connection details.
 
-**Note**: The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number. The region can be a WUI server in a CICSPlex, or else a stand-alone Single Management Application Programming (SMSS) region.  
+**Note**: The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number. The region can be a WUI server in a CICSPlex, or else a stand-alone Single Management Application Programming (SMSS) region.
 
 Configuring a CICS region to have a connection is a system programmer task and more details can be found in [Setting up CMCI with CICSPlex SM](https://www.ibm.com/docs/en/cics-ts/5.3?topic=explorer-setting-up-cmci-cicsplex-sm) or [Setting up CMCI in a stand-alone CICS region](https://www.ibm.com/docs/en/cics-ts/5.3?topic=suace-setting-up-cmci-in-stand-alone-cics-region). If your CMCI connection is configured to use a self-signed certificate that your PC's trust store doesn't recognize, see [Untrusted TLS certificates](#untrusted-tls-certificates).
 
 <p align="center">
-<img src="./docs/images/create-profile.gif" alt="Zowe CICS Explorer profiles" width="700px"/> 
+<img src="./docs/images/create-profile.gif" alt="Zowe CICS Explorer profiles" width="700px"/>
 </p>
 
 To show more than one CICS profiles in the tree, select the **+** button and choose from the list of profiles. Only profiles that not already included in the CICS tree will be shown.
@@ -123,17 +123,17 @@ To show more than one CICS profiles in the tree, select the **+** button and cho
 
 The connection must point to a CICS region's CICS Management Client Interface (CMCI) TCP/IP host name and port number.  The region can be a WUI server in a CICSPlex, a stand-alone Single Management Application Programming (SMSS) region, or a CICS system group.
 
-If neither of the fields under 'CICS Details' (for users using v1 profiles) or neither the 'cicsPlex' or 'regionName' properties (for users using team configuration) are specified, the profile will show all CICSPlex for the WUI server.  Specify a Plex Name to just view data for a single CICSPlex. 
+If neither of the fields under 'CICS Details' (for users using v1 profiles) or neither the 'cicsPlex' or 'regionName' properties (for users using team configuration) are specified, the profile will show all CICSPlex for the WUI server.  Specify a Plex Name to just view data for a single CICSPlex.
 
 For a CICSPlex, all managed regions will be shown unless you specify a specific region name. Instead of a region name, you may also enter a CICS System Group to allow scoping of resources within the CICSPlex.
 
 For a stand-alone CICS region, the Region Name may be entered but is optional.  Do not enter a CICSPlex name for a stand-alone CICS region.
 
 
-Configuring a CICS region to have a connection is a system programmer task and more details can be found in [Setting up CMCI with CICSPlex SM](https://www.ibm.com/docs/en/cics-ts/5.3?topic=explorer-setting-up-cmci-cicsplex-sm) or 
+Configuring a CICS region to have a connection is a system programmer task and more details can be found in [Setting up CMCI with CICSPlex SM](https://www.ibm.com/docs/en/cics-ts/5.3?topic=explorer-setting-up-cmci-cicsplex-sm) or
 [Setting up CMCI in a stand-alone CICS region](https://www.ibm.com/docs/en/cics-ts/5.3?topic=suace-setting-up-cmci-in-stand-alone-cics-region).  If your CMCI connection is configured to use a self-signed certificate that your PC's trust store doesn't recognize, see [Untrusted TLS certificates](#untrusted-tls-certificates)
 
-To show more than one CICS profile in the tree, select the + button and choose from the list of profiles.  Only profiles not already included in the CICS tree will be shown.  To view all Zowe CICS CLI profiles use the command `zowe profiles list cics` from a terminal.  
+To show more than one CICS profile in the tree, select the + button and choose from the list of profiles.  Only profiles not already included in the CICS tree will be shown.  To view all Zowe CICS CLI profiles use the command `zowe profiles list cics` from a terminal.
 
 ### Update Profile
 
@@ -148,7 +148,7 @@ To show more than one CICS profile in the tree, select the + button and choose f
 4. Refresh the Zowe Explorer for IBM CICS extension by either clicking the button at the top level of the CICS view, or the `Zowe Explorer for IBM CICS: Refresh` command palette option.
 
 <p align="center">
-<img src="./docs/images/update-config-profile.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/update-config-profile.gif" alt="Zowe CICS Explorer Filter" width="700px"/>
 </p>
 
 #### Using Zowe v1 profiles
@@ -162,7 +162,7 @@ To show more than one CICS profile in the tree, select the + button and choose f
 3. Once the details are updated, click the **Update Profile** button to apply the changes to the profile.
 
 <p align="center">
-<img src="./docs/images/update-profile.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/update-profile.gif" alt="Zowe CICS Explorer Filter" width="700px"/>
 </p>
 
 ### Hiding Profiles
@@ -170,7 +170,7 @@ To show more than one CICS profile in the tree, select the + button and choose f
 Open the menu actions for a profile by right-clicking a profile and select `Hide Profile` to hide it from the CICS view. To add the profile back, click the + button and select the profile from the quick pick list.
 
 <p align="center">
-<img src="./docs/images/hide-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/hide-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/>
 </p>
 
 ### Deleting Profiles
@@ -186,7 +186,7 @@ Open the menu actions for a profile by right-clicking a profile and select `Hide
 4. Refresh the Zowe Explorer for IBM CICS extension by either clicking the button at the top level of the CICS view, or the `Zowe Explorer for IBM CICS: Refresh` command palette option.
 
 <p align="center">
-<img src="./docs/images/delete-config-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/delete-config-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/>
 </p>
 
 #### Using Zowe v1 profiles
@@ -196,7 +196,7 @@ Open the menu actions for a profile by right-clicking a profile and select `Hide
 2. Select **Delete Profile** and click the **Yes** button when prompted to confirm the action of permanently deleting the profile. The functionality deletes the CICS profile from the persistent storage directory `~/.zowe/profiles/cics`.
 
 <p align="center">
-<img src="./docs/images/delete-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/delete-profile.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/>
 </p>
 
 ## CICS Resources
@@ -207,27 +207,27 @@ Expand a CICS profile to see the region name, and expand the region to view its 
 
 Expand a CICS region to show folders for the resource types `Programs`, `Transactions`, `Local Files` and `Tasks`.  Expand each type to show the resources. The number of resources in a resource tree will appear in square brackets next to the tree name.
 
-The list of resources are pre-filtered to exclude many of the IBM supplied ones to narrow the contents to just include user programs.  Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  against a resource type to apply a filter.  This can be an exact resource name or else you can use wildcards.  The search history is saved so you can recall previous searches.  
+The list of resources are pre-filtered to exclude many of the IBM supplied ones to narrow the contents to just include user programs.  Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  against a resource type to apply a filter.  This can be an exact resource name or else you can use wildcards.  The search history is saved so you can recall previous searches.
 
 To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the resource type.  If you wish to see all resources in a region (including IBM supplied ones) you can use "*" as a filter.
 
 <p align="center">
-<img src="./docs/images/region-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/region-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/>
 </p>
 
-**Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching. 
+**Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching.
 
 ### Show and Filter Resources in a Plex
 
-Similar to filtering resources in a region, it is also possible to apply a filter on a all region resources in a plex. Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  inline with the `Regions` tree and then select either `Regions`,  `Programs`, `Local Transactions` or `Local Files` from the drop-down menu to specify which resource type the filter should be applied to for all regions in the plex. 
+Similar to filtering resources in a region, it is also possible to apply a filter on a all region resources in a plex. Use the search icon <img src="./docs/images/resource-filter.png" width="16px"/>  inline with the `Regions` tree and then select either `Regions`,  `Programs`, `Local Transactions` or `Local Files` from the drop-down menu to specify which resource type the filter should be applied to for all regions in the plex.
 
 To reset the filter to its initial criteria use the clear filter icon <img src="./docs/images/resource-filter-clear.png" width="16px"/> against the `Regions` tree. This will open a drop-down menu which gives the option to clear the filter for all the `Regions`, `Programs`, `Local Transactions` or `Local Files` in the plex, and an option to otherwise clear `All` filters within the plex.
 
 <p align="center">
-<img src="./docs/images/plex-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/plex-filter.gif" alt="Zowe CICS Explorer Filter" width="700px"/>
 </p>
 
-**Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching. 
+**Tip:** To apply multiple filters, separate entries with a comma. You can append any filter with an *, which indicates wildcard searching.
 
 ### Show and Filter Resources in an 'All' Resource Tree
 Plexes contain an `All Programs`, `All Local Transactions`, `All Local Files` and `All Tasks` trees which contain all the corresponding resources from all regions in the plex.
@@ -235,7 +235,7 @@ Plexes contain an `All Programs`, `All Local Transactions`, `All Local Files` an
 To view resources under these trees, use the search icon <img src="./docs/images/resource-filter.png" width="16px"/> inline with the tree and apply a filter.
 
 <p align="center">
-<img src="./docs/images/all-resources.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/all-resources.gif" alt="Zowe CICS Explorer Filter" width="700px"/>
 </p>
 
 If the applied filter results in over 500 records, either change the filter to narrow down the search, or click the `view X more ...` item to retrieve 'X' more resources.
@@ -243,15 +243,15 @@ If the applied filter results in over 500 records, either change the filter to n
 **Tip:** The default 500 count can be modified via the `Record Count Increment` property in Settings (UI).
 
 <p align="center">
-<img src="./docs/images/record-count-increment.png" alt="Zowe CICS Explorer Record Count Increment in Setting UI" width="700px"/> 
+<img src="./docs/images/record-count-increment.png" alt="Zowe CICS Explorer Record Count Increment in Setting UI" width="700px"/>
 </p>
 
 ### Show Attributes
 
-Right-click and use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region, `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.  
+Right-click and use the pop-up menu against a program to list the available actions that can be performed. For every resource, including a CICS region, `Show Attributes` opens a viewer listing all attributes and their values.  The attributes page has a filter box at the top that lets you search for attributes matching the criteria.
 
 <p align="center">
-<img src="./docs/images/show-attributes.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/show-attributes.gif" alt="Zowe CICS Explorer Filter" width="700px"/>
 </p>
 
 ### Enable and Disable
@@ -259,7 +259,7 @@ Right-click and use the pop-up menu against a program to list the available acti
 Right-click against a program, local transaction or local file to open up the pop-up menu and click `Disable [CICS resource]` to disable the resource. When a resource is already disabled the first option becomes `Enable [CICS resource]` to allow its enablement state to be toggled. A disabled resource is identified by a `(Disabled)` text next to its name.
 
 <p align="center">
-<img src="./docs/images/disable-enable.gif" alt="Zowe CICS Explorer Filter" width="700px"/> 
+<img src="./docs/images/disable-enable.gif" alt="Zowe CICS Explorer Filter" width="700px"/>
 </p>
 
 ### New Copy and Phase In
@@ -269,17 +269,17 @@ Use `New Copy` <img src="./docs/images/program-newcopy-action.png" width="16px"/
 The `newcopycnt` for a program which is greater than zero is shown next to the program item in the CICS resource tree.
 
 <p align="center">
-<img src="./docs/images/new-copy.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/new-copy.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/>
 </p>
 
 ### Open and Close Local Files
 
-Right-click against a closed local file and perform the `Open Local File` menu action to toggle the `openstatus` attribute to 'OPEN'. 
+Right-click against a closed local file and perform the `Open Local File` menu action to toggle the `openstatus` attribute to 'OPEN'.
 
 To close a local file, right-click against an open local file and perform the `Close Local File` menu action. This will bring up a prompt on the bottom right corner requesting to choose one of `Wait`, `No Wait` or `Force` for the file busy condition. Once an option has been selected, the local file name will be appended with a `(Closed)` label upon success.
 
 <p align="center">
-<img src="./docs/images/open-close.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/open-close.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/>
 </p>
 
 ### Purge Task
@@ -289,7 +289,7 @@ Right-click against a task and click the `Purge Task` command. This will open a 
 Select the appropriate condition to perform the purge.
 
 <p align="center">
-<img src="./docs/images/purge-task.gif" alt="Zowe CICS Explorer Purge Task" width="600px"/> 
+<img src="./docs/images/purge-task.gif" alt="Zowe CICS Explorer Purge Task" width="600px"/>
 </p>
 
 ### Inquire Functionality
@@ -299,7 +299,7 @@ Right-click against a Task and perform the `Inquire Transaction` command. This w
 The same can be done on a Local Transaction to find the associated Program by executing the `Inquire Program` right-click menu action against a Local Transaction.
 
 <p align="center">
-<img src="./docs/images/inquire.gif" alt="Zowe CICS Explorer Inquire functionality" width="600px"/> 
+<img src="./docs/images/inquire.gif" alt="Zowe CICS Explorer Inquire functionality" width="600px"/>
 </p>
 
 ### View Datasets under Libraries
@@ -307,25 +307,25 @@ The same can be done on a Local Transaction to find the associated Program by ex
 Expand libraries of a region to view specific datasets belonging to a library. Right-click on libraries to `Show Attributes` to view library attributes. Similarly, right-click on datasets to `Show Attributes` to view dataset attributes.
 
 <p align="center">
-<img src="./docs/images/datasets.gif" alt="Zowe CICS Explorer View Datasets functionality" width="600px"/> 
+<img src="./docs/images/datasets.gif" alt="Zowe CICS Explorer View Datasets functionality" width="600px"/>
 </p>
 
 ### View four CICS Web Resources under the Web Folder
 
-Expand the Web folder to view TCPIP Services, URI Maps, Pipelines and Web Services. Each of these resources can be expanded and allows for right-click functionality on the specific resource to execute the `Show Attributes` command. Use the search icon to filter down specific resources by applying a filter. 
+Expand the Web folder to view TCPIP Services, URI Maps, Pipelines and Web Services. Each of these resources can be expanded and allows for right-click functionality on the specific resource to execute the `Show Attributes` command. Use the search icon to filter down specific resources by applying a filter.
 
 <p align="center">
-<img src="./docs/images/webResources.gif" alt="Zowe CICS Explorer Web resources under the Web folder" width="600px"/> 
+<img src="./docs/images/webResources.gif" alt="Zowe CICS Explorer Web resources under the Web folder" width="600px"/>
 </p>
 
 ## Untrusted TLS Certificates
 
 If the CMCI connection is using a TLS certificate that your PC doesn't have in its trust store, then by default the connection will be rejected as potentially this could be from an unsafe site.  To override this behavior,  either set the `Only accept trusted TLS certificates` field on the form when creating/updating the profile to `False`.  This is the same as setting `rejectUnauthorized=false` on the Zowe CICS CLI profile.
 
-If you define a profile as only accepting trusted TLS certificates when the Zowe Explorer first connects it will detect the mismatch and allow you to override the setting and proceed.  This is done through a pop-up message with a `Yes` button to accept the untrusted certificate authority, which changes the profile's setting.  
+If you define a profile as only accepting trusted TLS certificates when the Zowe Explorer first connects it will detect the mismatch and allow you to override the setting and proceed.  This is done through a pop-up message with a `Yes` button to accept the untrusted certificate authority, which changes the profile's setting.
 
 <p align="center">
-<img src="./docs/images/untrusted-cert.gif" alt="Zowe CICS Explorer accepted untrusted certificate" width="600px"/> 
+<img src="./docs/images/untrusted-cert.gif" alt="Zowe CICS Explorer accepted untrusted certificate" width="600px"/>
 </p>
 
 ## Usage tips
@@ -337,9 +337,9 @@ If you define a profile as only accepting trusted TLS certificates when the Zowe
 
 ## Providing feedback or help contributing
 ### Checking the source of an error
-Before filing an issue, check if an error is arising from the Zowe Explorer for IBM CICS extension and not the Zowe Explorer extension by expanding the error message and checking if the `Source` is `Zowe Explorer for IBM CICS (Extension)`. 
+Before filing an issue, check if an error is arising from the Zowe Explorer for IBM CICS extension and not the Zowe Explorer extension by expanding the error message and checking if the `Source` is `Zowe Explorer for IBM CICS (Extension)`.
 <p align="center">
-<img src="./docs/images/expand-error-cics.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/> 
+<img src="./docs/images/expand-error-cics.gif" alt="Zowe CICS Explorer NewCopy Program" width="600px"/>
 </p>
 
 Error messages arising from the Zowe Explorer extension will have the `Source` as `Zowe Explorer(Extension)`.

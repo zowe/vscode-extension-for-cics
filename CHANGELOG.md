@@ -2,6 +2,10 @@
 
 All notable changes to the "cics-extension-for-zowe" extension will be documented in this file.
 
+## `2.3.2`
+
+- BugFix: Updated badge images in README.md
+
 ## `2.3.1`
 
 - BugFix: Updated Zowe Explorer API depepdency to leverage the Secrets for Zowe SDK. [#324](https://github.com/zowe/vscode-extension-for-cics/issues/324)
