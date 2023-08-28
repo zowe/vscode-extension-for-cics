@@ -9,7 +9,7 @@ on:
         required: true
 
 jobs:
-  build_vsix:
+  build:
     runs-on: ${{ matrix.os }}
 
     timeout-minutes: 60
@@ -49,9 +49,10 @@ jobs:
       # - name: Tests
       #   run: npm run test
 
-  deploy_vsix:
+  deploy:
     name: deploy_vsix
     if: github.event_name == 'workflow_dispatch'
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
